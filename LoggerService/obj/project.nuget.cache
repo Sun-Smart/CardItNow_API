@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "dgSpecHash": "b+KWKyyqEqUBQ+OLxgLsc2xVIBh/5jm/l2EAShvb8nncuxR0KQrt6slJ0diLk0i3WL8PGdO5mTrQWi0ES4sXbA==",
+  "success": true,
+  "projectFilePath": "E:\\00_DevSource\\CarditNow\\LoggerService\\LoggerService.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\5.0.0\\microsoft.extensions.configuration.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\5.0.0\\microsoft.extensions.dependencyinjection.5.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\5.0.0\\microsoft.extensions.dependencyinjection.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.logging\\5.0.0\\microsoft.extensions.logging.5.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\5.0.0\\microsoft.extensions.logging.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.options\\5.0.0\\microsoft.extensions.options.5.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.extensions.primitives\\5.0.0\\microsoft.extensions.primitives.5.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\nlog\\4.7.9\\nlog.4.7.9.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\nlog.extensions.logging\\1.7.2\\nlog.extensions.logging.1.7.2.nupkg.sha512"
+  ],
+  "logs": []
+}

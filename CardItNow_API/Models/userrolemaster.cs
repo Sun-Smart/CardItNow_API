@@ -30,7 +30,7 @@ namespace carditnow.Models
     }
     public class userrolemasterView
     {
-public userrolemaster data{ get; set; }
+        public userrolemaster data{ get; set; }
 
     }
 }

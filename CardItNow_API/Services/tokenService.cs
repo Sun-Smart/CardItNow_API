@@ -152,12 +152,7 @@ namespace nTireBO.Services
                         u.username = objusermaster.username;
                         u.userroleid = 6;
                         u.language = "en";
-                        u.email = objusermaster.email;
-                       
-
-                        
-
-
+                        u.email = objusermaster.email;    
 
                     }
                     return u;

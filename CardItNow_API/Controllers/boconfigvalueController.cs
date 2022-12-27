@@ -28,13 +28,16 @@ namespace nTireBO.Controllers
         {
             _boconfigvalueService = obj_boconfigvalueService;
             _logger = logger;
-            cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
-            uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
-            uname = "";
-            uidemail = "";
-            if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
-            if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "email") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "email").Value.ToString();
-            _boconfigvalueService = obj_boconfigvalueService;
+            if (objhttpContextAccessor.HttpContext.User.Claims.Any())
+            {
+                cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
+                uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
+                uname = "";
+                uidemail = "";
+                if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
+                if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "email") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "email").Value.ToString();
+                _boconfigvalueService = obj_boconfigvalueService;
+            }
         }
 
         // GET: api/boconfigvalue

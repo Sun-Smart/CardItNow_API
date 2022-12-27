@@ -26,6 +26,8 @@ using System.Text;
 using LoggerService;
 using nTireBO.Services;
 using carditnow.Services;
+using System.IO;
+using System.Net.Http.Headers;
 
 namespace carditnow.Services
 {
@@ -36,99 +38,108 @@ namespace carditnow.Services
         private ILoggerManager _logger;
         private IHttpContextAccessor httpContextAccessor;
         private readonly IcustomerdetailService _service;
-int cid=0;
-int uid=0;
-string uname="";
-string uidemail="";
+        int cid = 0;
+        int uid = 0;
+        string uname = "";
+        string uidemail = "";
 
-
-
-
-        public customerdetailService(customerdetailContext context,IConfiguration configuration, ILoggerManager logger,  IHttpContextAccessor objhttpContextAccessor )
+        public customerdetailService(customerdetailContext context, IConfiguration configuration, ILoggerManager logger, IHttpContextAccessor objhttpContextAccessor)
         {
-Configuration = configuration;
+            Configuration = configuration;
             _context = context;
             _logger = logger;
             this.httpContextAccessor = objhttpContextAccessor;
-        cid=int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
-        uid=int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
-        uname = "";
-        uidemail = "";
-        if(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username")!=null)uname = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
-        if(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid")!=null)uidemail = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
+            if (httpContextAccessor.HttpContext.User.Claims.Any())
+            {
+               
+               
+                    cid = int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
+                    uid = int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
+                    uname = "";
+                    uidemail = "";
+                    if (httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
+                    if (httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
+                            }
         }
 
         // GET: service/customerdetail
-//Used in filling of dropdowns, search, next,prev. List checkbox in the column property need to be selected
+        //Used in filling of dropdowns, search, next,prev. List checkbox in the column property need to be selected
         public dynamic Get_customerdetails()
         {
-        _logger.LogInfo("Getting into Get_customerdetails() api");
-        try{
-        using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
-        {
-            
-        var parameters = new { @cid = cid,@uid=uid };
-    string SQL = "select pk_encode(a.customerdetailid) as pkcol,customerdetailid as value,uid as label from GetTable(NULL::public.customerdetails,@cid) a  WHERE  a.status='A'";
-        var result = connection.Query<dynamic>(SQL, parameters);
-            connection.Close();
-            connection.Dispose();
-            return result;
-        }
-        } catch (Exception ex) {
-            _logger.LogError($"Service : Get_customerdetails(): {ex}");
-            throw ex;
-        }
-        return null;
+            _logger.LogInfo("Getting into Get_customerdetails() api");
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    var parameters = new { @cid = cid, @uid = uid };
+                    string SQL = "select pk_encode(a.customerdetailid) as pkcol,customerdetailid as value,uid as label from GetTable(NULL::public.customerdetails,@cid) a  WHERE  a.status='A'";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    connection.Close();
+                    connection.Dispose();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service : Get_customerdetails(): {ex}");
+                throw ex;
+            }
+            return null;
         }
 
 
-        public  IEnumerable<Object> GetListBy_customerdetailid(int customerdetailid)
+        public IEnumerable<Object> GetListBy_customerdetailid(int customerdetailid)
         {
-        try{
-        _logger.LogInfo("Getting into  GetListBy_customerdetailid(int customerdetailid) api");
-        using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
-        {
-        var parameters_customerdetailid = new { @cid = cid,@uid=uid ,@customerdetailid = customerdetailid  };
-            var SQL = "select pk_encode(customerdetailid) as pkcol,customerdetailid as value,uid as label,* from GetTable(NULL::public.customerdetails,@cid) where customerdetailid = @customerdetailid";
-var result = connection.Query<dynamic>(SQL, parameters_customerdetailid);
+            try
+            {
+                _logger.LogInfo("Getting into  GetListBy_customerdetailid(int customerdetailid) api");
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    var parameters_customerdetailid = new { @cid = cid, @uid = uid, @customerdetailid = customerdetailid };
+                    var SQL = "select pk_encode(customerdetailid) as pkcol,customerdetailid as value,uid as label,* from GetTable(NULL::public.customerdetails,@cid) where customerdetailid = @customerdetailid";
+                    var result = connection.Query<dynamic>(SQL, parameters_customerdetailid);
 
-            connection.Close();
-            connection.Dispose();
-            return (result);
+                    connection.Close();
+                    connection.Dispose();
+                    return (result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetListBy_customerdetailid(int customerdetailid) \r\n {ex}");
+                throw ex;
+            }
         }
-        } catch (Exception ex) {
-            _logger.LogError($"Service:  GetListBy_customerdetailid(int customerdetailid) \r\n {ex}");
-            throw ex;
+        //used in getting the record. parameter is encrypted id  
+        public dynamic Get_customerdetail(string sid)
+        {
+            _logger.LogInfo("Getting into  Get_customerdetail(string sid) api");
+            int id = Helper.GetId(sid);
+            return Get_customerdetail(id);
         }
-        }
-//used in getting the record. parameter is encrypted id  
-public  dynamic Get_customerdetail(string sid)
-{
-        _logger.LogInfo("Getting into  Get_customerdetail(string sid) api");
-int id = Helper.GetId(sid);
-  return  Get_customerdetail(id);
-}
         // GET: customerdetail/5
-//gets the screen record
-        public  dynamic Get_customerdetail(int id)
+        //gets the screen record
+        public dynamic Get_customerdetail(int id)
         {
-        _logger.LogInfo("Getting into Get_customerdetail(int id) api");
-try{
-        using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
-        {
-        
-//all visible & hiding of fields are to be controlled with these variables.Must visible, Must hide fields are used 
-ArrayList visiblelist=new ArrayList();
-ArrayList hidelist=new ArrayList();
+            _logger.LogInfo("Getting into Get_customerdetail(int id) api");
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    //all visible & hiding of fields are to be controlled with these variables.Must visible, Must hide fields are used 
+                    ArrayList visiblelist = new ArrayList();
+                    ArrayList hidelist = new ArrayList();
 
 
-string wStatus = "NormalStatus";
-string vdivmode ="divmode";
-string vdivstatus ="divstatus";
-string vamlcheckstatus ="amlcheckstatus";
+                    string wStatus = "NormalStatus";
+                    string vdivmode = "divmode";
+                    string vdivstatus = "divstatus";
+                    string vamlcheckstatus = "amlcheckstatus";
 
-var parameters = new { @cid=cid,@uid=uid,@id=id,@wStatus=wStatus,@vdivmode =vdivmode,@vdivstatus =vdivstatus,@vamlcheckstatus =vamlcheckstatus};
-var SQL = @"select pk_encode(a.customerdetailid) as pkcol,a.customerdetailid as pk,a.*,
+                    var parameters = new { @cid = cid, @uid = uid, @id = id, @wStatus = wStatus, @vdivmode = vdivmode, @vdivstatus = vdivstatus, @vamlcheckstatus = vamlcheckstatus };
+                    var SQL = @"select pk_encode(a.customerdetailid) as pkcol,a.customerdetailid as pk,a.*,
 u.email as customeriddesc,
 i.email as uiddesc,
 g.geoname as geoiddesc,
@@ -145,62 +156,67 @@ s.cityname as cityiddesc,
  left join boconfigvalues v on a.divstatus=v.configkey and @vdivstatus=v.param
  left join boconfigvalues l on a.amlcheckstatus=l.configkey and @vamlcheckstatus=l.param
  where a.customerdetailid=@id";
-var result = connection.Query<dynamic>(SQL, parameters);
-var obj_customerdetail = result.FirstOrDefault();
-var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customerdetails'";
-var customerdetail_menuactions = connection.Query<dynamic>(SQLmenuactions, parameters);
-FormProperty formproperty=new FormProperty();
-formproperty.edit=true;
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    var obj_customerdetail = result.FirstOrDefault();
+                    var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customerdetails'";
+                    var customerdetail_menuactions = connection.Query<dynamic>(SQLmenuactions, parameters);
+                    FormProperty formproperty = new FormProperty();
+                    formproperty.edit = true;
 
 
-            connection.Close();
-            connection.Dispose();
-            return (new { customerdetail=obj_customerdetail,customerdetail_menuactions,formproperty,visiblelist,hidelist });
-}
-}catch(Exception ex)
-{
-            _logger.LogError($"Service: Get_customerdetail(int id)\r\n {ex}");
-throw ex;
-}
+                    connection.Close();
+                    connection.Dispose();
+                    return (new { customerdetail = obj_customerdetail, customerdetail_menuactions, formproperty, visiblelist, hidelist });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: Get_customerdetail(int id)\r\n {ex}");
+                throw ex;
+            }
         }
 
-        public  IEnumerable<Object> GetList(string condition="")
+        public IEnumerable<Object> GetList(string condition = "")
         {
-        try{
-        _logger.LogInfo("Getting into  GetList(string condition) api");
+            try
+            {
+                _logger.LogInfo("Getting into  GetList(string condition) api");
 
-        using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
-        {
-        var parameters = new { @cid = cid,@uid=uid,@key=condition  };
-            var SQL = @"select  pk_encode(a.customerdetailid) as pkcol,a.customerdetailid as pk,* ,customerdetailid as value,uid as label  from GetTable(NULL::public.customerdetails,@cid) a ";
-if(condition!="")SQL+=" and "+condition;
-SQL+=" order by uid";
-var result = connection.Query<dynamic>(SQL, parameters);
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    var parameters = new { @cid = cid, @uid = uid, @key = condition };
+                    var SQL = @"select  pk_encode(a.customerdetailid) as pkcol,a.customerdetailid as pk,* ,customerdetailid as value,uid as label  from GetTable(NULL::public.customerdetails,@cid) a ";
+                    if (condition != "") SQL += " and " + condition;
+                    SQL += " order by uid";
+                    var result = connection.Query<dynamic>(SQL, parameters);
 
 
-            connection.Close();
-            connection.Dispose();
-            return (result);
+                    connection.Close();
+                    connection.Dispose();
+                    return (result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
+                throw ex;
+            }
         }
-        } catch (Exception ex) {
-            _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
-            throw ex;
-        }
-        }
-        public  IEnumerable<Object> GetFullList()
+        public IEnumerable<Object> GetFullList()
         {
-        try{
-        _logger.LogInfo("Getting into  GetFullList() api");
+            try
+            {
+                _logger.LogInfo("Getting into  GetFullList() api");
 
-int id=0;
-        using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
-        {
-string wStatus = "NormalStatus";
-string vdivmode ="divmode";
-string vdivstatus ="divstatus";
-string vamlcheckstatus ="amlcheckstatus";
-var parameters = new { @cid=cid,@uid=uid,@id=id,@wStatus=wStatus,@vdivmode =vdivmode,@vdivstatus =vdivstatus,@vamlcheckstatus =vamlcheckstatus};
-            var SQL = @"select pk_encode(a.customerdetailid) as pkcol,a.customerdetailid as pk,a.*,
+                int id = 0;
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    string wStatus = "NormalStatus";
+                    string vdivmode = "divmode";
+                    string vdivstatus = "divstatus";
+                    string vamlcheckstatus = "amlcheckstatus";
+                    var parameters = new { @cid = cid, @uid = uid, @id = id, @wStatus = wStatus, @vdivmode = vdivmode, @vdivstatus = vdivstatus, @vamlcheckstatus = vamlcheckstatus };
+                    var SQL = @"select pk_encode(a.customerdetailid) as pkcol,a.customerdetailid as pk,a.*,
 u.email as customeriddesc,
 i.email as uiddesc,
 g.geoname as geoiddesc,
@@ -215,109 +231,172 @@ s.cityname as cityiddesc,
  left join boconfigvalues o on a.divmode=o.configkey and @vdivmode=o.param
  left join boconfigvalues v on a.divstatus=v.configkey and @vdivstatus=v.param
  left join boconfigvalues l on a.amlcheckstatus=l.configkey and @vamlcheckstatus=l.param";
-var result = connection.Query<dynamic>(SQL, parameters);
+                    var result = connection.Query<dynamic>(SQL, parameters);
 
 
-            connection.Close();
-            connection.Dispose();
-            return (result);
+                    connection.Close();
+                    connection.Dispose();
+                    return (result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
+                throw ex;
+            }
         }
-        } catch (Exception ex) {
-            _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
-            throw ex;
-        }
-        }
-//saving of record
-        public  dynamic Save_customerdetail(string token,customerdetail obj_customerdetail)
+        //saving of record
+        public dynamic Save_customerdetail(string token, customerdetail obj_customerdetail)
         {
-        _logger.LogInfo("Saving: Save_customerdetail(string token,customerdetail obj_customerdetail) ");
+            _logger.LogInfo("Saving: Save_customerdetail(string token,customerdetail obj_customerdetail) ");
             try
             {
                 string serr = "";
-int querytype=0;
-                if(serr!="")
+                int querytype = 0;
+                if (serr != "")
                 {
-            _logger.LogError($"Validation error-save: {serr}");
+                    _logger.LogError($"Validation error-save: {serr}");
                     throw new Exception(serr);
                 }
-                    
-                    //connection.Open();
-                    //using var transaction = connection.BeginTransaction();
-                    //_context.Database.UseTransaction(transaction);
+
+                //connection.Open();
+                //using var transaction = connection.BeginTransaction();
+                //_context.Database.UseTransaction(transaction);
                 //customerdetail table
-                if (obj_customerdetail.customerdetailid == 0 || obj_customerdetail.customerdetailid == null || obj_customerdetail.customerdetailid<0)
-{
-if(obj_customerdetail.status=="" || obj_customerdetail.status==null)obj_customerdetail.status="A";
-//obj_customerdetail.companyid=cid;
-obj_customerdetail.createdby=uid;
-obj_customerdetail.createddate=DateTime.Now;
+                if (obj_customerdetail.customerdetailid == 0 || obj_customerdetail.customerdetailid == null || obj_customerdetail.customerdetailid < 0)
+                {
+                    if (obj_customerdetail.status == "" || obj_customerdetail.status == null) obj_customerdetail.status = "A";
+                    //obj_customerdetail.companyid=cid;
+                    obj_customerdetail.createdby = uid;
+                    obj_customerdetail.createddate = DateTime.Now;
                     _context.customerdetails.Add((dynamic)obj_customerdetail);
-querytype=1;
-}
+                    querytype = 1;
+                }
                 else
-{
-//obj_customerdetail.companyid=cid;
-obj_customerdetail.updatedby=uid;
-obj_customerdetail.updateddate=DateTime.Now;
+                {
+                    //obj_customerdetail.companyid=cid;
+                    obj_customerdetail.updatedby = uid;
+                    obj_customerdetail.updateddate = DateTime.Now;
                     _context.Entry(obj_customerdetail).State = EntityState.Modified;
-//when IsModified = false, it will not update these fields.so old values will be retained
+                    //when IsModified = false, it will not update these fields.so old values will be retained
                     _context.Entry(obj_customerdetail).Property("createdby").IsModified = false;
                     _context.Entry(obj_customerdetail).Property("createddate").IsModified = false;
-querytype=2;
-}
-        _logger.LogInfo("saving api customerdetails ");
+                    querytype = 2;
+                }
+                _logger.LogInfo("saving api customerdetails ");
                 _context.SaveChanges();
 
 
-//to generate serial key - select serialkey option for that column
-//the procedure to call after insert/update/delete - configure in systemtables 
+                //to generate serial key - select serialkey option for that column
+                //the procedure to call after insert/update/delete - configure in systemtables 
 
-Helper.AfterExecute(token,querytype,obj_customerdetail,"customerdetails", 0,obj_customerdetail.customerdetailid,"",null, _logger);
+                Helper.AfterExecute(token, querytype, obj_customerdetail, "customerdetails", 0, obj_customerdetail.customerdetailid, "", null, _logger);
 
 
-//After saving, send the whole record to the front end. What saved will be shown in the screen
-var res= Get_customerdetail( (int)obj_customerdetail.customerdetailid);
-return (res);
+                //After saving, send the whole record to the front end. What saved will be shown in the screen
+                var res = Get_customerdetail((int)obj_customerdetail.customerdetailid);
+                return (res);
             }
             catch (Exception ex)
             {
 
-            _logger.LogError($"Service: Save_customerdetail(string token,customerdetail obj_customerdetail) \r\n{ex}");
+                _logger.LogError($"Service: Save_customerdetail(string token,customerdetail obj_customerdetail) \r\n{ex}");
                 throw ex;
             }
         }
 
         // DELETE: customerdetail/5
-//delete process
-        public  dynamic Delete(int id)
+        //delete process
+        public dynamic Delete(int id)
         {
-        try{
-        {
-        _logger.LogInfo("Getting into Delete(int id) api");
-customerdetail obj_customerdetail = _context.customerdetails.Find(id);
-_context.customerdetails.Remove(obj_customerdetail);
-//using var transaction = connection.BeginTransaction();
-//_context.Database.UseTransaction(transaction);
-        _logger.LogInfo("remove api customerdetails ");
-            _context.SaveChanges();
-//           transaction.Commit();
+            try
+            {
+                {
+                    _logger.LogInfo("Getting into Delete(int id) api");
+                    customerdetail obj_customerdetail = _context.customerdetails.Find(id);
+                    _context.customerdetails.Remove(obj_customerdetail);
+                    //using var transaction = connection.BeginTransaction();
+                    //_context.Database.UseTransaction(transaction);
+                    _logger.LogInfo("remove api customerdetails ");
+                    _context.SaveChanges();
+                    //           transaction.Commit();
 
-            return (true);
-        }
-        } catch (Exception ex) {
-            _logger.LogError($"Service: Delete(int id) \r\n{ex}");
-            throw ex;
-        }
+                    return (true);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: Delete(int id) \r\n{ex}");
+                throw ex;
+            }
         }
 
         private bool customerdetail_Exists(int id)
         {
-        try{
-            return _context.customerdetails.Count(e => e.customerdetailid == id) > 0;
-        } catch (Exception ex) {
-            _logger.LogError($"Service:customerdetail_Exists(int id) {ex}");
-            return false;
+            try
+            {
+                return _context.customerdetails.Count(e => e.customerdetailid == id) > 0;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:customerdetail_Exists(int id) {ex}");
+                return false;
+            }
         }
+
+        public customerdetail ProcessOCR(customerdetail model)
+        {
+            //Save_customerdetail(null,model);
+            var shuftiproResponseView = SubmitDetailstoShuftipro(model);
+            //model=SaveDetails(shuftiproResponseView)
+            return model;
+        }
+        private ShuftiproResponseView SubmitDetailstoShuftipro(customerdetail model)
+        {
+            string url = "https://api.shuftipro.com/";
+            ShuftiproRequestView shuftiproRequestView = new ShuftiproRequestView()
+            {
+                reference = DateTime.Now.ToString("yyyyMmddHHmmss"),
+                email = "johndoe@example.com",
+                country = "GB",
+                language = "EN"
+            };            
+            shuftiproRequestView.document.proof = model.livestockphoto;
+            ShuftiproResponseView shuftiproResponseView = new ShuftiproResponseView();
+
+            try
+            {
+                HttpMessageHandler handler = new HttpClientHandler()
+                {
+                };
+
+                var httpClient = new HttpClient(handler)
+                {
+                    BaseAddress = new Uri(url),
+                    Timeout = new TimeSpan(0, 2, 0)
+                };
+
+                httpClient.DefaultRequestHeaders.Add("ContentType", "application/json");
+                var plainTextBytes = Encoding.UTF8.GetBytes("a29549da1851e142d4c02fc2892e7fbf00d4b6754efb1eefbb73974736aa7063:6siOxNL792NQ1fXONgAgk5wfi8GHVc9f");
+                string val = Convert.ToBase64String(plainTextBytes);
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Basic " + val);
+                var requestcontent =new ByteArrayContent(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(shuftiproRequestView)));
+                requestcontent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                HttpResponseMessage response = httpClient.PostAsync(url, requestcontent).Result;
+                string content = string.Empty;
+
+                using (StreamReader stream = new StreamReader(response.Content.ReadAsStreamAsync().Result))
+                {
+                    content = stream.ReadToEnd();
+                    shuftiproResponseView=JsonConvert.DeserializeObject<ShuftiproResponseView>(content);
+                    //var _firstname=shuftiproResponseView.verification_data.document.name.first_name;
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return shuftiproResponseView;
         }
     }
 }

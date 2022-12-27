@@ -74,24 +74,24 @@ namespace carditnow.Models
         public string amlcheckstatusdesc { get; set; }
         [Column(TypeName = "string")]
         public string amlremarks { get; set; }
-[Column(TypeName = "jsonb")]
+        [Column(TypeName = "jsonb")]
         public string customfield { get; set; }
-[Column(TypeName = "jsonb")]
+        [Column(TypeName = "jsonb")]
         public string attachment { get; set; }
         [Column(TypeName = "string")]
         public string status { get; set; }
         [Column(TypeName = "int")]
         public int? createdby { get; set; }
         [Column(TypeName = "DateTime")]
-        public DateTime? createddate{ get; set; }
+        public DateTime? createddate { get; set; }
         [Column(TypeName = "int")]
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
-        public DateTime? updateddate{ get; set; }
+        public DateTime? updateddate { get; set; }
     }
     public class customerdetailView
     {
-public customerdetail data{ get; set; }
+        public customerdetail data { get; set; }
 
     }
 }

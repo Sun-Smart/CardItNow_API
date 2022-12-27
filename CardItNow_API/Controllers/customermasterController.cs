@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace carditnow.Controllers
 {
-    [Authorize]
+    
     [Route("carditnowapi/[controller]")]
     [ApiController]
     public class customermasterController : ControllerBase
@@ -38,22 +38,26 @@ namespace carditnow.Controllers
         {
             _customermasterService = obj_customermasterService;
             _logger = logger;
-            cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
-            uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
-            uname = "";
-            uidemail = "";
-            if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
-            if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
-            _customermasterService = obj_customermasterService;
-            _boconfigvalueService = obj_boconfigvalueService;
-            _avatarmasterService = obj_avatarmasterService;
-            _customerdetailService = obj_customerdetailService;
-            _customertermsacceptanceService = obj_customertermsacceptanceService;
-            _customerpaymodeService = obj_customerpaymodeService;
-            _customersecurityquestionService = obj_customersecurityquestionService;
-            _customersecurityquestionshistoryService = obj_customersecurityquestionshistoryService;
+            if (objhttpContextAccessor.HttpContext.User.Claims.Any())
+            {
+                cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
+                uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
+                uname = "";
+                uidemail = "";
+                if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
+                if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
+                _customermasterService = obj_customermasterService;
+                _boconfigvalueService = obj_boconfigvalueService;
+                _avatarmasterService = obj_avatarmasterService;
+                _customerdetailService = obj_customerdetailService;
+                _customertermsacceptanceService = obj_customertermsacceptanceService;
+                _customerpaymodeService = obj_customerpaymodeService;
+                _customersecurityquestionService = obj_customersecurityquestionService;
+                _customersecurityquestionshistoryService = obj_customersecurityquestionshistoryService;
+            }
         }
 
+        [Authorize]
         // GET: api/customermaster
         [HttpGet]
         public async Task<ActionResult<dynamic>> Get_customermasters()
@@ -71,6 +75,7 @@ namespace carditnow.Controllers
         }
 
         // PUT: api/customermaster/5
+        [Authorize]
         [HttpGet]
         [Route("fulllist")]
         public async Task<ActionResult<IEnumerable<Object>>> GetFullList()
@@ -118,6 +123,28 @@ namespace carditnow.Controllers
                 _logger.LogError($"Controller: GetListBy_customerid(int customerid)\r\n{ex}");
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "GetListBy_customerid " + ex.Message + "  " + ex.InnerException?.Message);
             }
+        }
+        [HttpPost("SendOTP")]        
+        public async Task<ActionResult<IEnumerable<Object>>> SendOTP(string email)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(email))
+                {
+                    var result = _customermasterService.SendOTP(email);
+                    return Ok(result);
+                }
+                else
+                {
+                    return Content("Required email id");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: GeSendOTP(string email)\r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "GetSendOTP " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+
         }
 
         [HttpGet("e/{sid}")]

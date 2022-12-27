@@ -54,6 +54,7 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "Get_avatarmasters " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
+        
 
         // PUT: api/avatarmaster/5
         [HttpGet]

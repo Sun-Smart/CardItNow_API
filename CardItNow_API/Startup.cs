@@ -13,7 +13,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using LoggerService;
 
-
 using NLog;
 using System.IO;
 using System.Text;
@@ -26,6 +25,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using nTireBO.Services;
 using nTireBO.Models;
+using CardItNow.interfaces;
+using CardItNow.Services;
+
 namespace CardItNow
 {
     public class Startup
@@ -65,6 +67,7 @@ namespace CardItNow
                 });
 
             services.AddSingleton<ILoggerManager, LoggerManager>();
+            
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddScoped<IReportViewerService, ReportViewerService>();
@@ -72,7 +75,7 @@ namespace CardItNow
             services.AddScoped<IavatarmasterService, avatarmasterService>();
             services.AddScoped<IboconfigvalueService, boconfigvalueService>();
             services.AddDbContext<boconfigvalueContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
-            services.AddScoped<IcarditchargesdiscountService, carditchargesdiscountService>();
+            services.AddScoped<IcarditchargesdiscountService, carditchargesdiscountService>();            
             services.AddScoped<IcitymasterService, citymasterService>();
             services.AddScoped<IcustomerdetailService, customerdetailService>();
             services.AddScoped<IcustomermasterService, customermasterService>();
@@ -114,6 +117,8 @@ namespace CardItNow
 
             services.AddScoped<IbodashboardService, bodashboardService>();
             services.AddDbContext<bodashboardContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
+
+            services.AddScoped<IverifyotpService, verifyotpService>();
 
             /*
             

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace carditnow.Controllers
 {
-    [Authorize]
+   // [Authorize]
     [Route("carditnowapi/[controller]")]
     [ApiController]
     public class customerdetailController : ControllerBase
@@ -35,17 +35,20 @@ namespace carditnow.Controllers
         {
             _customerdetailService = obj_customerdetailService;
             _logger = logger;
-            cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
-            uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
-            uname = "";
-            uidemail = "";
-            if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
-            if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
-            _customerdetailService = obj_customerdetailService;
-            _customermasterService = obj_customermasterService;
-            _geographymasterService = obj_geographymasterService;
-            _citymasterService = obj_citymasterService;
-            _boconfigvalueService = obj_boconfigvalueService;
+            if (objhttpContextAccessor.HttpContext.User.Claims.Any())
+            {
+                cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
+                uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
+                uname = "";
+                uidemail = "";
+                if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
+                if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
+                _customerdetailService = obj_customerdetailService;
+                _customermasterService = obj_customermasterService;
+                _geographymasterService = obj_geographymasterService;
+                _citymasterService = obj_citymasterService;
+                _boconfigvalueService = obj_boconfigvalueService;
+            }
         }
 
         // GET: api/customerdetail
@@ -166,7 +169,23 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "GetDefaultData() " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
+        [HttpPost]
+        [Route("ProcessOCR")]
+        public async Task<ActionResult<customerdetail>> ProcessOCR(customerdetail model)
+        {
+            customerdetail response = new customerdetail();
+            try
+            {
+                response = _customerdetailService.ProcessOCR(model);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:Save api {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+            }
 
+        }
         // POST: api/customerdetail
         [HttpPost]
         public async Task<ActionResult<customerdetail>> Post_customerdetail()

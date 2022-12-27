@@ -15,7 +15,7 @@ namespace carditnow.Services
         IEnumerable<Object> GetFullList();
         IEnumerable<Object> GetList(string  key);
         IEnumerable<Object> GetListBy_avatarid(int avatarid);
-dynamic Get_avatarmaster(string sid);
+        dynamic Get_avatarmaster(string sid);
          dynamic Get_avatarmaster(int id);
         dynamic Save_avatarmaster(string token,avatarmaster obj_avatarmaster);
         dynamic Delete(int id);

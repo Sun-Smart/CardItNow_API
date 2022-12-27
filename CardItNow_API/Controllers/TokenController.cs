@@ -1,7 +1,9 @@
 //------------------------------------------------------------------------------
 
 using carditnow.Models;
+using carditnow.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 /*
@@ -16,15 +18,19 @@ using Microsoft.AspNetCore.Http;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Npgsql;
 
 //using SunSmartnTireProducts.Models;
 using nTireBO.Models;
 using nTireBO.Services;
 using SunSmartnTireProducts.Helpers;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace nTireBOWebAPI.Controllers
 {
@@ -32,9 +38,17 @@ namespace nTireBOWebAPI.Controllers
     [Route("carditnowapi/[controller]")]
     public class TokenController : ControllerBase
     {
+        private readonly IConfiguration Configuration;
         private readonly usermasterContext _context;
         private IConfiguration _config;
         private ItokenService _service;
+       // private readonly IcustomermasterService _customermasterService;
+
+        //public TokenController(IcustomermasterService obj_customermasterService)
+        //{
+        //    _customermasterService = obj_customermasterService;           
+           
+        //}
 
         public static TokenController Current { get; set; }
         public string BaseAddress { get; set; } = @"http://localhost:65521/";
@@ -139,5 +153,40 @@ namespace nTireBOWebAPI.Controllers
 
             return response;
         }
+
+        private static Random random = new Random();
+        private object service;
+
+        public static string RandomString(int length)
+        {
+            const string chars = "0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        
+
+        //public async Task<ActionResult<string>> SendOTP(string email)
+        //{
+        //    try
+        //    {
+        //        if (!string.IsNullOrEmpty(email))
+        //        {
+        //            var result = _customermasterService.SendOTP(email);
+        //            return Ok(result);
+        //        }
+        //        else
+        //        {
+        //            return Content("Required email id");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //_logger.LogError($"Controller: GeGetUserEmail_validate(string email)\r\n{ex}");
+        //        return StatusCode(StatusCodes.Status417ExpectationFailed, "GeGetUserEmail_validate " + ex.Message + "  " + ex.InnerException?.Message);
+        //    }
+
+        //}
+
     }
 }

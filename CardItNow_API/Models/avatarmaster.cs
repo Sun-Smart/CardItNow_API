@@ -34,7 +34,7 @@ namespace carditnow.Models
     }
     public class avatarmasterView
     {
-public avatarmaster data{ get; set; }
+        public avatarmaster data{ get; set; }
 
     }
 }

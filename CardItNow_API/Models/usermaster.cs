@@ -46,7 +46,7 @@ namespace carditnow.Models
     }
     public class usermasterView
     {
-public usermaster data{ get; set; }
+        public usermaster data{ get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<userrolemaster> userrolemasters { get; set; }
         [NotMapped]

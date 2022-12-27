@@ -88,9 +88,9 @@ Configuration = configuration;
         _logger.LogInfo("Getting into  GetListBy_userid(int userid) api");
         using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
         {
-        var parameters_userid = new { @cid = cid,@uid=uid ,@userid = userid  };
+            var parameters_userid = new { @cid = cid,@uid=uid ,@userid = userid  };
             var SQL = "select pk_encode(userid) as pkcol,userid as value,username as label,* from GetTable(NULL::public.usermasters,@cid) where userid = @userid";
-var result = connection.Query<dynamic>(SQL, parameters_userid);
+            var result = connection.Query<dynamic>(SQL, parameters_userid);
 
             connection.Close();
             connection.Dispose();

@@ -73,6 +73,9 @@ namespace carditnow.Models
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
         public DateTime? updateddate{ get; set; }
+
+        [Column(TypeName = "string")]        
+        public string otp { get; set; }
     }
     public class customermasterView
     {

@@ -57,15 +57,15 @@ namespace CardItNow.Services
                         if (result.ToString()== otp)
                         {
                             string sql_update = "update customermasters set status='A' where email=@email and otp=@otp ";
-                            var result_update = connection.Query<dynamic>(sql_update,parameters);
+                            var result_update = connection.Query<string>(sql_update,parameters);
                             //if (result_update >= 1)
                             //{
-                            if (result_update.Count() >= 0)
+                            if (result_update.Count()== 0)
                             {
                                 //return (new { data = result_update, count = result_update.Count() });
                                 return "Success";
                             }
-                            else { return "Record missmatch or already validate this email"; }
+                            else { return "Record missmatch or already validate this OTP"; }
                             //}
                         }
                         else { return "not match"; }

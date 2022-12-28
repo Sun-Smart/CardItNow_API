@@ -171,6 +171,7 @@ namespace carditnow.Services
                         dbEntry.status = "N";
                         dbEntry.mobile = "000000";
                         OTPUpdated = _context.SaveChanges() > 0;
+                        return "Success";
                     }
 
                 }
@@ -188,6 +189,7 @@ namespace carditnow.Services
                     cus_master.otp = TACNo.ToString();
                     _context.customermasters.Add(cus_master);
                     OTPUpdated = _context.SaveChanges() > 0;
+                    return "Success";
                 }
 
                 if (OTPUpdated)
@@ -232,7 +234,7 @@ namespace carditnow.Services
                 _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
                 throw ex;
             }
-            return "success";
+            //return "success";
         }
 
         public void SendEmail(string toemail, string subject, string htmlString)

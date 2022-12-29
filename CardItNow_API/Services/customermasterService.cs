@@ -148,7 +148,7 @@ namespace carditnow.Services
 
         public string SendOTP(string email)
         {
-            GetRandomNumber();
+            //GetRandomNumber();
             bool OTPUpdated = false;
             try
             {
@@ -171,7 +171,7 @@ namespace carditnow.Services
                         dbEntry.status = "N";
                         dbEntry.mobile = "000000";
                         OTPUpdated = _context.SaveChanges() > 0;
-                        return "Success";
+                        //return "Success";
                     }
 
                 }
@@ -189,7 +189,7 @@ namespace carditnow.Services
                     cus_master.otp = TACNo.ToString();
                     _context.customermasters.Add(cus_master);
                     OTPUpdated = _context.SaveChanges() > 0;
-                    return "Success";
+                    //return "Success";
                 }
 
                 if (OTPUpdated)
@@ -239,8 +239,8 @@ namespace carditnow.Services
 
         public void SendEmail(string toemail, string subject, string htmlString)
         {
-            string _fromemail = @"rameshgbravo@gmail.com";
-            string _password = @"ewbpwjrvjwmjekuw";
+            string _fromemail = @"support@myskillstree.com";//@"rameshgbravo@gmail.com";
+            string _password = @"SupMyST123";//@"ewbpwjrvjwmjekuw";
             try
             {
                 MailMessage message = new MailMessage();
@@ -251,12 +251,13 @@ namespace carditnow.Services
                 message.IsBodyHtml = true; //to make message body as html  
                 message.Body = htmlString;
                 smtp.Port = 587;
-                smtp.Host = "smtp.gmail.com"; //for gmail host  
+                smtp.Host = "smtp.office365.com"; //for gmail host  
                 smtp.EnableSsl = true;
                 smtp.UseDefaultCredentials = false;
                 smtp.Credentials = new NetworkCredential(_fromemail, _password);
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.Send(message);
+                smtp.Dispose();
             }
             catch (Exception ex)
             {

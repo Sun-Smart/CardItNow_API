@@ -258,8 +258,8 @@ namespace carditnow.Services
                 message.Body = htmlString;
                 smtp.Port = 587;
                 smtp.Host = "smtp.gmail.com"; //for gmail host  
-                //smtp.EnableSsl = true;
-                //smtp.UseDefaultCredentials = false;
+                smtp.EnableSsl = true;
+                smtp.UseDefaultCredentials = false;
                 smtp.Credentials = new NetworkCredential(_fromemail, _password);
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.Send(message);

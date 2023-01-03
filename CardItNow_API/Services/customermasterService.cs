@@ -196,6 +196,9 @@ namespace carditnow.Services
                 {
                     string subject = "CarditNow Registration OTP ";
                     StringBuilder sb = new StringBuilder();
+                    SmtpClient smtp = new SmtpClient();
+                    smtp.EnableSsl = true;
+                    smtp.UseDefaultCredentials = false;                    
                     sb.Append("Dear Customer,");
                     sb.Append("<br/>");
                     sb.Append("<br/>");
@@ -239,8 +242,11 @@ namespace carditnow.Services
 
         public void SendEmail(string toemail, string subject, string htmlString)
         {
-            string _fromemail = @"support@myskillstree.com";//@"rameshgbravo@gmail.com";
-            string _password = @"SupMyST123";//@"ewbpwjrvjwmjekuw";
+            //string _fromemail = @"support@myskillstree.com";//@"rameshgbravo@gmail.com";
+           // string _password = @"SupMyST123";//@"ewbpwjrvjwmjekuw";
+
+            string _fromemail = @"support@sunsmartglobal.com";//@"rameshgbravo@gmail.com";
+            string _password = @"ecqsufegzoucluji";//@"ewbpwjrvjwmjekuw";
             try
             {
                 MailMessage message = new MailMessage();
@@ -251,7 +257,7 @@ namespace carditnow.Services
                 message.IsBodyHtml = true; //to make message body as html  
                 message.Body = htmlString;
                 smtp.Port = 587;
-                smtp.Host = "smtp.office365.com"; //for gmail host  
+                smtp.Host = "smtp.gmail.com"; //for gmail host  
                 smtp.EnableSsl = true;
                 smtp.UseDefaultCredentials = false;
                 smtp.Credentials = new NetworkCredential(_fromemail, _password);

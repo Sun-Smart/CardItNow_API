@@ -44,22 +44,26 @@ string uidemail="";
 
 
 
-        public termsmasterService(termsmasterContext context,IConfiguration configuration, ILoggerManager logger,  IHttpContextAccessor objhttpContextAccessor )
+        public termsmasterService(termsmasterContext context, IConfiguration configuration, ILoggerManager logger, IHttpContextAccessor objhttpContextAccessor)
         {
-Configuration = configuration;
+            Configuration = configuration;
             _context = context;
             _logger = logger;
             this.httpContextAccessor = objhttpContextAccessor;
-        cid=int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
-        uid=int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
-        uname = "";
-        uidemail = "";
-        if(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username")!=null)uname = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
-        if(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid")!=null)uidemail = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
+            if (httpContextAccessor.HttpContext.User.Claims.Any())
+            {
+                cid = int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
+                uid = int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
+                uname = "";
+                uidemail = "";
+                if (httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
+                if (httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
+            }
         }
 
         // GET: service/termsmaster
 //Used in filling of dropdowns, search, next,prev. List checkbox in the column property need to be selected
+       
         public dynamic Get_termsmasters()
         {
         _logger.LogInfo("Getting into Get_termsmasters() api");
@@ -68,7 +72,7 @@ Configuration = configuration;
         {
             
         var parameters = new { @cid = cid,@uid=uid };
-    string SQL = "select pk_encode(a.termid) as pkcol,termid as value,status as label from GetTable(NULL::public.termsmasters,@cid) a  WHERE  a.status='A'";
+    string SQL = "select pk_encode(a.termid) as pkcol,termid as value,termdetails as discription,status as label from GetTable(NULL::public.termsmasters,@cid) a  WHERE  a.status='A'";
         var result = connection.Query<dynamic>(SQL, parameters);
             connection.Close();
             connection.Dispose();

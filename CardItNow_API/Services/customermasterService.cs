@@ -240,6 +240,133 @@ namespace carditnow.Services
             //return "success";
         }
 
+
+        public string PasswordSet(string email,string password)
+        {           
+            try
+            {
+                _logger.LogInfo("Getting into SendOTP(string email) api");
+                var customers = _context.customermasters.Where(x => x.email == email);
+                if (customers != null && customers.Any())
+                {
+                    var dbEntry = _context.customermasters.Find(customers.FirstOrDefault().customerid);
+                    if (dbEntry != null)
+                    {
+                        dbEntry.password = password.ToString();
+                        dbEntry.updateddate = DateTime.Now;
+                        dbEntry.updatedby = 0;
+                        dbEntry.mode = "m";
+                        dbEntry.type = "c";
+                        dbEntry.status = "N";
+                        dbEntry.mobile = "000000";
+                        _context.SaveChanges();
+                        //return "Success";
+                    }
+
+                }
+                else
+                {
+                    var cus_master = new customermaster();
+                    cus_master.email = email;
+                    cus_master.createdby = 0;
+                    cus_master.mode = "m";
+                    cus_master.uid = "Test" + DateTime.Now.Second.ToString();
+                    cus_master.type = "c";
+                    cus_master.status = "N";
+                    cus_master.mobile = "000000";
+                    cus_master.createddate = DateTime.Now;
+                    cus_master.password = password.ToString();
+                    _context.customermasters.Add(cus_master);
+                    //OTPUpdated = _context.SaveChanges() > 0;
+                    _context.SaveChanges();
+                    //return "Success";
+                }
+                return "Success";
+             #region
+                //using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                //{
+                //    var parameters_customeremail = new { @cid = cid, @uid = uid, @customeremail = email }; 
+                //    Helper.SendEmail("Login OTP", token, fromuser, touser, fromemailuser, toemailuser, strOTP.ToString(), _logger);
+
+                //    connection.Close();
+                //    connection.Dispose();
+                //    //return (result);
+                //    return "send";
+                //}
+                #endregion
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+                throw ex;
+            }
+            //return "success";
+        }
+
+        public string SetPinConfig(string email, string pin)
+        {
+            try
+            {
+                _logger.LogInfo("Getting into Set PIN(string PIN) api");
+                var customers = _context.customermasters.Where(x => x.email == email);
+                if (customers != null && customers.Any())
+                {
+                    var dbEntry = _context.customermasters.Find(customers.FirstOrDefault().customerid);
+                    if (dbEntry != null)
+                    {
+                        dbEntry.Tpin = pin.ToString();
+                        dbEntry.updateddate = DateTime.Now;
+                        dbEntry.updatedby = 0;
+                        dbEntry.mode = "m";
+                        dbEntry.type = "c";
+                        dbEntry.status = "N";
+                        dbEntry.mobile = "000000";
+                        _context.SaveChanges();
+                        //return "Success";
+                    }
+
+                }
+                else
+                {
+                    var cus_master = new customermaster();
+                    cus_master.email = email;
+                    cus_master.createdby = 0;
+                    cus_master.mode = "m";
+                    cus_master.uid = "Test" + DateTime.Now.Second.ToString();
+                    cus_master.type = "c";
+                    cus_master.status = "N";
+                    cus_master.mobile = "000000";
+                    cus_master.createddate = DateTime.Now;
+                    cus_master.Tpin = pin.ToString();
+                    _context.customermasters.Add(cus_master);
+                    //OTPUpdated = _context.SaveChanges() > 0;
+                    _context.SaveChanges();
+                    //return "Success";
+                }
+                return "Success";
+                #region
+                //using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                //{
+                //    var parameters_customeremail = new { @cid = cid, @uid = uid, @customeremail = email }; 
+                //    Helper.SendEmail("Login OTP", token, fromuser, touser, fromemailuser, toemailuser, strOTP.ToString(), _logger);
+
+                //    connection.Close();
+                //    connection.Dispose();
+                //    //return (result);
+                //    return "send";
+                //}
+                #endregion
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+                throw ex;
+            }
+            //return "success";
+        }
+
         public void SendEmail(string toemail, string subject, string htmlString)
         {
             //string _fromemail = @"support@myskillstree.com";//@"rameshgbravo@gmail.com";

@@ -16,7 +16,9 @@ namespace carditnow.Services
         IEnumerable<Object> GetList(string  key);
         IEnumerable<Object> GetListBy_customerid(int customerid);
         string SendOTP(string email);
-dynamic Get_customermaster(string sid);
+        string PasswordSet(string email,string password);
+        string SetPinConfig(string email, string pin);
+        dynamic Get_customermaster(string sid);
          dynamic Get_customermaster(int id);
         dynamic Save_customermaster(string token,customermaster obj_customermaster);
         dynamic Delete(int id);

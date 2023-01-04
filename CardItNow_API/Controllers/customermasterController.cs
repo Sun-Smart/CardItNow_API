@@ -124,25 +124,49 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "GetListBy_customerid " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
-        [HttpPost("SendOTP")]        
-        public async Task<ActionResult<IEnumerable<Object>>> SendOTP(string email)
+        
+        [HttpPost("Password Config")]        
+        public async Task<ActionResult<IEnumerable<Object>>> PasswordSet(string email,string password)
         {
             try
             {
                 if (!string.IsNullOrEmpty(email))
                 {
-                    var result = _customermasterService.SendOTP(email);
+                    var result = _customermasterService.PasswordSet(email,password);
                     return Ok(result);
                 }
                 else
                 {
-                    return Content("Required email id");
+                    return Content("fail");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Controller: GeSendOTP(string email)\r\n{ex}");
-                return StatusCode(StatusCodes.Status417ExpectationFailed, "GetSendOTP " + ex.Message + "  " + ex.InnerException?.Message);
+                _logger.LogError($"Controller: Password Config(string email,string password)\r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Password Config " + ex.Message + "  " + ex.InnerException?.Message);
+            }            
+
+        }
+
+        [HttpPost("TPIN Config")]
+        public async Task<ActionResult<IEnumerable<Object>>> SetPinConfig(string email, string pin)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(email))
+                {
+                    var result = _customermasterService.SetPinConfig(email, pin);
+                    return Ok(result);
+                }
+                else
+                {
+                    return Content("fail");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: Password Config(string email,string password)\r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Password Config " + ex.Message + "  " + ex.InnerException?.Message);
             }
 
         }

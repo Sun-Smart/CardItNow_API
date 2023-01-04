@@ -33,6 +33,12 @@ namespace carditnow.Models
         public string lastname { get; set; }
         [Column(TypeName = "string")]
         public string email { get; set; }
+
+        [Column(TypeName = "string")]
+        public string password { get; set; }        
+
+        [Column(TypeName = "string")]
+        public string Tpin { get; set; }
         [Column(TypeName = "string")]
         public string mobile { get; set; }
         [Column(TypeName = "DateTime")]

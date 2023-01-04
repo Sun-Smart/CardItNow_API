@@ -161,6 +161,7 @@ namespace carditnow.Services
                 if (customers != null && customers.Any())
                 {
                     var dbEntry = _context.customermasters.Find(customers.FirstOrDefault().customerid);
+                    
                     if (dbEntry != null)
                     {
                         dbEntry.otp = Convert.ToString(TACNo);

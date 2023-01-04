@@ -71,7 +71,7 @@ string uidemail="";
         using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
         {
             
-        var parameters = new { @cid = cid,@uid=uid };
+        var parameters = new { @cid = 1,@uid=0 };
     string SQL = "select pk_encode(a.termid) as pkcol,termid as value,termdetails as discription,status as label from GetTable(NULL::public.termsmasters,@cid) a  WHERE  a.status='A'";
         var result = connection.Query<dynamic>(SQL, parameters);
             connection.Close();
@@ -174,30 +174,61 @@ var result = connection.Query<dynamic>(SQL, parameters);
             throw ex;
         }
         }
-        public  IEnumerable<Object> GetFullList()
+        public  IEnumerable<Object> Get_NoAuthFullList()
         {
-        try{
-        _logger.LogInfo("Getting into  GetFullList() api");
+            try
+            {
+               // _logger.LogInfo("Getting into  GetFullList() api");
 
-int id=0;
-        using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                    int id=0;
+                    using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                    {
+
+                        //var parameters = new { @cid=0,@uid=0};
+                        var SQL = @"select termid,termdetails,currentversion,status from termsmasters where status='A'";
+                        //var result = connection.Query<dynamic>(SQL, parameters);
+                        var result1 = connection.Query(SQL);
+                        connection.Close();
+                        connection.Dispose();
+                        return (result1);
+                    }
+            }
+            catch (Exception ex) 
+            {
+                    _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
+                    throw ex;
+            }
+        }
+
+        public IEnumerable<Object> GetFullList()
         {
-string wStatus = "NormalStatus";
-var parameters = new { @cid=cid,@uid=uid,@id=id,@wStatus=wStatus};
-            var SQL = @"select pk_encode(a.termid) as pkcol,a.termid as pk,a.* from GetTable(NULL::public.termsmasters,@cid) a ";
-var result = connection.Query<dynamic>(SQL, parameters);
+            try
+            {
+                _logger.LogInfo("Getting into  GetFullList() api");
+
+                int id = 0;
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    string wStatus = "NormalStatus";
+                    var parameters = new { @cid = cid, @uid = uid, @id = id, @wStatus = wStatus };
+                    var SQL = @"select pk_encode(a.termid) as pkcol,a.termid as pk,a.* from GetTable(NULL::public.termsmasters,@cid) a ";
+                    var result = connection.Query<dynamic>(SQL, parameters);
 
 
-            connection.Close();
-            connection.Dispose();
-            return (result);
+                    connection.Close();
+                    connection.Dispose();
+                    return (result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
+                throw ex;
+            }
         }
-        } catch (Exception ex) {
-            _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
-            throw ex;
-        }
-        }
-//saving of record
+
+
+        //saving of record
         public  dynamic Save_termsmaster(string token,termsmaster obj_termsmaster)
         {
         _logger.LogInfo("Saving: Save_termsmaster(string token,termsmaster obj_termsmaster) ");

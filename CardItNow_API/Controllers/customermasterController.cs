@@ -124,7 +124,30 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "GetListBy_customerid " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
-        
+
+        [HttpPost("SendOTP")]
+        public async Task<ActionResult<IEnumerable<Object>>> SendOTP(string email)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(email))
+                {
+                    var result = _customermasterService.SendOTP(email);
+                    return Ok(result);
+                }
+                else
+                {
+                    return Content("fail");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: Password Config(string email,string password)\r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Password Config " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+
+        }
+
         [HttpPost("Password Config")]        
         public async Task<ActionResult<IEnumerable<Object>>> PasswordSet(string email,string password)
         {

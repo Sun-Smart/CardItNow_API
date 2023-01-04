@@ -13,6 +13,8 @@ namespace carditnow.Services
 
         dynamic Get_termsmasters();
         IEnumerable<Object> GetFullList();
+
+        IEnumerable<Object> Get_NoAuthFullList();
         IEnumerable<Object> GetList(string  key);
         IEnumerable<Object> GetListBy_termid(int termid);
 dynamic Get_termsmaster(string sid);

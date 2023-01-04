@@ -55,6 +55,8 @@ namespace carditnow.Controllers
             }
         }
 
+        
+
         // PUT: api/termsmaster/5
         [HttpGet]
         [Route("fulllist")]
@@ -71,6 +73,22 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "GetList " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
+
+        //[HttpGet]
+        //[Route("NoAuthFullList")]
+        //public async Task<ActionResult<IEnumerable<Object>>> Get_NoAuthFullList()
+        //{
+        //    try
+        //    {
+        //        var result = _termsmasterService.Get_NoAuthFullList();
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Controller: GetFullList() \r\n{ex}");
+        //        return StatusCode(StatusCodes.Status417ExpectationFailed, "GetList " + ex.Message + "  " + ex.InnerException?.Message);
+        //    }
+        //}
 
         [HttpGet]
         //Dump of the table.If param field exists, filter by param

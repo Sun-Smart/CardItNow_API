@@ -26,6 +26,8 @@ using System.Text;
 using LoggerService;
 using nTireBO.Services;
 using carditnow.Services;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace carditnow.Services
 {
@@ -36,17 +38,15 @@ namespace carditnow.Services
         private ILoggerManager _logger;
         private IHttpContextAccessor httpContextAccessor;
         private readonly IavatarmasterService _service;
+        public static IWebHostEnvironment _environment;
         int cid = 0;
         int uid = 0;
         string uname = "";
         string uidemail = "";
-
-
-
-
-        public avatarmasterService(avatarmasterContext context, IConfiguration configuration, ILoggerManager logger, IHttpContextAccessor objhttpContextAccessor)
+        public avatarmasterService(avatarmasterContext context, IConfiguration configuration, ILoggerManager logger, IHttpContextAccessor objhttpContextAccessor, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            _environment = environment;
             _context = context;
             _logger = logger;
             this.httpContextAccessor = objhttpContextAccessor;
@@ -73,7 +73,7 @@ namespace carditnow.Services
                 {
 
                     var parameters = new { @cid = cid, @uid = uid };
-                    string SQL = "select pk_encode(a.avatarid) as pkcol,avatarid as value,avatarname as label from GetTable(NULL::public.avatarmasters,@cid) a  WHERE  a.status='A'";
+                    string SQL = "select pk_encode(a.avatarid) as pkcol,avatarid as value,avatarname as label,avatarurl as aurl from GetTable(NULL::public.avatarmasters,@cid) a  WHERE  a.status='A'";
                     var result = connection.Query<dynamic>(SQL, parameters);
                     connection.Close();
                     connection.Dispose();
@@ -83,12 +83,10 @@ namespace carditnow.Services
             catch (Exception ex)
             {
                 _logger.LogError($"Service : Get_avatarmasters(): {ex}");
-                throw ex;
+
             }
             return null;
         }
-
-
         public IEnumerable<Object> GetListBy_avatarid(int avatarid)
         {
             try
@@ -120,143 +118,143 @@ namespace carditnow.Services
         }
         // GET: avatarmaster/5
         //gets the screen record
- //       public dynamic Get_avatarmaster(int id)
- //       {
- //           _logger.LogInfo("Getting into Get_avatarmaster(int id) api");
- //           try
- //           {
- //               using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
- //               {
+        //       public dynamic Get_avatarmaster(int id)
+        //       {
+        //           _logger.LogInfo("Getting into Get_avatarmaster(int id) api");
+        //           try
+        //           {
+        //               using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+        //               {
 
- //                   //all visible & hiding of fields are to be controlled with these variables.Must visible, Must hide fields are used 
- //                   ArrayList visiblelist = new ArrayList();
- //                   ArrayList hidelist = new ArrayList();
-
-
- //                   string wStatus = "NormalStatus";
-
- //                   var parameters = new { @cid = cid, @uid = uid, @id = id, @wStatus = wStatus };
- //                   var SQL = @"select pk_encode(a.avatarid) as pkcol,a.avatarid as pk,a.*
- //from GetTable(NULL::public.avatarmasters,@cid) a 
- //where a.avatarid=@id";
- //                   var result = connection.Query<dynamic>(SQL, parameters);
- //                   var obj_avatarmaster = result.FirstOrDefault();
- //                   var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'avatarmasters'";
- //                   var avatarmaster_menuactions = connection.Query<dynamic>(SQLmenuactions, parameters);
- //                   FormProperty formproperty = new FormProperty();
- //                   formproperty.edit = true;
+        //                   //all visible & hiding of fields are to be controlled with these variables.Must visible, Must hide fields are used 
+        //                   ArrayList visiblelist = new ArrayList();
+        //                   ArrayList hidelist = new ArrayList();
 
 
- //                   connection.Close();
- //                   connection.Dispose();
- //                   return (new { avatarmaster = obj_avatarmaster, avatarmaster_menuactions, formproperty, visiblelist, hidelist });
- //               }
- //           }
- //           catch (Exception ex)
- //           {
- //               _logger.LogError($"Service: Get_avatarmaster(int id)\r\n {ex}");
- //               throw ex;
- //           }
- //       }
+        //                   string wStatus = "NormalStatus";
 
- //       public IEnumerable<Object> GetList(string condition = "")
- //       {
- //           try
- //           {
- //               _logger.LogInfo("Getting into  GetList(string condition) api");
-
- //               using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
- //               {
- //                   var parameters = new { @cid = cid, @uid = uid, @key = condition };
- //                   var SQL = @"select  pk_encode(a.avatarid) as pkcol,a.avatarid as pk,* ,avatarid as value,avatarname as label  from GetTable(NULL::public.avatarmasters,@cid) a ";
- //                   if (condition != "") SQL += " and " + condition;
- //                   SQL += " order by avatarname";
- //                   var result = connection.Query<dynamic>(SQL, parameters);
+        //                   var parameters = new { @cid = cid, @uid = uid, @id = id, @wStatus = wStatus };
+        //                   var SQL = @"select pk_encode(a.avatarid) as pkcol,a.avatarid as pk,a.*
+        //from GetTable(NULL::public.avatarmasters,@cid) a 
+        //where a.avatarid=@id";
+        //                   var result = connection.Query<dynamic>(SQL, parameters);
+        //                   var obj_avatarmaster = result.FirstOrDefault();
+        //                   var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'avatarmasters'";
+        //                   var avatarmaster_menuactions = connection.Query<dynamic>(SQLmenuactions, parameters);
+        //                   FormProperty formproperty = new FormProperty();
+        //                   formproperty.edit = true;
 
 
- //                   connection.Close();
- //                   connection.Dispose();
- //                   return (result);
- //               }
- //           }
- //           catch (Exception ex)
- //           {
- //               _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
- //               throw ex;
- //           }
- //       }
- //       public IEnumerable<Object> GetFullList()
- //       {
- //           try
- //           {
- //               _logger.LogInfo("Getting into  GetFullList() api");
+        //                   connection.Close();
+        //                   connection.Dispose();
+        //                   return (new { avatarmaster = obj_avatarmaster, avatarmaster_menuactions, formproperty, visiblelist, hidelist });
+        //               }
+        //           }
+        //           catch (Exception ex)
+        //           {
+        //               _logger.LogError($"Service: Get_avatarmaster(int id)\r\n {ex}");
+        //               throw ex;
+        //           }
+        //       }
 
- //               int id = 0;
- //               using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
- //               {
- //                   string wStatus = "NormalStatus";
- //                   var parameters = new { @cid = cid, @uid = uid, @id = id, @wStatus = wStatus };
- //                   var SQL = @"select pk_encode(a.avatarid) as pkcol,a.avatarid as pk,a.* from GetTable(NULL::public.avatarmasters,@cid) a ";
- //                   var result = connection.Query<dynamic>(SQL, parameters);
+        //       public IEnumerable<Object> GetList(string condition = "")
+        //       {
+        //           try
+        //           {
+        //               _logger.LogInfo("Getting into  GetList(string condition) api");
+
+        //               using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+        //               {
+        //                   var parameters = new { @cid = cid, @uid = uid, @key = condition };
+        //                   var SQL = @"select  pk_encode(a.avatarid) as pkcol,a.avatarid as pk,* ,avatarid as value,avatarname as label  from GetTable(NULL::public.avatarmasters,@cid) a ";
+        //                   if (condition != "") SQL += " and " + condition;
+        //                   SQL += " order by avatarname";
+        //                   var result = connection.Query<dynamic>(SQL, parameters);
 
 
- //                   connection.Close();
- //                   connection.Dispose();
- //                   return (result);
- //               }
- //           }
- //           catch (Exception ex)
- //           {
- //               _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
- //               throw ex;
- //           }
- //       }
+        //                   connection.Close();
+        //                   connection.Dispose();
+        //                   return (result);
+        //               }
+        //           }
+        //           catch (Exception ex)
+        //           {
+        //               _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
+        //               throw ex;
+        //           }
+        //       }
+        //       public IEnumerable<Object> GetFullList()
+        //       {
+        //           try
+        //           {
+        //               _logger.LogInfo("Getting into  GetFullList() api");
 
-       
- //       public IEnumerable<avatarmaster> getlist_Test(avatarmaster model)
- //       {
- //           var result = _context.avatarmasters.Where(x => x.avatarid == model.avatarid);
+        //               int id = 0;
+        //               using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+        //               {
+        //                   string wStatus = "NormalStatus";
+        //                   var parameters = new { @cid = cid, @uid = uid, @id = id, @wStatus = wStatus };
+        //                   var SQL = @"select pk_encode(a.avatarid) as pkcol,a.avatarid as pk,a.* from GetTable(NULL::public.avatarmasters,@cid) a ";
+        //                   var result = connection.Query<dynamic>(SQL, parameters);
 
- //           result.Where(x => x.avatarname.Contains("dada"));
 
- //           return result;
+        //                   connection.Close();
+        //                   connection.Dispose();
+        //                   return (result);
+        //               }
+        //           }
+        //           catch (Exception ex)
+        //           {
+        //               _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
+        //               throw ex;
+        //           }
+        //       }
 
- //       }
- //       public void getlist_Test(avatarmaster model)
- //       {
- //           var result=_context.avatarmasters.Where(x => x.avatarid == model.avatarid);
 
- //           result.Where(x => x.avatarname.Contains("dada"));
- //           result.ToList();
- //       }
- //       public void TestList(List<avatarmaster> models)
- //       {
- //           foreach (var model in models)
- //           {
- //               if (model.avatarid == 0)
- //               {
- //                   //create 
- //                   _context.avatarmasters.Add(model);
- //               }
- //               else
- //               {
- //                   var dbObject = _context.avatarmasters.Find(model.avatarid);
- //                   if (dbObject != null)
- //                   {
- //                       dbObject.avatarname = model.avatarname;
- //                       dbObject.avatarurl = model.avatarurl;
- //                   }
- //               }
- //               //delete 
- //               //var dbObjecttodelete = _context.avatarmasters.Find(model.avatarid);
- //               //_context.avatarmasters.Remove(dbObjecttodelete);
- //               //_context.SaveChanges();
- //           }
- //           _context.SaveChanges();
+        //       public IEnumerable<avatarmaster> getlist_Test(avatarmaster model)
+        //       {
+        //           var result = _context.avatarmasters.Where(x => x.avatarid == model.avatarid);
 
- //       }
+        //           result.Where(x => x.avatarname.Contains("dada"));
 
-       
+        //           return result;
+
+        //       }
+        //       public void getlist_Test(avatarmaster model)
+        //       {
+        //           var result=_context.avatarmasters.Where(x => x.avatarid == model.avatarid);
+
+        //           result.Where(x => x.avatarname.Contains("dada"));
+        //           result.ToList();
+        //       }
+        //       public void TestList(List<avatarmaster> models)
+        //       {
+        //           foreach (var model in models)
+        //           {
+        //               if (model.avatarid == 0)
+        //               {
+        //                   //create 
+        //                   _context.avatarmasters.Add(model);
+        //               }
+        //               else
+        //               {
+        //                   var dbObject = _context.avatarmasters.Find(model.avatarid);
+        //                   if (dbObject != null)
+        //                   {
+        //                       dbObject.avatarname = model.avatarname;
+        //                       dbObject.avatarurl = model.avatarurl;
+        //                   }
+        //               }
+        //               //delete 
+        //               //var dbObjecttodelete = _context.avatarmasters.Find(model.avatarid);
+        //               //_context.avatarmasters.Remove(dbObjecttodelete);
+        //               //_context.SaveChanges();
+        //           }
+        //           _context.SaveChanges();
+
+        //       }
+
+
         //saving of record
         public dynamic Save_avatarmaster(string token, avatarmaster obj_avatarmaster)
         {
@@ -379,6 +377,57 @@ namespace carditnow.Services
         public dynamic Get_avatarmaster(int id)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<string> UploadSelfi(avatarUploadRequestViewModel objfile)
+        {
+
+            try
+            {
+                if (!Directory.Exists(_environment.WebRootPath + "\\uploads\\"))
+                {
+                    Directory.CreateDirectory(_environment.WebRootPath + "\\uploads\\");
+                }
+                using (FileStream fileStream = File.Create(_environment.WebRootPath + "\\uploads\\" + objfile.ImageFile.FileName))
+                {
+                    objfile.ImageFile.CopyTo(fileStream);
+                    fileStream.Flush();
+                    var file_path = fileStream.Name;
+                    var img_name = objfile.ImageFile.FileName;
+                    if(!string.IsNullOrEmpty(img_name))
+                    {
+                        using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                        {
+                            connection.Open();
+                            NpgsqlCommand inst_cd = new NpgsqlCommand("insert into avatarmasters (orderid,avatarname,avatarurl,status,createdby,createddate,updatedby,updateddate) values(@orderid,@avatarname,@avatarurl,@status,@createdby,@createddate,@updatedby,@updateddate)", connection);
+                            inst_cd.Parameters.AddWithValue("@orderid", 0);
+                            inst_cd.Parameters.AddWithValue("@avatarname", img_name);
+                            inst_cd.Parameters.AddWithValue("@avatarurl", file_path);
+                            inst_cd.Parameters.AddWithValue("@status", 'A');
+                            inst_cd.Parameters.AddWithValue("@createdby", cid);
+                            inst_cd.Parameters.AddWithValue("@createddate", DateTime.Now);
+                            inst_cd.Parameters.AddWithValue("@updatedby", cid);
+                            inst_cd.Parameters.AddWithValue("@updateddate", DateTime.Now);
+                            var output = inst_cd.ExecuteNonQuery();
+                            if (output > 0)
+                            {
+                                return "Success";
+                            }
+                            else
+                            {
+                                return "fail";
+                            }
+                        }
+
+                     }
+                    return objfile.ImageFile.FileName;
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log error
+            }
+            return null;
         }
     }
 }

@@ -37,6 +37,7 @@ namespace carditnow.Services
     {
         private readonly IConfiguration Configuration;
         private readonly customermasterContext _context;
+        private readonly customerdetailContext _context_cd;
         private ILoggerManager _logger;
         private IHttpContextAccessor httpContextAccessor;
         private readonly IcustomermasterService _service;
@@ -48,10 +49,11 @@ namespace carditnow.Services
 
 
 
-        public customermasterService(customermasterContext context, IConfiguration configuration, ILoggerManager logger, IHttpContextAccessor objhttpContextAccessor)
+        public customermasterService(customermasterContext context, customerdetailContext contextdb, IConfiguration configuration, ILoggerManager logger, IHttpContextAccessor objhttpContextAccessor)
         {
             Configuration = configuration;
             _context = context;
+            _context_cd = contextdb;
             _logger = logger;
             this.httpContextAccessor = objhttpContextAccessor;
             if (httpContextAccessor.HttpContext.User.Claims.Any())
@@ -241,7 +243,6 @@ namespace carditnow.Services
             //return "success";
         }
 
-
         public string PasswordSet(string email,string password)
         {           
             try
@@ -283,18 +284,6 @@ namespace carditnow.Services
                     //return "Success";
                 }
                 return "Success";
-             #region
-                //using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
-                //{
-                //    var parameters_customeremail = new { @cid = cid, @uid = uid, @customeremail = email }; 
-                //    Helper.SendEmail("Login OTP", token, fromuser, touser, fromemailuser, toemailuser, strOTP.ToString(), _logger);
-
-                //    connection.Close();
-                //    connection.Dispose();
-                //    //return (result);
-                //    return "send";
-                //}
-                #endregion
             }
 
             catch (Exception ex)
@@ -302,7 +291,7 @@ namespace carditnow.Services
                 _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
                 throw ex;
             }
-            //return "success";
+            
         }
 
         public string SetPinConfig(string email, string pin)
@@ -319,9 +308,6 @@ namespace carditnow.Services
                         dbEntry.Tpin = pin.ToString();
                         dbEntry.updateddate = DateTime.Now;
                         dbEntry.updatedby = 0;
-                        dbEntry.mode = "m";
-                        dbEntry.type = "c";
-                        dbEntry.status = "N";
                         dbEntry.mobile = "000000";
                         _context.SaveChanges();
                         //return "Success";
@@ -335,8 +321,7 @@ namespace carditnow.Services
                     cus_master.createdby = 0;
                     cus_master.mode = "m";
                     cus_master.uid = "Test" + DateTime.Now.Second.ToString();
-                    cus_master.type = "c";
-                    cus_master.status = "N";
+                    cus_master.type = "c";                   
                     cus_master.mobile = "000000";
                     cus_master.createddate = DateTime.Now;
                     cus_master.Tpin = pin.ToString();
@@ -368,6 +353,66 @@ namespace carditnow.Services
             //return "success";
         }
 
+
+        public string ProcessDocument(string email, int doucumenttype, string document, string documentid, string selfie)
+        {
+            try
+            {
+                _logger.LogInfo("Getting into SendOTP(string email) api");
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    var get_cuscode = @"select customerid from customermasters where email='"+email+"' ";              
+                    var result = connection.ExecuteScalar(get_cuscode,connection);
+                    if((result!=null)||(Convert.ToInt32(result) >0))
+                    {
+                        var get_customerdetails = @"select * from customerdetails where customerid='" + result + "'";
+                        var result_customerdetails = connection.ExecuteScalar(get_customerdetails, connection);
+                        if((result_customerdetails!=null)||(Convert.ToInt32(result_customerdetails)>0))
+                        {
+                            var update_customerdocumnet = @"update customerdetails set identificationdocumenttype='"+ doucumenttype + "',idnumber='"+ documentid + "',updateby='"+ result + "',updateddate='"+System.DateTime.Now.ToString("ddMMyyyy")+"' where customerid='" + result_customerdetails + "' ";
+                            var result_updatedocument = connection.Query(update_customerdocumnet);
+                        } 
+                        else
+                        {
+                            
+                            //var Insert_customerdocument = "insert into customerdetails values";
+                            NpgsqlCommand inst_cd = new NpgsqlCommand("insert into customerdetails (customerid,type,uid,identificationdocumenttype,idnumber) values(@customerid,@type,@uid,@identificationdocumenttype,@idnumber)", connection);
+                            inst_cd.Parameters.AddWithValue("@customerid",result);
+                            inst_cd.Parameters.AddWithValue("@type", 1);
+                            inst_cd.Parameters.AddWithValue("@uid", 2);
+                            inst_cd.Parameters.AddWithValue("@identificationdocumenttype", doucumenttype);
+                            inst_cd.Parameters.AddWithValue("@idnumber", documentid);
+                            //inst_cd.Parameters.AddWithValue("@createdby", result);
+                            //inst_cd.Parameters.AddWithValue("@createddate", DateTime.Now);
+                            var output = inst_cd.ExecuteNonQuery();
+                            if(output>0)
+                            {
+                                return "Success";
+                            }
+                            else
+                            {
+                                return "fail";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return "Customer not register in carditnow";
+                    }
+                    connection.Close();
+                    connection.Dispose();
+                    return (result.ToString());
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");                
+            }
+            return null;           
+        }
         public void SendEmail(string toemail, string subject, string htmlString)
         {
             //string _fromemail = @"support@myskillstree.com";//@"rameshgbravo@gmail.com";

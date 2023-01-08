@@ -15,10 +15,10 @@ using System.Threading.Tasks;
 
 namespace carditnow.Controllers
 {
-    
+
     [Route("carditnowapi/[controller]")]
     [ApiController]
-    public class customermasterController : ControllerBase
+    public class customermasterController : baseController
     {
         private ILoggerManager _logger;
         private int cid = 0;
@@ -34,7 +34,7 @@ namespace carditnow.Controllers
         private readonly IcustomersecurityquestionService _customersecurityquestionService;
         private readonly IcustomersecurityquestionshistoryService _customersecurityquestionshistoryService;
 
-        public customermasterController(IHttpContextAccessor objhttpContextAccessor, IcustomermasterService obj_customermasterService, IboconfigvalueService obj_boconfigvalueService, IavatarmasterService obj_avatarmasterService, IcustomerdetailService obj_customerdetailService, IcustomertermsacceptanceService obj_customertermsacceptanceService, IcustomerpaymodeService obj_customerpaymodeService, IcustomersecurityquestionService obj_customersecurityquestionService, IcustomersecurityquestionshistoryService obj_customersecurityquestionshistoryService, ILoggerManager logger)
+        public customermasterController(IHttpContextAccessor objhttpContextAccessor, IcustomermasterService obj_customermasterService, IboconfigvalueService obj_boconfigvalueService, IavatarmasterService obj_avatarmasterService, IcustomerdetailService obj_customerdetailService, IcustomertermsacceptanceService obj_customertermsacceptanceService, IcustomerpaymodeService obj_customerpaymodeService, IcustomersecurityquestionService obj_customersecurityquestionService, IcustomersecurityquestionshistoryService obj_customersecurityquestionshistoryService, ILoggerManager logger) : base(logger)
         {
             _customermasterService = obj_customermasterService;
             _logger = logger;
@@ -148,14 +148,14 @@ namespace carditnow.Controllers
 
         }
 
-        [HttpPost("Password Config")]        
-        public async Task<ActionResult<IEnumerable<Object>>> PasswordSet(string email,string password)
+        [HttpPost("Password Config")]
+        public async Task<ActionResult<IEnumerable<Object>>> PasswordSet(string email, string password)
         {
             try
             {
                 if (!string.IsNullOrEmpty(email))
                 {
-                    var result = _customermasterService.PasswordSet(email,password);
+                    var result = _customermasterService.PasswordSet(email, password);
                     return Ok(result);
                 }
                 else
@@ -167,7 +167,7 @@ namespace carditnow.Controllers
             {
                 _logger.LogError($"Controller: Password Config(string email,string password)\r\n{ex}");
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "Password Config " + ex.Message + "  " + ex.InnerException?.Message);
-            }            
+            }
 
         }
 
@@ -188,8 +188,30 @@ namespace carditnow.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Controller: Password Config(string email,string password)\r\n{ex}");
-                return StatusCode(StatusCodes.Status417ExpectationFailed, "Password Config " + ex.Message + "  " + ex.InnerException?.Message);
+                return HandleError(ex, "SetPinConfig");
+            }
+
+        }
+
+        [HttpPost("ProcessDocument")]
+        public async Task<ActionResult<IEnumerable<Object>>> ProcessDocument(string email, int doucumenttype, string document, string documentid, string selfie)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(email))
+                {
+                    var result = _customermasterService.ProcessDocument(email, doucumenttype, document, documentid, selfie);
+                    return Ok(result);
+                }
+                else
+                {
+                    //throw new Exception("Test error message");
+                    return StatusCode(StatusCodes.Status400BadRequest, "Email is Required");
+                }
+            }
+            catch (Exception ex)
+            {
+                return HandleError(ex, "Process Document");
             }
 
         }
@@ -443,8 +465,7 @@ namespace carditnow.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Controller: Delete(int id) {ex}");
-                return StatusCode(StatusCodes.Status417ExpectationFailed, "Delete " + ex.Message + "  " + ex.InnerException?.Message);
+                return HandleError(ex, "Delete");
             }
         }
     }

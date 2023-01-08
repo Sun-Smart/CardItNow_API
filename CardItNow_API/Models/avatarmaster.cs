@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Dynamic;
+using System.ComponentModel;
+using Microsoft.AspNetCore.Http;
 
 namespace carditnow.Models
 {
@@ -31,10 +33,20 @@ namespace carditnow.Models
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
         public DateTime? updateddate{ get; set; }
+
+        [NotMapped]
+        [DisplayName("Upload File")]
+        public IFormFile ImageFile { get; set; }
     }
     public class avatarmasterView
     {
         public avatarmaster data{ get; set; }
+
+    }
+    public class avatarUploadRequestViewModel
+    {
+        public IFormFile ImageFile { get; set; }
+        public string email { get; set; }        
 
     }
 }

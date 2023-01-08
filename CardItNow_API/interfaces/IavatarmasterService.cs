@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using carditnow.Models;
 using nTireBO.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace carditnow.Services
 {
@@ -19,5 +20,7 @@ namespace carditnow.Services
          dynamic Get_avatarmaster(int id);
         dynamic Save_avatarmaster(string token,avatarmaster obj_avatarmaster);
         dynamic Delete(int id);
+
+        Task<string> UploadSelfi(avatarUploadRequestViewModel objfile);
     }  
     }  

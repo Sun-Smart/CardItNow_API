@@ -107,11 +107,7 @@ namespace nTireBOWebAPI.Controllers
             return Ok();
         }
 
-        [HttpOptions]
-        public IActionResult CreateToken1()
-        {
-            return Ok(new { token = "" });
-        }
+        
 
         [HttpGet]
         public IActionResult CreateToken(LoginModel login)

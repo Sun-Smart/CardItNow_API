@@ -2,12 +2,14 @@ using carditnow.Models;
 using carditnow.Services;
 using LoggerService;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SunSmartnTireProducts.Helpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -17,17 +19,18 @@ namespace carditnow.Controllers
     [Authorize]
     [Route("carditnowapi/[controller]")]
     [ApiController]
-    public class avatarmasterController : ControllerBase
+    public class avatarmasterController : baseController
     {
         private ILoggerManager _logger;
         private int cid = 0;
         private int uid = 0;
         private string uname = "";
         private string uidemail = "";
-        private readonly IavatarmasterService _avatarmasterService;
+        private readonly IavatarmasterService _avatarmasterService;      
 
-        public avatarmasterController(IHttpContextAccessor objhttpContextAccessor, IavatarmasterService obj_avatarmasterService, ILoggerManager logger)
+        public avatarmasterController(IHttpContextAccessor objhttpContextAccessor, IavatarmasterService obj_avatarmasterService, ILoggerManager logger):base(logger)
         {
+            
             _avatarmasterService = obj_avatarmasterService;
             _logger = logger;
             cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
@@ -39,6 +42,7 @@ namespace carditnow.Controllers
             _avatarmasterService = obj_avatarmasterService;
         }
 
+        
         // GET: api/avatarmaster
         [HttpGet]
         public async Task<ActionResult<dynamic>> Get_avatarmasters()
@@ -195,6 +199,32 @@ namespace carditnow.Controllers
             {
                 _logger.LogError($"Controller: Delete(int id) {ex}");
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "Delete " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("UploadSelfi")]
+        public async Task<ActionResult<string>> UploadSelfi([FromForm] avatarUploadRequestViewModel model)
+        {
+            try
+            {
+                if (model.ImageFile.Length > 0)
+                {
+
+                    string result = await _avatarmasterService.UploadSelfi(model);
+                    if (!string.IsNullOrEmpty(result))
+                        return Ok(result);
+                    else
+                        return StatusCode(StatusCodes.Status500InternalServerError, "Internal Error");
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest,"Image file is Required");
+                }
+            }
+            catch (Exception ex)
+            {
+                return HandleError(ex, "UploadSelfi");
             }
         }
     }

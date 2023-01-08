@@ -133,26 +133,52 @@ namespace nTireBO.Services
                         */
                         var parameters = new { @cid = cid, @key = key, @password = login.Password, tenant = login.host };
                         string SQL = "select pk_encode(userid) as pkcol,* from usermasters where email = @key  and emailpassword=crypt(@password,emailpassword)";
-                        ;
+                        
                         var result = connection.Query<dynamic>(SQL, parameters);
-                        if (result.FirstOrDefault().userid > 0)
+                        if (result.Count()>0)
                         {
-                            buserfound = true;
-                            cid = 1;// result.FirstOrDefault().companyid;
+
+                            if (result.FirstOrDefault().userid > 0)
+                                {
+                                buserfound = true;
+                                cid = 1;// result.FirstOrDefault().companyid;
+                                }
+                            var objusermaster = result.FirstOrDefault();
+
+                            u.pkcol = objusermaster.pkcol;
+
+                            u.companyid = 1;
+                            u.userid = objusermaster.userid;
+                            u.username = objusermaster.username;
+                            u.userroleid = 6;
+                            u.language = "en";
+                            u.email = objusermaster.email;
+                        }
+                        else
+                        {
+                            var parameters_customermaster = new { @cid = cid, @key = key, @password = login.Password, tenant = login.host };
+                            string SQL_customer = "select pk_encode(customerid) as pkcol,* from customermasters where email = @key  and password=@password";
+                            var result_customer = connection.Query<dynamic>(SQL_customer, parameters_customermaster);
+                            if (result_customer.FirstOrDefault().customerid > 0)
+                            {
+                                buserfound = true;
+                                cid = 1;// result.FirstOrDefault().companyid;
+                            }
+                            var objusermaster = result_customer.FirstOrDefault();
+
+                            u.pkcol = objusermaster.pkcol;
+
+                            u.companyid = 1;
+                            u.customerid = objusermaster.customerid;
+                            //u.username = objusermaster.username;
+                            u.userroleid = 6;
+                            u.language = "en";
+                            u.email = objusermaster.email;
                         }
                         if (!buserfound) throw new Exception("User not found");
 
                         
-                        var objusermaster = result.FirstOrDefault();
-
-                        u.pkcol = objusermaster.pkcol;
-
-                        u.companyid = 1;
-                        u.userid = objusermaster.userid;
-                        u.username = objusermaster.username;
-                        u.userroleid = 6;
-                        u.language = "en";
-                        u.email = objusermaster.email;    
+                           
 
                     }
                     return u;

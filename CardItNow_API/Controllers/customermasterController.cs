@@ -206,7 +206,7 @@ namespace carditnow.Controllers
                 else
                 {
                     //throw new Exception("Test error message");
-                    return StatusCode(StatusCodes.Status400BadRequest, "Email is Required");
+                    return StatusCode(StatusCodes.Status400BadRequest, "Email is Required");                    
                 }
             }
             catch (Exception ex)

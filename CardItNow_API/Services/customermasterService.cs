@@ -370,8 +370,26 @@ namespace carditnow.Services
                         var result_customerdetails = connection.ExecuteScalar(get_customerdetails, connection);
                         if((result_customerdetails!=null)||(Convert.ToInt32(result_customerdetails)>0))
                         {
-                            var update_customerdocumnet = @"update customerdetails set identificationdocumenttype='"+ doucumenttype + "',idnumber='"+ documentid + "',updateby='"+ result + "',updateddate='"+System.DateTime.Now.ToString("ddMMyyyy")+"' where customerid='" + result_customerdetails + "' ";
-                            var result_updatedocument = connection.Query(update_customerdocumnet);
+                            //var update_customerdocumnet = @"update customerdetails set identificationdocumenttype='"+ doucumenttype + "',idnumber='"+ documentid + "'where customerdetailid='" + result_customerdetails + "' ";
+                            //var result_updatedocument = connection.Query(update_customerdocumnet);
+
+                            NpgsqlCommand inst_cd = new NpgsqlCommand("update customerdetails set identificationdocumenttype=@identificationdocumenttype,doucumenttype=@doucumenttype,idnumber=@idnumber", connection);
+                            inst_cd.Parameters.AddWithValue("@customerdetailid", result_customerdetails);
+                            inst_cd.Parameters.AddWithValue("@identificationdocumenttype", doucumenttype);
+                            inst_cd.Parameters.AddWithValue("@doucumenttype", document);
+                            inst_cd.Parameters.AddWithValue("@idnumber", documentid);
+                            //inst_cd.Parameters.AddWithValue("@idnumber", documentid);
+                            //inst_cd.Parameters.AddWithValue("@createdby", result);
+                            //inst_cd.Parameters.AddWithValue("@createddate", DateTime.Now);
+                            var output = inst_cd.ExecuteNonQuery();
+                            if (output > 0)
+                            {
+                                return "Success";
+                            }
+                            else
+                            {
+                                return "fail";
+                            }
                         } 
                         else
                         {
@@ -413,6 +431,119 @@ namespace carditnow.Services
             }
             return null;           
         }
+
+
+        public string UpdateProfileInformation(string email,string firstname,string lastname,string mobile,DateTime dateofbirth,string address,int geoid,int cityid,string postalcode,DateTime idissuedate,DateTime idexpirydate)
+        {
+            try
+            {
+                _logger.LogInfo("Getting into SendOTP(string email) api");
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    var get_cuscode = @"select customerid from customermasters where email='" + email + "' ";
+                    var result = connection.ExecuteScalar(get_cuscode, connection);
+                    if ((result != null) || (Convert.ToInt32(result) > 0))
+                    {
+
+                        NpgsqlCommand update_cus = new NpgsqlCommand(@"update customermasters set firstname=@firstname,lastname=@lastname,mobile=@mobile,dob=@dob where email=@email",connection);
+                        update_cus.CommandType = CommandType.Text;
+                        update_cus.Parameters.AddWithValue("@email", email);
+                        update_cus.Parameters.AddWithValue("@firstname",firstname);
+                        update_cus.Parameters.AddWithValue("@lastname",lastname);
+                        update_cus.Parameters.AddWithValue("@mobile",mobile);
+                        update_cus.Parameters.AddWithValue("@dob",dateofbirth);
+                        int rowAfftect = update_cus.ExecuteNonQuery();
+
+                        var get_customerdetails = @"select * from customerdetails where customerid='" + result + "'";
+                        var result_customerdetails = connection.ExecuteScalar(get_customerdetails, connection);
+                        if ((result_customerdetails != null) || (Convert.ToInt32(result_customerdetails) > 0))
+                        {
+                            NpgsqlCommand update_cusdetails = new NpgsqlCommand(@"update customerdetails set address=@address,geoid=@geoid,cityid=@cityid,postalcode=@postalcode,
+                             idissuedate=@idissudate,idexpirydate=@idexpirydate,createdby=@createdby,
+                            createddate=@createddate where customerid=@customerid", connection);
+                            update_cus.CommandType = CommandType.Text;
+                            update_cus.Parameters.AddWithValue("@customerid", result);
+                            update_cus.Parameters.AddWithValue("@address", address);
+                            update_cus.Parameters.AddWithValue("@geoid", 1);
+                            update_cus.Parameters.AddWithValue("@cityid", 2);
+                            update_cus.Parameters.AddWithValue("@postalcode", postalcode);
+                            update_cus.Parameters.AddWithValue("@idissudate", idissuedate);
+                            update_cus.Parameters.AddWithValue("@idexpirydate", idexpirydate);
+                            //update_cus.Parameters.AddWithValue("@createdby", createdby);
+                            //update_cus.Parameters.AddWithValue("@createddate", createddate);
+                            //connection.Open();
+                            int customerdetailsUpdate = update_cus.ExecuteNonQuery();
+                            if (customerdetailsUpdate > 0)
+                            {
+                                return "Success";
+                            }
+                            else
+                            {
+                                return "fail";
+                            }
+                        }
+                        else
+                        {
+
+                            //var Insert_customerdocument = "insert into customerdetails values";
+                            NpgsqlCommand inst_cd = new NpgsqlCommand("insert into customerdetails (customerid,address,geoid,cityid,postalcode,idissuedate,idexpirydate) values(@customerid,@address,@geoid,@cityid,@postalcode,@idissudate,@idexpirydate)", connection);
+                            inst_cd.Parameters.AddWithValue("@customerid", result);
+                            inst_cd.Parameters.AddWithValue("@address", address);
+                            inst_cd.Parameters.AddWithValue("@geoid", 1);
+                            inst_cd.Parameters.AddWithValue("@cityid", 2);
+                            inst_cd.Parameters.AddWithValue("@postalcode", postalcode);
+                            inst_cd.Parameters.AddWithValue("@idissudate", idissuedate);
+                            inst_cd.Parameters.AddWithValue("@idexpirydate", idexpirydate);
+                            //inst_cd.Parameters.AddWithValue("@createdby", createdby);
+                            //inst_cd.Parameters.AddWithValue("@createddate", createddate);
+                            var output = inst_cd.ExecuteNonQuery();
+                            if (output > 0)
+                            {
+                                return "Success";
+                            }
+                            else
+                            {
+                                return "fail";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return "Customer not register in carditnow";
+                    }
+                    connection.Close();
+                    connection.Dispose();
+                    return (result.ToString());
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+            }
+            return null;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         public void SendEmail(string toemail, string subject, string htmlString)
         {
             //string _fromemail = @"support@myskillstree.com";//@"rameshgbravo@gmail.com";

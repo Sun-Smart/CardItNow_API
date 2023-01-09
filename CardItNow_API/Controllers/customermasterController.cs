@@ -216,6 +216,29 @@ namespace carditnow.Controllers
 
         }
 
+        [HttpPost("UpdateProfileInformation")]
+        public async Task<ActionResult<IEnumerable<Object>>> UpdateProfileInformation(string email, string firstname, string lastname, string mobile, DateTime dateofbirth, string address, int geoid, int cityid, string postalcode, DateTime idissuedate, DateTime idexpirydate)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(email))
+                {
+                    var result = _customermasterService.UpdateProfileInformation(email, firstname, lastname, mobile, dateofbirth, address, geoid, cityid, postalcode, idissuedate, idexpirydate);
+                    return Ok(result);
+                }
+                else
+                {
+                    //throw new Exception("Test error message");
+                    return StatusCode(StatusCodes.Status400BadRequest, "Email is Required");
+                }
+            }
+            catch (Exception ex)
+            {
+                return HandleError(ex, "Process Document");
+            }
+
+        }
+
         [HttpGet("e/{sid}")]
         public async Task<ActionResult<customermaster>> Get_customermaster(string sid)
         {

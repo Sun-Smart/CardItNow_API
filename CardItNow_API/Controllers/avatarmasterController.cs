@@ -26,8 +26,10 @@ namespace carditnow.Controllers
         private int uid = 0;
         private string uname = "";
         private string uidemail = "";
-        private readonly IavatarmasterService _avatarmasterService;      
+        private readonly IavatarmasterService _avatarmasterService;
 
+
+        
         public avatarmasterController(IHttpContextAccessor objhttpContextAccessor, IavatarmasterService obj_avatarmasterService, ILoggerManager logger):base(logger)
         {
             
@@ -42,8 +44,9 @@ namespace carditnow.Controllers
             _avatarmasterService = obj_avatarmasterService;
         }
 
-        
+
         // GET: api/avatarmaster
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<dynamic>> Get_avatarmasters()
         {
@@ -58,9 +61,10 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "Get_avatarmasters " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
-        
+
 
         // PUT: api/avatarmaster/5
+        [Authorize]
         [HttpGet]
         [Route("fulllist")]
         public async Task<ActionResult<IEnumerable<Object>>> GetFullList()
@@ -77,6 +81,7 @@ namespace carditnow.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         //Dump of the table.If param field exists, filter by param
         [Route("param/{key}")]
@@ -94,6 +99,7 @@ namespace carditnow.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         [Route("avatarid/{avatarid}")]
         public async Task<ActionResult<IEnumerable<Object>>> GetListBy_avatarid(int avatarid)
@@ -110,6 +116,7 @@ namespace carditnow.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("e/{sid}")]
         public async Task<ActionResult<avatarmaster>> Get_avatarmaster(string sid)
         {
@@ -126,6 +133,7 @@ namespace carditnow.Controllers
         }
 
         // GET: api/avatarmaster/5
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<avatarmaster>> Get_avatarmaster(int id)
         {
@@ -141,6 +149,7 @@ namespace carditnow.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         [Route("getdefaultdata")]
         public async Task<ActionResult<Object>> GetDefaultData()
@@ -158,6 +167,7 @@ namespace carditnow.Controllers
         }
 
         // POST: api/avatarmaster
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<avatarmaster>> Post_avatarmaster()
         {
@@ -186,6 +196,7 @@ namespace carditnow.Controllers
         }
 
         // DELETE: api/avatarmaster/5
+        [Authorize]
         [HttpDelete]
         [Route("{id}")]
         public async Task<ActionResult<avatarmaster>> Delete(int id)

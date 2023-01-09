@@ -18,6 +18,9 @@ namespace carditnow.Services
         string SendOTP(string email);
 
         string ProcessDocument(string email,int doucumenttype,string document,string documentid, string selfie);
+
+        public string UpdateProfileInformation(string email, string firstname, string lastname, string mobile, DateTime dateofbirth, string address, int geoid, int cityid, string postalcode, DateTime idissuedate, DateTime idexpirydate);
+        
         string PasswordSet(string email,string password);
         string SetPinConfig(string email, string pin);
         dynamic Get_customermaster(string sid);

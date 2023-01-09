@@ -108,6 +108,7 @@ namespace nTireBO.Services
                 using (var connection = new NpgsqlConnection(Helper.Connectionstring))
                 {
                     UserCredential u = new UserCredential();
+                   // customermaster cm = new carditnow.Models.customermaster();
                     if (key == "sunsmart")
                     {
                         u.companyid = new Random().Next();
@@ -167,36 +168,27 @@ namespace nTireBO.Services
                             var objusermaster = result_customer.FirstOrDefault();
 
                             u.pkcol = objusermaster.pkcol;
+                            
 
-                            u.companyid = 1;
-                            u.customerid = objusermaster.customerid;
+                            u.companyid = 1;                            
+                            u.userid = objusermaster.customerid;
                             //u.username = objusermaster.username;
                             u.userroleid = 6;
                             u.language = "en";
                             u.email = objusermaster.email;
                         }
                         if (!buserfound) throw new Exception("User not found");
-
-                        
-                           
-
                     }
                     return u;
                 }
             }
             catch (Exception ex)
             {
-
                 //return BadRequest(ex);
                 string s = ex.ToString();
                 return null;
             }
-
         }
-
-
     }
-
-  
 }
 

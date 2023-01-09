@@ -358,7 +358,7 @@ namespace carditnow.Services
         {
             try
             {
-                _logger.LogInfo("Getting into SendOTP(string email) api");
+                _logger.LogInfo("Getting into ProcessDocument api");
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
                     connection.Open();
@@ -373,14 +373,12 @@ namespace carditnow.Services
                             //var update_customerdocumnet = @"update customerdetails set identificationdocumenttype='"+ doucumenttype + "',idnumber='"+ documentid + "'where customerdetailid='" + result_customerdetails + "' ";
                             //var result_updatedocument = connection.Query(update_customerdocumnet);
 
-                            NpgsqlCommand inst_cd = new NpgsqlCommand("update customerdetails set identificationdocumenttype=@identificationdocumenttype,doucumenttype=@doucumenttype,idnumber=@idnumber", connection);
+                            NpgsqlCommand inst_cd = new NpgsqlCommand("update customerdetails set identificationdocumenttype=@identificationdocumenttype,idnumber=@idnumber,updatedby=@updatedby,updateddate=@updateddate", connection);
                             inst_cd.Parameters.AddWithValue("@customerdetailid", result_customerdetails);
                             inst_cd.Parameters.AddWithValue("@identificationdocumenttype", doucumenttype);
-                            inst_cd.Parameters.AddWithValue("@doucumenttype", document);
                             inst_cd.Parameters.AddWithValue("@idnumber", documentid);
-                            //inst_cd.Parameters.AddWithValue("@idnumber", documentid);
-                            //inst_cd.Parameters.AddWithValue("@createdby", result);
-                            //inst_cd.Parameters.AddWithValue("@createddate", DateTime.Now);
+                            inst_cd.Parameters.AddWithValue("@updatedby", result_customerdetails);
+                            inst_cd.Parameters.AddWithValue("@updateddate", DateTime.Now);
                             var output = inst_cd.ExecuteNonQuery();
                             if (output > 0)
                             {
@@ -395,14 +393,14 @@ namespace carditnow.Services
                         {
                             
                             //var Insert_customerdocument = "insert into customerdetails values";
-                            NpgsqlCommand inst_cd = new NpgsqlCommand("insert into customerdetails (customerid,type,uid,identificationdocumenttype,idnumber) values(@customerid,@type,@uid,@identificationdocumenttype,@idnumber)", connection);
+                            NpgsqlCommand inst_cd = new NpgsqlCommand("insert into customerdetails (customerid,type,uid,identificationdocumenttype,idnumber,createdby,createddate) values(@customerid,@type,@uid,@identificationdocumenttype,@idnumber,@createdby,@createddate)", connection);
                             inst_cd.Parameters.AddWithValue("@customerid",result);
                             inst_cd.Parameters.AddWithValue("@type", 1);
                             inst_cd.Parameters.AddWithValue("@uid", 2);
                             inst_cd.Parameters.AddWithValue("@identificationdocumenttype", doucumenttype);
                             inst_cd.Parameters.AddWithValue("@idnumber", documentid);
-                            //inst_cd.Parameters.AddWithValue("@createdby", result);
-                            //inst_cd.Parameters.AddWithValue("@createddate", DateTime.Now);
+                            inst_cd.Parameters.AddWithValue("@createdby", result);
+                            inst_cd.Parameters.AddWithValue("@createddate", DateTime.Now);
                             var output = inst_cd.ExecuteNonQuery();
                             if(output>0)
                             {

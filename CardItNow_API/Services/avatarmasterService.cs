@@ -390,6 +390,7 @@ namespace carditnow.Services
                 }
                 using (FileStream fileStream = File.Create(_environment.WebRootPath + "\\uploads\\" + objfile.ImageFile.FileName))
                 {
+                    
                     objfile.ImageFile.CopyTo(fileStream);
                     fileStream.Flush();
                     var file_path = fileStream.Name;

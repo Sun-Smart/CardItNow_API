@@ -26,8 +26,8 @@ namespace carditnow.Models
         public string email { get; set; }
         [Column(TypeName = "string")]
         public string emailpassword { get; set; }
-        [Column(TypeName = "int")]
-        public int? mobile { get; set; }
+        [Column(TypeName = "string")]
+        public string? mobile { get; set; }
         [Column(TypeName = "int")]
         public int? basegeoid { get; set; }
         [NotMapped]

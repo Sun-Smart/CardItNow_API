@@ -46,7 +46,7 @@ namespace carditnow.Models
     public class avatarUploadRequestViewModel
     {
         public IFormFile ImageFile { get; set; }
-        public string email { get; set; }        
+              
 
     }
 }

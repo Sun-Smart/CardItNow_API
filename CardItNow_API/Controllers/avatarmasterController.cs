@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace carditnow.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("carditnowapi/[controller]")]
     [ApiController]
     public class avatarmasterController : baseController
@@ -64,7 +64,7 @@ namespace carditnow.Controllers
 
 
         // PUT: api/avatarmaster/5
-        [Authorize]
+        //[Authorize]
         [HttpGet]
         [Route("fulllist")]
         public async Task<ActionResult<IEnumerable<Object>>> GetFullList()
@@ -149,7 +149,7 @@ namespace carditnow.Controllers
             }
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet]
         [Route("getdefaultdata")]
         public async Task<ActionResult<Object>> GetDefaultData()

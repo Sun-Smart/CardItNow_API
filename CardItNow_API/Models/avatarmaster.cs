@@ -46,8 +46,23 @@ namespace carditnow.Models
     public class avatarUploadRequestViewModel
     {
         public IFormFile ImageFile { get; set; }
-              
+    }
+    public class avatarUploadRequestViewModelsMobile
+    {
+        public string ImageFile { get; set; }
+        public string customerid { get; set; }
+    }
 
+    public class JsonMobile
+    {
+        public string ImageFile { get; set; }
+        public string customerid { get; set; }
+    }
+    public class avatarUploadList
+    {
+        public int? avatarid { get; set; }        
+        public string avatarname { get; set; }        
+        public string avatarurl { get; set; }
     }
 }
 

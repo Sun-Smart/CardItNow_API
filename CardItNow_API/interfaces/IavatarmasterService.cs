@@ -13,6 +13,8 @@ namespace carditnow.Services
     {  
 
         dynamic Get_avatarmasters();
+        dynamic GetImages();
+        dynamic UploadSelfiJson(string SJsonVal);
         IEnumerable<Object> GetFullList();
         IEnumerable<Object> GetList(string  key);
         IEnumerable<Object> GetListBy_avatarid(int avatarid);

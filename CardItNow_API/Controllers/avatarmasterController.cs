@@ -35,8 +35,8 @@ namespace carditnow.Controllers
             
             _avatarmasterService = obj_avatarmasterService;
             _logger = logger;
-            cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
-            uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
+            //cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
+            //uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
             uname = "";
             uidemail = "";
             if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
@@ -114,6 +114,23 @@ namespace carditnow.Controllers
                 _logger.LogError($"Controller: GetListBy_avatarid(int avatarid)\r\n{ex}");
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "GetListBy_avatarid " + ex.Message + "  " + ex.InnerException?.Message);
             }
+        }
+
+        [HttpGet]
+        [Route("GetImages")]
+        public dynamic GetImages()
+        {
+                var result = _avatarmasterService.GetImages();
+                return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("UploadSelfiJson")]
+        public dynamic UploadSelfiJson([FromBody]JsonMobile model)
+        {
+            string sname = JsonConvert.SerializeObject(model);
+            var result =_avatarmasterService.UploadSelfiJson(sname);
+            return Ok(result);
         }
 
         [Authorize]

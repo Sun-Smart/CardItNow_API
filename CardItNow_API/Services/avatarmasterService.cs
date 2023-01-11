@@ -53,7 +53,7 @@ namespace carditnow.Services
             if (httpContextAccessor.HttpContext.User.Claims.Any())
             {
                 //cid = int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
-               // uid = int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
+                // uid = int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
                 uname = "";
                 uidemail = "";
 
@@ -378,32 +378,36 @@ namespace carditnow.Services
         {
             throw new NotImplementedException();
         }
-
+        [AllowAnonymous]
         public async Task<string> UploadSelfi(avatarUploadRequestViewModel objfile)
         {
 
             try
             {
-                if (!Directory.Exists(_environment.WebRootPath + "\\uploads\\"))
+                string sSharePath = @"D:\Production\Application\CardItNow\CarditNowImages";
+                //string sSharePath = @"E:\";
+                string sHostPath = @"https://demo.herbie.ai:80/CarditNowImages";
+                if (!Directory.Exists(sSharePath + "\\uploads\\"))
                 {
-                    Directory.CreateDirectory(_environment.WebRootPath + "\\uploads\\");
+                    Directory.CreateDirectory(sSharePath + "\\uploads\\");
                 }
-                using (FileStream fileStream = File.Create(_environment.WebRootPath + "\\uploads\\" + objfile.ImageFile.FileName))
+                using (FileStream fileStream = File.Create(sSharePath + "\\uploads\\" + objfile.ImageFile.FileName))
                 {
-                    
+
                     objfile.ImageFile.CopyTo(fileStream);
                     fileStream.Flush();
                     var file_path = fileStream.Name;
                     var img_name = objfile.ImageFile.FileName;
-                    if(!string.IsNullOrEmpty(img_name))
+                    if (!string.IsNullOrEmpty(img_name))
                     {
+                        sHostPath = sHostPath + "\\uploads\\" + objfile.ImageFile.FileName;
                         using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                         {
                             connection.Open();
                             NpgsqlCommand inst_cd = new NpgsqlCommand("insert into avatarmasters (orderid,avatarname,avatarurl,status,createdby,createddate,updatedby,updateddate) values(@orderid,@avatarname,@avatarurl,@status,@createdby,@createddate,@updatedby,@updateddate)", connection);
                             inst_cd.Parameters.AddWithValue("@orderid", 0);
                             inst_cd.Parameters.AddWithValue("@avatarname", img_name);
-                            inst_cd.Parameters.AddWithValue("@avatarurl", file_path);
+                            inst_cd.Parameters.AddWithValue("@avatarurl", sHostPath);
                             inst_cd.Parameters.AddWithValue("@status", 'A');
                             inst_cd.Parameters.AddWithValue("@createdby", cid);
                             inst_cd.Parameters.AddWithValue("@createddate", DateTime.Now);
@@ -420,7 +424,7 @@ namespace carditnow.Services
                             }
                         }
 
-                     }
+                    }
                     return objfile.ImageFile.FileName;
                 }
             }
@@ -430,6 +434,84 @@ namespace carditnow.Services
             }
             return null;
         }
+
+        public dynamic UploadSelfiJson(string SJsonVal)
+        {
+
+            try
+            {
+                string val = SJsonVal;
+                avatarUploadRequestViewModelsMobile mavatarUploadRequestViewModelsMobile = JsonConvert.DeserializeObject<avatarUploadRequestViewModelsMobile>(val);
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    NpgsqlCommand inst_cd = new NpgsqlCommand("update customermasters set customerphoto=@customerphoto where customerid=@customerid", connection);
+                    inst_cd.Parameters.AddWithValue("@customerphoto", mavatarUploadRequestViewModelsMobile.ImageFile);
+                    inst_cd.Parameters.AddWithValue("@customerid", Convert.ToInt32(mavatarUploadRequestViewModelsMobile.customerid));                    
+                    //inst_cd.Parameters.AddWithValue("@updatedby", cid);
+                    //inst_cd.Parameters.AddWithValue("@updateddate", DateTime.Now);
+                    var output = inst_cd.ExecuteNonQuery();
+                    if (output > 0)
+                    {
+                        return  "Success";
+                    }
+                    else
+                    {
+                        return "fail";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log error
+                return null;
+            }
+            return null;
+        }
+
+        public dynamic GetImages()
+        {
+            var sList = new List<avatarUploadList>();
+            //string sSharePath = @"D:\Production\Application\CardItNow\CarditNowImages";
+            //string sHostPath = @"https://demo.herbie.ai:80/CarditNowImages";
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    NpgsqlCommand inst_cd = new NpgsqlCommand("select orderid,avatarname,avatarurl from avatarmasters", connection);
+                    //inst_cd.Parameters.AddWithValue("@orderid", 0);
+                    //inst_cd.Parameters.AddWithValue("@avatarname", img_name);
+                    NpgsqlDataAdapter sda = new NpgsqlDataAdapter(inst_cd);
+                    DataTable dt = new DataTable();
+                    sda.Fill(dt);
+                    if (dt.Rows.Count > 0)
+                    {
+                        foreach (DataRow dr in dt.Rows)
+                        {
+                            sList.Add(new avatarUploadList
+                            {
+                                avatarid = Convert.ToInt32(dr["orderid"].ToString()),
+                                avatarname = dr["avatarname"].ToString(),
+                                avatarurl = dr["avatarurl"].ToString()
+
+                            });
+                        }
+
+                    }
+                    else
+                    {
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Log error
+            }
+            return sList;
+        }
+
     }
 }
 

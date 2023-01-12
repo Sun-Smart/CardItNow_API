@@ -384,8 +384,8 @@ namespace carditnow.Services
 
             try
             {
-                string sSharePath = @"D:\Production\Application\CardItNow\CarditNowImages";
-                //string sSharePath = @"E:\";
+                //string sSharePath = @"D:\Production\Application\CardItNow\CarditNowImages";
+                string sSharePath = @"E:\";
                 string sHostPath = @"https://demo.herbie.ai:80/CarditNowImages";
                 if (!Directory.Exists(sSharePath + "\\uploads\\"))
                 {

@@ -157,6 +157,7 @@ namespace carditnow.Controllers
 
         // POST: api/customerpaymode
         [HttpPost]
+        
         public async Task<ActionResult<customerpaymode>> Post_customerpaymode()
         {
             string token = Request.Headers["Authorization"].ToString();
@@ -173,6 +174,27 @@ namespace carditnow.Controllers
                         Helper.Upload(file);
                     }
                 }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:Save api {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("SaveCutomerCardDeatils")]
+        public dynamic SaveCutomerCardDeatils(customerpaymode obj_customerpaymode)
+        {
+            //string token = Request.Headers["Authorization"].ToString();
+            try
+            {
+                //obj_customerpaymode = JsonConvert.DeserializeObject<customerpaymode>(Request.Form["formData"]);
+                var result = _customerpaymodeService.SaveCutomerCardDeatils(obj_customerpaymode);
+                //HttpClient client = new HttpClient();
+                //client.DefaultRequestHeaders.Add("Authorization", token);               
 
                 return Ok(result);
             }

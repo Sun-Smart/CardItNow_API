@@ -15,9 +15,10 @@ namespace carditnow.Services
         IEnumerable<Object> GetFullList();
         IEnumerable<Object> GetList(string  key);
         IEnumerable<Object> GetListBy_payid(int payid);
-dynamic Get_customerpaymode(string sid);
+        dynamic Get_customerpaymode(string sid);
          dynamic Get_customerpaymode(int id);
         dynamic Save_customerpaymode(string token,customerpaymode obj_customerpaymode);
+        dynamic SaveCutomerCardDeatils(customerpaymode obj_customerpaymode);
         dynamic Delete(int id);
     }  
     }  

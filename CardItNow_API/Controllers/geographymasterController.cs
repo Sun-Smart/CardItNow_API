@@ -32,8 +32,8 @@ namespace carditnow.Controllers
         {
             _geographymasterService = obj_geographymasterService;
             _logger = logger;
-            cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
-            uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
+            //cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
+           // uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
             uname = "";
             uidemail = "";
             if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
@@ -44,6 +44,7 @@ namespace carditnow.Controllers
         }
 
         // GET: api/geographymaster
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<dynamic>> Get_geographymasters()
         {

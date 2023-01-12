@@ -159,11 +159,11 @@ namespace carditnow.Services
 
                 decimal TACNo = GetRandomNumber();
 
-                var customers = _context.customermasters.Where(x => x.email == email);                 
+                var customers = _context.customermasters.Where(x => x.email == email);
                 if (customers != null && customers.Any())
                 {
                     var dbEntry = _context.customermasters.Find(customers.FirstOrDefault().customerid);
-                    
+
                     if (dbEntry != null)
                     {
                         dbEntry.otp = Convert.ToString(TACNo);
@@ -201,7 +201,7 @@ namespace carditnow.Services
                     StringBuilder sb = new StringBuilder();
                     SmtpClient smtp = new SmtpClient();
                     smtp.EnableSsl = true;
-                    smtp.UseDefaultCredentials = false;                    
+                    smtp.UseDefaultCredentials = false;
                     sb.Append("Dear Customer,");
                     sb.Append("<br/>");
                     sb.Append("<br/>");
@@ -243,8 +243,8 @@ namespace carditnow.Services
             //return "success";
         }
 
-        public string PasswordSet(string email,string password)
-        {           
+        public string PasswordSet(string email, string password)
+        {
             try
             {
                 _logger.LogInfo("Getting into SendOTP(string email) api");
@@ -291,7 +291,7 @@ namespace carditnow.Services
                 _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
                 throw ex;
             }
-            
+
         }
 
         public string SetPinConfig(string email, string pin)
@@ -321,7 +321,7 @@ namespace carditnow.Services
                     cus_master.createdby = 0;
                     cus_master.mode = "m";
                     cus_master.uid = "Test" + DateTime.Now.Second.ToString();
-                    cus_master.type = "c";                   
+                    cus_master.type = "c";
                     cus_master.mobile = "000000";
                     cus_master.createddate = DateTime.Now;
                     cus_master.Tpin = pin.ToString();
@@ -362,13 +362,13 @@ namespace carditnow.Services
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
                     connection.Open();
-                    var get_cuscode = @"select customerid from customermasters where email='"+email+"' ";              
-                    var result = connection.ExecuteScalar(get_cuscode,connection);
-                    if((result!=null)||(Convert.ToInt32(result) >0))
+                    var get_cuscode = @"select customerid from customermasters where email='" + email + "' ";
+                    var result = connection.ExecuteScalar(get_cuscode, connection);
+                    if ((result != null) || (Convert.ToInt32(result) > 0))
                     {
                         var get_customerdetails = @"select * from customerdetails where customerid='" + result + "'";
                         var result_customerdetails = connection.ExecuteScalar(get_customerdetails, connection);
-                        if((result_customerdetails!=null)||(Convert.ToInt32(result_customerdetails)>0))
+                        if ((result_customerdetails != null) || (Convert.ToInt32(result_customerdetails) > 0))
                         {
                             //var update_customerdocumnet = @"update customerdetails set identificationdocumenttype='"+ doucumenttype + "',idnumber='"+ documentid + "'where customerdetailid='" + result_customerdetails + "' ";
                             //var result_updatedocument = connection.Query(update_customerdocumnet);
@@ -388,13 +388,13 @@ namespace carditnow.Services
                             {
                                 return "fail";
                             }
-                        } 
+                        }
                         else
                         {
-                            
+
                             //var Insert_customerdocument = "insert into customerdetails values";
                             NpgsqlCommand inst_cd = new NpgsqlCommand("insert into customerdetails (customerid,type,uid,identificationdocumenttype,idnumber,createdby,createddate) values(@customerid,@type,@uid,@identificationdocumenttype,@idnumber,@createdby,@createddate)", connection);
-                            inst_cd.Parameters.AddWithValue("@customerid",result);
+                            inst_cd.Parameters.AddWithValue("@customerid", result);
                             inst_cd.Parameters.AddWithValue("@type", 1);
                             inst_cd.Parameters.AddWithValue("@uid", 2);
                             inst_cd.Parameters.AddWithValue("@identificationdocumenttype", doucumenttype);
@@ -402,7 +402,7 @@ namespace carditnow.Services
                             inst_cd.Parameters.AddWithValue("@createdby", result);
                             inst_cd.Parameters.AddWithValue("@createddate", DateTime.Now);
                             var output = inst_cd.ExecuteNonQuery();
-                            if(output>0)
+                            if (output > 0)
                             {
                                 return "Success";
                             }
@@ -425,13 +425,13 @@ namespace carditnow.Services
 
             catch (Exception ex)
             {
-                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");                
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
             }
-            return null;           
+            return null;
         }
 
 
-        public string UpdateProfileInformation(string email,string firstname,string lastname,string mobile,DateTime dateofbirth,string address,int geoid,int cityid,string postalcode,DateTime idissuedate,DateTime idexpirydate)
+        public string UpdateProfileInformation(string email, string firstname, string lastname, string mobile, DateTime dateofbirth, string address, int geoid, int cityid, string postalcode, DateTime idissuedate, DateTime idexpirydate)
         {
             try
             {
@@ -444,13 +444,13 @@ namespace carditnow.Services
                     if ((result != null) || (Convert.ToInt32(result) > 0))
                     {
 
-                        NpgsqlCommand update_cus = new NpgsqlCommand(@"update customermasters set firstname=@firstname,lastname=@lastname,mobile=@mobile,dob=@dob where email=@email",connection);
+                        NpgsqlCommand update_cus = new NpgsqlCommand(@"update customermasters set firstname=@firstname,lastname=@lastname,mobile=@mobile,dob=@dob where email=@email", connection);
                         update_cus.CommandType = CommandType.Text;
                         update_cus.Parameters.AddWithValue("@email", email);
-                        update_cus.Parameters.AddWithValue("@firstname",firstname);
-                        update_cus.Parameters.AddWithValue("@lastname",lastname);
-                        update_cus.Parameters.AddWithValue("@mobile",mobile);
-                        update_cus.Parameters.AddWithValue("@dob",dateofbirth);
+                        update_cus.Parameters.AddWithValue("@firstname", firstname);
+                        update_cus.Parameters.AddWithValue("@lastname", lastname);
+                        update_cus.Parameters.AddWithValue("@mobile", mobile);
+                        update_cus.Parameters.AddWithValue("@dob", dateofbirth);
                         int rowAfftect = update_cus.ExecuteNonQuery();
 
                         var get_customerdetails = @"select * from customerdetails where customerid='" + result + "'";
@@ -545,7 +545,7 @@ namespace carditnow.Services
         public void SendEmail(string toemail, string subject, string htmlString)
         {
             //string _fromemail = @"support@myskillstree.com";//@"rameshgbravo@gmail.com";
-           // string _password = @"SupMyST123";//@"ewbpwjrvjwmjekuw";
+            // string _password = @"SupMyST123";//@"ewbpwjrvjwmjekuw";
 
             string _fromemail = @"support@sunsmartglobal.com";//@"rameshgbravo@gmail.com";
             string _password = @"ecqsufegzoucluji";//@"ewbpwjrvjwmjekuw";

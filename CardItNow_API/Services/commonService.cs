@@ -42,7 +42,7 @@ namespace CardItNow.Services
             var sList = new List<IndividualDocument>();
             try
             {
-                _logger.LogInfo("Getting into SendOTP(string email) api");
+                _logger.LogInfo("Getting into Get Document Type api");
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
                     connection.Open();

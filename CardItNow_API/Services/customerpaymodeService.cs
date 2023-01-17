@@ -374,12 +374,7 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
                     connection.Dispose();
                     return (result.ToString());
                 }
-                
-
-
             }
-            
-
             catch (Exception ex)
             {
                 _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");

@@ -35,7 +35,7 @@ namespace carditnow.Models
         public string email { get; set; }
 
         [Column(TypeName = "string")]
-        public string password { get; set; }        
+        public string password { get; set; }
 
         [Column(TypeName = "string")]
         public string Tpin { get; set; }
@@ -58,9 +58,9 @@ namespace carditnow.Models
         public string facebookid { get; set; }
         [Column(TypeName = "int")]
         public int? lasttermsaccepted { get; set; }
-[Column(TypeName = "jsonb")]
+        [Column(TypeName = "jsonb")]
         public string customfield { get; set; }
-[Column(TypeName = "jsonb")]
+        [Column(TypeName = "jsonb")]
         public string attachment { get; set; }
         [Column(TypeName = "string")]
         public string status { get; set; }
@@ -74,18 +74,18 @@ namespace carditnow.Models
         [Column(TypeName = "int")]
         public int? createdby { get; set; }
         [Column(TypeName = "DateTime")]
-        public DateTime? createddate{ get; set; }
+        public DateTime? createddate { get; set; }
         [Column(TypeName = "int")]
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
-        public DateTime? updateddate{ get; set; }
+        public DateTime? updateddate { get; set; }
 
-        [Column(TypeName = "string")]        
+        [Column(TypeName = "string")]
         public string otp { get; set; }
     }
     public class customermasterView
     {
-public customermaster data{ get; set; }
+        public customermaster data { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<customerdetail> customerdetails { get; set; }
         [NotMapped]

@@ -75,7 +75,8 @@ namespace CardItNow
             services.AddScoped<IavatarmasterService, avatarmasterService>();
             services.AddScoped<IboconfigvalueService, boconfigvalueService>();
             services.AddDbContext<boconfigvalueContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
-            services.AddScoped<IcarditchargesdiscountService, carditchargesdiscountService>();            
+            services.AddScoped<IcarditchargesdiscountService, carditchargesdiscountService>();
+            
             services.AddScoped<IcitymasterService, citymasterService>();
             services.AddScoped<IcustomerdetailService, customerdetailService>();
             services.AddScoped<IcustomermasterService, customermasterService>();
@@ -119,6 +120,7 @@ namespace CardItNow
             services.AddDbContext<bodashboardContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
 
             services.AddScoped<IverifyotpService, verifyotpService>();
+            services.AddScoped<IcommonService, commonService>();
 
             /*
             

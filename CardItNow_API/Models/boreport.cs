@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Dynamic;
 using nTireBO.Models;
 
-namespace nTireBO.Models
+namespace carditnow.Models
 {
     public class boreport
     {
@@ -229,9 +229,9 @@ namespace nTireBO.Models
         public string reportjsondata { get; set; }
         [Column(TypeName = "string")]
         public string helptext { get; set; }
-[Column(TypeName = "jsonb")]
+        [Column(TypeName = "jsonb")]
         public string filters { get; set; }
-[Column(TypeName = "jsonb")]
+        [Column(TypeName = "jsonb")]
         public string filtercolumns { get; set; }
         [Column(TypeName = "string")]
         public string groupbyfooter { get; set; }
@@ -247,28 +247,12 @@ namespace nTireBO.Models
         [Column(TypeName = "int")]
         public int? createdby { get; set; }
         [Column(TypeName = "DateTime")]
-        public DateTime? createddate{ get; set; }
+        public DateTime? createddate { get; set; }
         [Column(TypeName = "int")]
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
-        public DateTime? updateddate{ get; set; }
+        public DateTime? updateddate { get; set; }
     }
-    public class boreportView
-    {
-public boreport data{ get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<nTireBO.Models.boreportdetail> boreportdetails { get; set; }
-        [NotMapped]
-        public string Deleted_boreportdetail_IDs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<nTireBO.Models.boreportothertable> boreportothertables { get; set; }
-        [NotMapped]
-        public string Deleted_boreportothertable_IDs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<nTireBO.Models.boreportcolumn> boreportcolumns { get; set; }
-        [NotMapped]
-        public string Deleted_boreportcolumn_IDs { get; set; }
-
-    }
+    
 }
 

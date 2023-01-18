@@ -7,16 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace nTireBO.Services
 {
-   public interface IboreportcolumnService
-    {  
+    public interface IboreportcolumnService
+    {
 
         dynamic Get_boreportcolumns();
         IEnumerable<Object> GetFullList();
-        IEnumerable<Object> GetList(string  key);
+        IEnumerable<Object> GetList(string key);
         IEnumerable<Object> GetListBy_reportcolumnid(int reportcolumnid);
-dynamic Get_boreportcolumn(string sid);
-         dynamic Get_boreportcolumn(int id);
-        dynamic Save_boreportcolumn(string token,boreportcolumn obj_boreportcolumn);
+        dynamic Get_boreportcolumn(string sid);
+        dynamic Get_boreportcolumn(int id);
+        dynamic Save_boreportcolumn(string token, boreportcolumn obj_boreportcolumn);
         dynamic Delete(int id);
-    }  
-    }  
+    }
+}

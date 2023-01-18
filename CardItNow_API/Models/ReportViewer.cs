@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Dynamic;
 using nTireBO.Models;
+using carditnow.Models;
 
 namespace nTireBO.Models
 {

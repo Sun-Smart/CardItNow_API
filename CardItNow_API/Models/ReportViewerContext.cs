@@ -1,3 +1,4 @@
+using carditnow.Models;
 using Microsoft.EntityFrameworkCore;
 using nTireBO.Models;
 namespace nTireBO.Models

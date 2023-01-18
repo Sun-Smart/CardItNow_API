@@ -24,6 +24,7 @@ using System.Collections;
 using System.Text;
 using LoggerService;
 using nTireBO.Services;
+using SunSmartnTireProducts.Models;
 
 namespace nTireBO.Services
 {

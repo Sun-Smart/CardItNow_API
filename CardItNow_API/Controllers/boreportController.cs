@@ -1,3 +1,4 @@
+using carditnow.Models;
 using LoggerService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -192,95 +193,107 @@ namespace nTireBO.Controllers
 
         // POST: api/boreport
         [HttpPost]
-        public async Task<ActionResult<boreport>> Post_boreport()
+        public async Task<ActionResult<boreport>> Post_boreport(boreport obj_boreport)
         {
+            //string token = Request.Headers["Authorization"].ToString();
+            //try
+            //{
+            //    boreportView obj_boreport = JsonConvert.DeserializeObject<boreportView>(Request.Form["formData"]);
+            //    var result = _boreportService.Save_boreport(token, obj_boreport.data);
+            //    HttpClient client = new HttpClient();
+            //    client.DefaultRequestHeaders.Add("Authorization", token);
+            //    if (obj_boreport.boreportdetails != null && obj_boreport.boreportdetails.Count > 0)
+            //    {
+            //        foreach (var obj in obj_boreport.boreportdetails)
+            //        {
+            //            if (obj.reportdetailid == null)
+            //            {
+            //                obj.reportid = result.boreport.reportid;
+            //                _boreportdetailService.Save_boreportdetail(token, obj);
+            //            }
+            //        }
+            //    }
+            //    if (obj_boreport.Deleted_boreportdetail_IDs != null && obj_boreport.Deleted_boreportdetail_IDs != "")
+            //    {
+            //        string[] ids = obj_boreport.Deleted_boreportdetail_IDs.Split(',');
+            //        foreach (var id in ids)
+            //        {
+            //            if (id != "")
+            //            {
+            //                _boreportdetailService.Delete(int.Parse(id));
+            //            }
+            //        }
+            //    }
+            //    if (obj_boreport.boreportothertables != null && obj_boreport.boreportothertables.Count > 0)
+            //    {
+            //        foreach (var obj in obj_boreport.boreportothertables)
+            //        {
+            //            if (obj.othertableid == null)
+            //            {
+            //                obj.reportid = result.boreport.reportid;
+            //                _boreportothertableService.Save_boreportothertable(token, obj);
+            //            }
+            //        }
+            //    }
+            //    if (obj_boreport.Deleted_boreportothertable_IDs != null && obj_boreport.Deleted_boreportothertable_IDs != "")
+            //    {
+            //        string[] ids = obj_boreport.Deleted_boreportothertable_IDs.Split(',');
+            //        foreach (var id in ids)
+            //        {
+            //            if (id != "")
+            //            {
+            //                _boreportothertableService.Delete(int.Parse(id));
+            //            }
+            //        }
+            //    }
+            //    if (obj_boreport.boreportcolumns != null && obj_boreport.boreportcolumns.Count > 0)
+            //    {
+            //        foreach (var obj in obj_boreport.boreportcolumns)
+            //        {
+            //            if (obj.reportcolumnid == null)
+            //            {
+            //                obj.reportid = result.boreport.reportid;
+            //                _boreportcolumnService.Save_boreportcolumn(token, obj);
+            //            }
+            //        }
+            //    }
+            //    if (obj_boreport.Deleted_boreportcolumn_IDs != null && obj_boreport.Deleted_boreportcolumn_IDs != "")
+            //    {
+            //        string[] ids = obj_boreport.Deleted_boreportcolumn_IDs.Split(',');
+            //        foreach (var id in ids)
+            //        {
+            //            if (id != "")
+            //            {
+            //                _boreportcolumnService.Delete(int.Parse(id));
+            //            }
+            //        }
+            //    }
+            //    if (Request.Form.Files != null)
+            //    {
+            //        foreach (var file in Request.Form.Files)
+            //        {
+            //            Helper.Upload(file);
+            //        }
+            //    }
+
+            //    return Ok(result);
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError($"Controller:Save api {ex}");
+            //    return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+            //}
+
             string token = Request.Headers["Authorization"].ToString();
             try
             {
-                boreportView obj_boreport = JsonConvert.DeserializeObject<boreportView>(Request.Form["formData"]);
-                var result = _boreportService.Save_boreport(token, obj_boreport.data);
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Authorization", token);
-                if (obj_boreport.boreportdetails != null && obj_boreport.boreportdetails.Count > 0)
-                {
-                    foreach (var obj in obj_boreport.boreportdetails)
-                    {
-                        if (obj.reportdetailid == null)
-                        {
-                            obj.reportid = result.boreport.reportid;
-                            _boreportdetailService.Save_boreportdetail(token, obj);
-                        }
-                    }
-                }
-                if (obj_boreport.Deleted_boreportdetail_IDs != null && obj_boreport.Deleted_boreportdetail_IDs != "")
-                {
-                    string[] ids = obj_boreport.Deleted_boreportdetail_IDs.Split(',');
-                    foreach (var id in ids)
-                    {
-                        if (id != "")
-                        {
-                            _boreportdetailService.Delete(int.Parse(id));
-                        }
-                    }
-                }
-                if (obj_boreport.boreportothertables != null && obj_boreport.boreportothertables.Count > 0)
-                {
-                    foreach (var obj in obj_boreport.boreportothertables)
-                    {
-                        if (obj.othertableid == null)
-                        {
-                            obj.reportid = result.boreport.reportid;
-                            _boreportothertableService.Save_boreportothertable(token, obj);
-                        }
-                    }
-                }
-                if (obj_boreport.Deleted_boreportothertable_IDs != null && obj_boreport.Deleted_boreportothertable_IDs != "")
-                {
-                    string[] ids = obj_boreport.Deleted_boreportothertable_IDs.Split(',');
-                    foreach (var id in ids)
-                    {
-                        if (id != "")
-                        {
-                            _boreportothertableService.Delete(int.Parse(id));
-                        }
-                    }
-                }
-                if (obj_boreport.boreportcolumns != null && obj_boreport.boreportcolumns.Count > 0)
-                {
-                    foreach (var obj in obj_boreport.boreportcolumns)
-                    {
-                        if (obj.reportcolumnid == null)
-                        {
-                            obj.reportid = result.boreport.reportid;
-                            _boreportcolumnService.Save_boreportcolumn(token, obj);
-                        }
-                    }
-                }
-                if (obj_boreport.Deleted_boreportcolumn_IDs != null && obj_boreport.Deleted_boreportcolumn_IDs != "")
-                {
-                    string[] ids = obj_boreport.Deleted_boreportcolumn_IDs.Split(',');
-                    foreach (var id in ids)
-                    {
-                        if (id != "")
-                        {
-                            _boreportcolumnService.Delete(int.Parse(id));
-                        }
-                    }
-                }
-                if (Request.Form.Files != null)
-                {
-                    foreach (var file in Request.Form.Files)
-                    {
-                        Helper.Upload(file);
-                    }
-                }
-
+                var result = _boreportService.Save_boreport(token, obj_boreport);
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Controller:Save api {ex}");
-                return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+                _logger.LogError($"Something went wrong: {ex}");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 

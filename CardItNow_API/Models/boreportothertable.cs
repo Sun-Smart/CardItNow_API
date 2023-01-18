@@ -1,13 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Reflection;
-using System.Dynamic;
 
-namespace nTireBO.Models
+namespace SunSmartnTireProducts.Models
 {
     public class boreportothertable
     {
@@ -28,22 +23,16 @@ namespace nTireBO.Models
         public string jointypedesc { get; set; }
         [Column(TypeName = "string")]
         public string wherecondition { get; set; }
-        [Column(TypeName = "int")]
-        public int? sequence { get; set; }
         [Column(TypeName = "string")]
         public string status { get; set; }
         [Column(TypeName = "int")]
         public int? createdby { get; set; }
         [Column(TypeName = "DateTime")]
-        public DateTime? createddate{ get; set; }
+        public DateTime? createddate { get; set; }
         [Column(TypeName = "int")]
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
-        public DateTime? updateddate{ get; set; }
-    }
-    public class boreportothertableView
-    {
-public boreportothertable data{ get; set; }
+        public DateTime? updateddate { get; set; }
 
     }
 }

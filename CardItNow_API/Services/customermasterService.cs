@@ -298,7 +298,7 @@ namespace carditnow.Services
         {
             try
             {
-                _logger.LogInfo("Getting into Set PIN(string PIN) api");
+                _logger.LogInfo("Getting into Set passcode api");
                 var customers = _context.customermasters.Where(x => x.email == email);
                 if (customers != null && customers.Any())
                 {
@@ -306,6 +306,7 @@ namespace carditnow.Services
                     if (dbEntry != null)
                     {
                         dbEntry.Tpin = pin.ToString();
+                        dbEntry.password = pin.ToString();
                         dbEntry.updateddate = DateTime.Now;
                         dbEntry.updatedby = 0;
                         dbEntry.mobile = "000000";
@@ -325,6 +326,7 @@ namespace carditnow.Services
                     cus_master.mobile = "000000";
                     cus_master.createddate = DateTime.Now;
                     cus_master.Tpin = pin.ToString();
+                    cus_master.password = pin.ToString();
                     _context.customermasters.Add(cus_master);
                     //OTPUpdated = _context.SaveChanges() > 0;
                     _context.SaveChanges();
@@ -435,7 +437,7 @@ namespace carditnow.Services
         {
             try
             {
-                _logger.LogInfo("Getting into SendOTP(string email) api");
+                _logger.LogInfo("Getting into UpdateProfileInformation api");
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
                     connection.Open();
@@ -452,7 +454,6 @@ namespace carditnow.Services
                         update_cus.Parameters.AddWithValue("@mobile", mobile);
                         update_cus.Parameters.AddWithValue("@dob", dateofbirth);
                         int rowAfftect = update_cus.ExecuteNonQuery();
-
                         var get_customerdetails = @"select * from customerdetails where customerid='" + result + "'";
                         var result_customerdetails = connection.ExecuteScalar(get_customerdetails, connection);
                         if ((result_customerdetails != null) || (Convert.ToInt32(result_customerdetails) > 0))
@@ -514,9 +515,7 @@ namespace carditnow.Services
                     connection.Dispose();
                     return (result.ToString());
                 }
-
             }
-
             catch (Exception ex)
             {
                 _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
@@ -524,31 +523,13 @@ namespace carditnow.Services
             return null;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         public void SendEmail(string toemail, string subject, string htmlString)
         {
-            //string _fromemail = @"support@myskillstree.com";//@"rameshgbravo@gmail.com";
-            // string _password = @"SupMyST123";//@"ewbpwjrvjwmjekuw";
+            //string _fromemail = @"support@myskillstree.com";
+            // string _password = @"SupMyST123";//
 
-            string _fromemail = @"support@sunsmartglobal.com";//@"rameshgbravo@gmail.com";
-            string _password = @"ecqsufegzoucluji";//@"ewbpwjrvjwmjekuw";
+            string _fromemail = @"support@sunsmartglobal.com";
+            string _password = @"ecqsufegzoucluji";
             try
             {
                 MailMessage message = new MailMessage();
@@ -594,22 +575,19 @@ namespace carditnow.Services
                     //all visible & hiding of fields are to be controlled with these variables.Must visible, Must hide fields are used 
                     ArrayList visiblelist = new ArrayList();
                     ArrayList hidelist = new ArrayList();
-
-
                     string wStatus = "NormalStatus";
                     string vmode = "mode";
                     string vcustomermastertype = "customermastertype";
-
                     var parameters = new { @cid = cid, @uid = uid, @id = id, @wStatus = wStatus, @vmode = vmode, @vcustomermastertype = vcustomermastertype };
                     var SQL = @"select pk_encode(a.customerid) as pkcol,a.customerid as pk,a.*,
                               d.configtext as modedesc,
                               t.configtext as typedesc,
-s.avatarname as defaultavatardesc
- from GetTable(NULL::public.customermasters,@cid) a 
- left join boconfigvalues d on a.mode=d.configkey and @vmode=d.param
- left join boconfigvalues t on a.type=t.configkey and @vcustomermastertype=t.param
- left join avatarmasters s on a.defaultavatar=s.avatarid
- where a.customerid=@id";
+                              s.avatarname as defaultavatardesc
+                             from GetTable(NULL::public.customermasters,@cid) a 
+                             left join boconfigvalues d on a.mode=d.configkey and @vmode=d.param
+                             left join boconfigvalues t on a.type=t.configkey and                       @vcustomermastertype=t.param
+                             left join avatarmasters s on a.defaultavatar=s.avatarid
+                             where a.customerid=@id";
                     var result = connection.Query<dynamic>(SQL, parameters);
                     var obj_customermaster = result.FirstOrDefault();
                     var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customermasters'";

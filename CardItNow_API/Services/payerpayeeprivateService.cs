@@ -3,11 +3,16 @@ using CardItNow.Models;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Npgsql;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace CardItNow.Services
@@ -88,12 +93,6 @@ namespace CardItNow.Services
                         {
                             return "Document type/ customer ID missing  ";
                         }
-
-
-                        connection.Close();
-                        connection.Dispose();
-
-
                         connection.Close();
                         connection.Dispose();
                         return null;// result;
@@ -107,6 +106,16 @@ namespace CardItNow.Services
             }
             else { return "Customer id not avilable"; }
             return null;
+        }
+
+        public dynamic Get_rawresult()
+        {
+            var result = new
+            {
+                Inviceno = "97342301",
+                Amount = "2000"
+            };
+            return JsonConvert.SerializeObject(result);
         }
 
         //public dynamic Save_payerpayeprivateDocument(payerpayeeprivate obj_payerpayeeprivate)

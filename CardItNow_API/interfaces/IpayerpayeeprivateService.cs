@@ -11,5 +11,6 @@ namespace CardItNow.interfaces
         //dynamic Save_payerpayeprivate(string token, payerpayeeprivate obj_payerpayeeprivate);
         dynamic Save_payerpayeprivate(payerpayeeprivate obj_payerpayeeprivate);
         //dynamic Save_payerpayeprivateDocument(payerpayeeprivate obj_payerpayeeprivate); 
+        dynamic Get_rawresult();
     }
 }

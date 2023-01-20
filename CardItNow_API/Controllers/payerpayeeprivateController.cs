@@ -45,12 +45,12 @@ namespace CardItNow.Controllers
             return Ok(result);
         }
 
-        //[HttpPost]
-        ////[Route("SavePayerPayeePrivate")]
-        //public dynamic Save_payerpayeprivateDocument(payerpayeeprivate model)
-        //{
-        //    var result = _payerpayeeprivateService.Save_payerpayeprivateDocument(model);
-        //    return Ok(result);
-        //}
+        [HttpPost]
+        [Route("GetRawResult")]
+        public dynamic Get_rawresult()
+        {
+            var result = _payerpayeeprivateService.Get_rawresult();
+            return result;
+        }
     }
 }

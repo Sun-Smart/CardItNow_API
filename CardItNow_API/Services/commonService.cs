@@ -76,5 +76,86 @@ namespace CardItNow.Services
             }
             return sList;
         }
+
+        public dynamic GetBankList()
+        {
+            var sList = new List<BankList>();
+            try
+            {
+                _logger.LogInfo("Getting into Get Document Type api");
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    NpgsqlCommand inst_cd = new NpgsqlCommand("select  masterdatadescription from masterdatatypes inner join masterdatas on datatypeid = masterdatatypeid  where masterdatatypename = 'Bank Details' order by masterdatadescription", connection);
+                    NpgsqlDataAdapter sda = new NpgsqlDataAdapter(inst_cd);
+                    DataTable dt = new DataTable();
+                    sda.Fill(dt);
+                    if (dt.Rows.Count > 0)
+                    {
+                        //dt.AsEnumerable().Select(x => new IndividualDocument
+                        //{
+                        //    documnettype = (string)x["masterdatadescription"]
+                        //}).ToList();
+
+                        foreach (DataRow dr in dt.Rows)
+                        {
+                            sList.Add(new BankList
+                            {
+                                bankname = dr["masterdatadescription"].ToString()
+                            });
+                        }
+                    }
+                    connection.Close();
+                    connection.Dispose();
+                }
+                return sList;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+            }
+            return sList;
+        }
+
+        public dynamic GetPurposeList()
+        {
+            var sList = new List<purposeList>();
+            try
+            {
+                _logger.LogInfo("Getting into Get Document Type api");
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    NpgsqlCommand inst_cd = new NpgsqlCommand("select  masterdatadescription from masterdatatypes inner join masterdatas on datatypeid = masterdatatypeid  where masterdatatypename = 'Purpose Of Payment' order by masterdatadescription", connection);
+                    NpgsqlDataAdapter sda = new NpgsqlDataAdapter(inst_cd);
+                    DataTable dt = new DataTable();
+                    sda.Fill(dt);
+                    if (dt.Rows.Count > 0)
+                    {
+                        //dt.AsEnumerable().Select(x => new IndividualDocument
+                        //{
+                        //    documnettype = (string)x["masterdatadescription"]
+                        //}).ToList();
+
+                        foreach (DataRow dr in dt.Rows)
+                        {
+                            sList.Add(new purposeList
+                            {
+                                purpose = dr["masterdatadescription"].ToString()
+                            });
+                        }
+                    }
+                    connection.Close();
+                    connection.Dispose();
+                }
+                return sList;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+            }
+            return sList;
+        }
+
     }
 }

@@ -357,8 +357,8 @@ s.cityname as cityiddesc,
             ShuftiproRequestView shuftiproRequestView = new ShuftiproRequestView()
             {
                 reference = DateTime.Now.ToString("yyyyMmddHHmmss"),
-                email = "johndoe@example.com",
-                country = "GB",
+                email = "info@carditnow.com",
+                country = "PH",
                 language = "EN"
             };            
             shuftiproRequestView.document.proof = model.livestockphoto;

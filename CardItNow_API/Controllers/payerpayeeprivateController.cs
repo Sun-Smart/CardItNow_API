@@ -1,5 +1,6 @@
 ﻿using carditnow.Controllers;
-using CardItNow.Services;
+using CardItNow.interfaces;
+using CardItNow.Models;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,50 +13,44 @@ namespace CardItNow.Controllers
 {
     [Route("carditnowapi/[controller]")]
     [ApiController]
-    public class commonController : baseController
+    public class payerpayeeprivateController : baseController
     {
-        
-
         private ILoggerManager _logger;
-        private readonly IcommonService _commonService;
         private int cid = 0;
         private int uid = 0;
         private string uname = "";
         private string uidemail = "";
-        public commonController(IHttpContextAccessor objhttpContextAccessor,IcommonService commonservices, ILoggerManager logger) : base(logger)
+        private readonly IpayerpayeeprivateService _payerpayeeprivateService;
+
+        public payerpayeeprivateController(IHttpContextAccessor objhttpContextAccessor, IpayerpayeeprivateService obj_payerpayeeprivateService, ILoggerManager logger) : base(logger)
         {
+
+            _payerpayeeprivateService = obj_payerpayeeprivateService;
             _logger = logger;
-            _commonService = commonservices;
             //cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
             //uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
             uname = "";
             uidemail = "";
             if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
             if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
-           
-        }
-        [HttpGet]
-        [Route("Getdocumenttype")]
-        public dynamic Getdocumenttype()
-        {
-            var result = _commonService.Getdocumenttype();
-            return result;
+            
         }
 
-        [HttpGet]
-        [Route("GetBankList")]
-        public dynamic GetBankList()
+
+        [HttpPost]
+        //[Route("SavePayerPayeePrivate")]
+        public dynamic Save_payerpayeeprivate(payerpayeeprivate model)
         {
-            var result = _commonService.GetBankList();
-            return result;
+            var result = _payerpayeeprivateService.Save_payerpayeprivate(model);
+            return Ok(result);
         }
 
-        [HttpGet]
-        [Route("GetPurposeList")]
-        public dynamic GetPurposeList()
-        {
-            var result = _commonService.GetPurposeList();
-            return result;
-        }
+        //[HttpPost]
+        ////[Route("SavePayerPayeePrivate")]
+        //public dynamic Save_payerpayeprivateDocument(payerpayeeprivate model)
+        //{
+        //    var result = _payerpayeeprivateService.Save_payerpayeprivateDocument(model);
+        //    return Ok(result);
+        //}
     }
 }

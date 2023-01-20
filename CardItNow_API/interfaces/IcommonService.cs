@@ -11,6 +11,8 @@ namespace CardItNow.Services
     public interface IcommonService
     {
         dynamic Getdocumenttype();
+        dynamic GetBankList(); 
+        dynamic GetPurposeList();
 
     }
 }

@@ -42,12 +42,12 @@ namespace nTireBOWebAPI.Controllers
         private readonly usermasterContext _context;
         private IConfiguration _config;
         private ItokenService _service;
-       // private readonly IcustomermasterService _customermasterService;
+        // private readonly IcustomermasterService _customermasterService;
 
         //public TokenController(IcustomermasterService obj_customermasterService)
         //{
         //    _customermasterService = obj_customermasterService;           
-           
+
         //}
 
         public static TokenController Current { get; set; }
@@ -107,7 +107,7 @@ namespace nTireBOWebAPI.Controllers
             return Ok();
         }
 
-        
+
 
         [HttpGet]
         public IActionResult CreateToken(LoginModel login)
@@ -135,19 +135,42 @@ namespace nTireBOWebAPI.Controllers
             var response2 = Ok(new { token = "" });
             return;
             */
-
-            IActionResult response = Ok(new { token = "" });
-
-            if (login.host != null) login.host = login.host.Replace(".sunsmart.com", "");
-            var user = _service.Authenticate(login);
-
-            if (user != null)
+            //if (((login.email != null)||(login.email!="")) && ((login.Password != null) || (login.Password != "")))
+            //{
+            if (!string.IsNullOrEmpty(login.email) && (!string.IsNullOrEmpty(login.Password)))
             {
-                var tokenString = _service.BuildToken(user);
-                response = Ok(new { token = tokenString });
+
+                IActionResult response; //= Ok(new { token = "" });
+
+                if (login.host != null) login.host = login.host.Replace(".sunsmart.com", "");
+                var user = _service.Authenticate(login);
+
+                if (user != null)
+                {
+                    var tokenString = _service.BuildToken(user);
+                    response = Ok(new { token = tokenString });
+                    return response;
+                }
+                else
+                {
+
+                    return response = Ok(new { Message = "Invalid login credential" });
+                }
             }
 
-            return response;
+            else if((!string.IsNullOrEmpty(login.email))&&(string.IsNullOrEmpty(login.Password)))
+            {
+                return new OkObjectResult(new { Message = "Please enter your Password !" });
+            }
+            else if((!string.IsNullOrEmpty(login.Password))&&(string.IsNullOrEmpty(login.email)))
+            {
+                return new OkObjectResult(new { Message = "Please enter your Email ID !" });
+            }
+            else
+            {
+                return new OkObjectResult(new { Message = "Please enter your Email ID and Password !" });
+            }
+
         }
 
         private static Random random = new Random();
@@ -160,7 +183,7 @@ namespace nTireBOWebAPI.Controllers
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        
+
 
         //public async Task<ActionResult<string>> SendOTP(string email)
         //{

@@ -219,8 +219,11 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
             {
                 string serr = "";
                 int querytype = 0;
+
+
                 if (obj_customerpaymode.cardnumber != null)
                 {
+
                     var parameterscardnumber = new { @cid = cid, @uid = uid, @cardnumber = obj_customerpaymode.cardnumber, @payid = obj_customerpaymode.payid };
                     if (Helper.Count("select count(*) from customerpaymodes where  and cardnumber =  @cardnumber and (@payid == 0 ||  @payid == null ||  @payid < 0 || payid!=  @payid)", parameterscardnumber) > 0) serr += "cardnumber is unique\r\n";
                 }
@@ -323,7 +326,7 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
         {
             try
             {
-                _logger.LogInfo("Getting into SendOTP(string email) api");
+                _logger.LogInfo("Getting into SaveCutomerCardDeatils api");
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
                     connection.Open();
@@ -333,12 +336,14 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
                     {
                         if (!string.IsNullOrEmpty(obj_customerpaymode.cardnumber))
                         {
+                            MaskedNumber(obj_customerpaymode.cardnumber);
                             NpgsqlCommand customer_card = new NpgsqlCommand("insert into customerpaymodes (customerid,uid,cardnumber,cardname,expirydate,bankname,ibannumber,status,createdby,createddate,updatedby,updateddate)  values(@customerid,@uid,@cardnumber,@cardname,@expirydate,@bankname," +
                                 "@ibannumber,@status,@createdby,@createddate,@updatedby,@updateddate)", connection);
                             customer_card.Parameters.AddWithValue("@customerid", obj_customerpaymode.customerid);
                             customer_card.Parameters.AddWithValue("@uid", obj_customerpaymode.uid);
                             customer_card.Parameters.AddWithValue("@cardnumber", obj_customerpaymode.cardnumber);
-                            customer_card.Parameters.AddWithValue("@cardname", obj_customerpaymode.cardname);
+                           // customer_card.Parameters.AddWithValue("@cardname", obj_customerpaymode.cardname);
+                            customer_card.Parameters.AddWithValue("@cardname", sb.ToString());
                             customer_card.Parameters.AddWithValue("@expirydate", obj_customerpaymode.expirydate);
                             customer_card.Parameters.AddWithValue("@bankname", obj_customerpaymode.bankname);
                             customer_card.Parameters.AddWithValue("@ibannumber", obj_customerpaymode.ibannumber);
@@ -380,6 +385,42 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
                 _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
             }
             return null;
+        }
+        StringBuilder sb;
+        public dynamic MaskedNumber(string source)
+        {
+            sb= new StringBuilder(source);
+
+            const int skipLeft = 6;
+            const int skipRight = 4;
+
+            int left = -1;
+
+            for (int i = 0, c = 0; i < sb.Length; ++i)
+            {
+                if (Char.IsDigit(sb[i]))
+                {
+                    c += 1;
+
+                    if (c > skipLeft)
+                    {
+                        left = i;
+
+                        break;
+                    }
+                }
+            }
+
+            for (int i = sb.Length - 1, c = 0; i >= left; --i)
+                if (Char.IsDigit(sb[i]))
+                {
+                    c += 1;
+
+                    if (c > skipRight)
+                        sb[i] = 'X';
+                }
+
+            return sb.ToString();
         }
     }
 }

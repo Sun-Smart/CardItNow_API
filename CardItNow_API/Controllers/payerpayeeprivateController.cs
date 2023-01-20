@@ -52,5 +52,13 @@ namespace CardItNow.Controllers
             var result = _payerpayeeprivateService.Get_rawresult();
             return result;
         }
+
+        [HttpGet]
+        [Route("GetCardNo")]
+        public dynamic MaskedNumber(string source)
+        {
+            var result = _payerpayeeprivateService.MaskedNumber(source);
+            return result;
+        }
     }
 }

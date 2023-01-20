@@ -118,6 +118,43 @@ namespace CardItNow.Services
             return JsonConvert.SerializeObject(result);
         }
 
+        public dynamic MaskedNumber(string source)
+        {
+            StringBuilder sb = new StringBuilder(source);
+
+            const int skipLeft = 6;
+            const int skipRight = 4;
+
+            int left = -1;
+
+            for (int i = 0, c = 0; i < sb.Length; ++i)
+            {
+                if (Char.IsDigit(sb[i]))
+                {
+                    c += 1;
+
+                    if (c > skipLeft)
+                    {
+                        left = i;
+
+                        break;
+                    }
+                }
+            }
+
+            for (int i = sb.Length - 1, c = 0; i >= left; --i)
+                if (Char.IsDigit(sb[i]))
+                {
+                    c += 1;
+
+                    if (c > skipRight)
+                        sb[i] = 'X';
+                }
+
+            return sb.ToString();
+        }
+
+
         //public dynamic Save_payerpayeprivateDocument(payerpayeeprivate obj_payerpayeeprivate)
         //{
         //    if (obj_payerpayeeprivate.customerid != null)

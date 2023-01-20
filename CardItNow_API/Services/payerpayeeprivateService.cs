@@ -51,14 +51,15 @@ namespace CardItNow.Services
                     {
                         
                         connection.Open();
-                        if (obj_payerpayeeprivate.customerid != null)
+                        if ((obj_payerpayeeprivate.customerid != null) &&
+                            (!string.IsNullOrEmpty(obj_payerpayeeprivate.documnettype)))
                         {
-                            NpgsqlCommand check_payer = new NpgsqlCommand("select count(*)  from initiatorrecipientprivates where customerid = '" + obj_payerpayeeprivate.customerid + "' and bankname = '" + obj_payerpayeeprivate.bankname + "' and bankaccountnumber = '" + obj_payerpayeeprivate.accountnumber + "',documenttype=''"+obj_payerpayeeprivate.documnettype+"", connection);
+                            NpgsqlCommand check_payer = new NpgsqlCommand("select count(*)  from initiatorrecipientprivates where customerid = '" + obj_payerpayeeprivate.customerid + "' and bankname = '" + obj_payerpayeeprivate.bankname + "' and bankaccountnumber = '" + obj_payerpayeeprivate.accountnumber + "'and documenttype='"+obj_payerpayeeprivate.documnettype+"'", connection);
                            var output_result = check_payer.ExecuteScalar().ToString();
 
                             if ((int.Parse(output_result) == 0 )||(output_result==null))
                             {
-                                NpgsqlCommand inst_payerpayeeprivate = new NpgsqlCommand("insert into initiatorrecipientprivates(customerid,firstname,email,mobile,bankaccountnumber,bankname,iban,accountname,status,createdby,createddate) values(@customerid,@firstname,@email,@mobile,@bankaccountnumber,@bankname,@iban,@accountname,@status,@createdby,@createddate)", connection);
+                                NpgsqlCommand inst_payerpayeeprivate = new NpgsqlCommand("insert into initiatorrecipientprivates(customerid,firstname,email,mobile,bankaccountnumber,bankname,iban,accountname,status,createdby,createddate,documenttype) values(@customerid,@firstname,@email,@mobile,@bankaccountnumber,@bankname,@iban,@accountname,@status,@createdby,@createddate,@documenttype)", connection);
                                 inst_payerpayeeprivate.Parameters.AddWithValue("@customerid", obj_payerpayeeprivate.customerid);
                                 inst_payerpayeeprivate.Parameters.AddWithValue("@firstname", obj_payerpayeeprivate.firstname);
                                 inst_payerpayeeprivate.Parameters.AddWithValue("@email", obj_payerpayeeprivate.email);
@@ -71,7 +72,7 @@ namespace CardItNow.Services
                                 inst_payerpayeeprivate.Parameters.AddWithValue("@createdby", obj_payerpayeeprivate.customerid);
                                 inst_payerpayeeprivate.Parameters.AddWithValue("@createddate", DateTime.Now);
                                 inst_payerpayeeprivate.Parameters.AddWithValue("@documenttype",obj_payerpayeeprivate.documnettype);
-                                inst_payerpayeeprivate.Parameters.AddWithValue("@document",obj_payerpayeeprivate.documnet);
+                                //inst_payerpayeeprivate.Parameters.AddWithValue("@document",obj_payerpayeeprivate.documentvalue);
                                 int result = inst_payerpayeeprivate.ExecuteNonQuery();
                                 if (result > 0)
                                 {
@@ -82,6 +83,10 @@ namespace CardItNow.Services
                             {
                                 return "The Given Payee already availbale in your My payee list ";
                             }
+                        }
+                        else
+                        {
+                            return "Document type/ customer ID missing  ";
                         }
 
 

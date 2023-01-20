@@ -33,8 +33,8 @@ namespace CardItNow.Models
 
         [Column (TypeName ="string")]
         public string documnettype { get; set; }
-        [Column(TypeName = "Bytea[]")]
-        public string documnet { get; set; }
+        [Column(TypeName ="string")]
+        public string documentvalue { get; set; }
 
 
     }

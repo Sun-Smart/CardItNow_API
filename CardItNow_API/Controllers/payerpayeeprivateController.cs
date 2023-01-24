@@ -45,7 +45,7 @@ namespace CardItNow.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("GetRawResult")]
         public dynamic Get_rawresult()
         {

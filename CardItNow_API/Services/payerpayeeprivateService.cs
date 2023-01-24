@@ -112,8 +112,13 @@ namespace CardItNow.Services
         {
             var result = new
             {
-                Inviceno = "97342301",
-                Amount = "2000"
+                Owner = "ANTONIN LAVYS. INGLES, Jr.and/or MARY ROSE C.INGLES",
+                Resident = "GERALDINE Q.GALINATO",
+                Address="Deelling house,Lot6,Block20,Royal South,Town Homes,",
+                StartDate="20-05-2007",
+                EndDate="20-05-2008",
+                Rent="6500.00"
+
             };
             return JsonConvert.SerializeObject(result);
         }

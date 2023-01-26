@@ -68,7 +68,7 @@ namespace carditnow.Models
     {
         public int name { get; set; }
         public int dob { get; set; }
-        public int expiry_date { get; set; }
+        public string expiry_date { get; set; }
         public int document_number { get; set; }
 
     }

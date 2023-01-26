@@ -19,6 +19,6 @@ namespace carditnow.Services
         dynamic Get_customerdetail(int id);
         dynamic Save_customerdetail(string token, customerdetail obj_customerdetail);
         dynamic Delete(int id);
-        customerdetail ProcessOCR(customerdetail model);
+        ProcessOCRResposeView ProcessOCR(customerdetail model);
     }
 }

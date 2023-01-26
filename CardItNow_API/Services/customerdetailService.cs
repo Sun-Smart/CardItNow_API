@@ -344,12 +344,19 @@ s.cityname as cityiddesc,
             }
         }
 
-        public customerdetail ProcessOCR(customerdetail model)
+        public ProcessOCRResposeView ProcessOCR(customerdetail model)        
         {
             //Save_customerdetail(null,model);
             var shuftiproResponseView = SubmitDetailstoShuftipro(model);
+            ProcessOCRResposeView processOCRResposeView = new ProcessOCRResposeView();
+            processOCRResposeView.Firstname =shuftiproResponseView.verification_data.document.name.first_name;
+            processOCRResposeView.Lastname = shuftiproResponseView.verification_data.document.name.last_name;
+            processOCRResposeView.Middlename = shuftiproResponseView.verification_data.document.name.middle_name;
+            processOCRResposeView.dob = shuftiproResponseView.verification_data.document.dob;
+            processOCRResposeView.Expirydate = shuftiproResponseView.verification_data.document.expiry_date;
+            processOCRResposeView.Documentno= shuftiproResponseView.verification_data.document.document_number;
             //model=SaveDetails(shuftiproResponseView)
-            return model;
+            return processOCRResposeView;
         }
         private ShuftiproResponseView SubmitDetailstoShuftipro(customerdetail model)
         {
@@ -389,8 +396,7 @@ s.cityname as cityiddesc,
                 using (StreamReader stream = new StreamReader(response.Content.ReadAsStreamAsync().Result))
                 {
                     content = stream.ReadToEnd();
-                    shuftiproResponseView=JsonConvert.DeserializeObject<ShuftiproResponseView>(content);
-                    //var _firstname=shuftiproResponseView.verification_data.document.name.first_name;
+                    shuftiproResponseView=JsonConvert.DeserializeObject<ShuftiproResponseView>(content); // Json return
                 }
             }
             catch (Exception ex)

@@ -88,10 +88,33 @@ namespace carditnow.Models
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
         public DateTime? updateddate { get; set; }
+
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
+        public string Middlename { get; set; }
+        public string dob { get; set; }
+        public string Issuedate { get; set; }
+        public string Expirydate { get; set; }
+        public string Email { get; set; }
+        public string Referanceno { get; set; }
     }
     public class customerdetailView
     {
         public customerdetail data { get; set; }
+
+    }
+
+    public class ProcessOCRResposeView
+    {
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
+        public string Middlename { get; set; }
+        public string dob { get; set; }
+        public string Issuedate { get; set; }
+        public string Expirydate { get; set; }
+        public string Email { get; set; }
+        public string Documentno { get; set; }
+        //public string Referanceno { get; set; }
 
     }
 }

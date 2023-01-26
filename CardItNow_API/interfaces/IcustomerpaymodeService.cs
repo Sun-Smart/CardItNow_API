@@ -21,5 +21,7 @@ namespace carditnow.Services
         dynamic Save_customerpaymode(string token,customerpaymode obj_customerpaymode);
         dynamic SaveCutomerCardDeatils(customerpaymode obj_customerpaymode);
         dynamic Delete(int id);
+
+        dynamic CardDefault(cardDefault model);
     }  
     }  

@@ -255,5 +255,22 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "Delete " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
+
+        [HttpPost]
+        [Route("setCardDefault")]
+        public dynamic CardDefault(cardDefault model)
+        {
+            try
+            {
+                //var list_uid = getList_uid().Result.Result;
+                var result = _customerpaymodeService.CardDefault(model);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:GetDefaultData() {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "GetDefaultData() " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
     }
 }

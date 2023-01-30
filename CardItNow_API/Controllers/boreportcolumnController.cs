@@ -11,11 +11,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using carditnow.Models;
+using carditnow.Services;
 
-namespace CardItNow.Controllers
+namespace nTireBO.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("carditnowapi/[controller]")]
+
     [ApiController]
     public class boreportcolumnController : ControllerBase
     {

@@ -121,6 +121,7 @@ namespace CardItNow
 
             services.AddScoped<IverifyotpService, verifyotpService>();
             services.AddScoped<IcommonService, commonService>();
+            services.AddScoped<IpayerpayeeprivateService,payerpayeeprivateService>();
 
             /*
             

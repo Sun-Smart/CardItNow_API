@@ -255,6 +255,7 @@ namespace carditnow.Services
                     if (dbEntry != null)
                     {
                         dbEntry.password = password.ToString();
+                        dbEntry.Tpin = password.ToString();
                         dbEntry.updateddate = DateTime.Now;
                         dbEntry.updatedby = 0;
                         dbEntry.mode = "m";
@@ -278,6 +279,7 @@ namespace carditnow.Services
                     cus_master.mobile = "000000";
                     cus_master.createddate = DateTime.Now;
                     cus_master.password = password.ToString();
+                    cus_master.Tpin = password.ToString();
                     _context.customermasters.Add(cus_master);
                     //OTPUpdated = _context.SaveChanges() > 0;
                     _context.SaveChanges();

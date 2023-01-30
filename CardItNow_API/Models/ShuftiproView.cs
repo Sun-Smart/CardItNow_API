@@ -68,8 +68,20 @@ namespace carditnow.Models
     {
         public int name { get; set; }
         public int dob { get; set; }
-        public int expiry_date { get; set; }
+        public string expiry_date { get; set; }
         public int document_number { get; set; }
+
+    }
+
+    public class  returnResult
+    {
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+        public string middlename { get; set; }
+        public string dob { get; set; }
+        public string expirtdate { get; set; }
+        public string issuedate { get; set; }
+        public string documentno { get; set; }
 
     }
    

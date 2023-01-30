@@ -138,6 +138,23 @@ namespace carditnow.Controllers
             }
         }
 
+        [HttpGet] //dynamic Get_customerpaymodeCard(int id)
+        [Route("GetCustomerCardList")]
+
+        public async Task<ActionResult<customerpaymode>> Get_customerCard(int id)
+        {
+            try
+            {
+                var result = _customerpaymodeService.Get_customerCard(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: Get_customerpaymode(int id)\r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Get_customerpaymode(int id) " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
         [HttpGet]
         [Route("getdefaultdata")]
         public async Task<ActionResult<Object>> GetDefaultData()
@@ -236,6 +253,23 @@ namespace carditnow.Controllers
             {
                 _logger.LogError($"Controller: Delete(int id) {ex}");
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "Delete " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("setCardDefault")]
+        public dynamic CardDefault(cardDefault model)
+        {
+            try
+            {
+                //var list_uid = getList_uid().Result.Result;
+                var result = _customerpaymodeService.CardDefault(model);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:GetDefaultData() {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "GetDefaultData() " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
     }

@@ -45,8 +45,14 @@ namespace carditnow.Models
     }
     public class customerpaymodeView
     {
-public customerpaymode data{ get; set; }
+        public customerpaymode data{ get; set; }
 
+    }
+
+    public class cardDefault
+    {
+        public int payid { get; set; }
+        public int customerid { get; set; }
     }
 }
 

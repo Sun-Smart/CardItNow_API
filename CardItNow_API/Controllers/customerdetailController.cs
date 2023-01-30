@@ -171,9 +171,9 @@ namespace carditnow.Controllers
         }
         [HttpPost]
         [Route("ProcessOCR")]
-        public async Task<ActionResult<customerdetail>> ProcessOCR(customerdetail model)
+        public async Task<ActionResult<ProcessOCRResposeView>> ProcessOCR(customerdetail model)
         {
-            customerdetail response = new customerdetail();
+            ProcessOCRResposeView response = new ProcessOCRResposeView();
             try
             {
                 response = _customerdetailService.ProcessOCR(model);

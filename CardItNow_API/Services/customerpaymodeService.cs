@@ -337,8 +337,8 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
                         if (!string.IsNullOrEmpty(obj_customerpaymode.cardnumber))
                         {
                             MaskedNumber(obj_customerpaymode.cardnumber);
-                            NpgsqlCommand customer_card = new NpgsqlCommand("insert into customerpaymodes (customerid,uid,cardnumber,cardname,expirydate,bankname,ibannumber,status,createdby,createddate,updatedby,updateddate)  values(@customerid,@uid,@cardnumber,@cardname,@expirydate,@bankname," +
-                                "@ibannumber,@status,@createdby,@createddate,@updatedby,@updateddate)", connection);
+                            NpgsqlCommand customer_card = new NpgsqlCommand("insert into customerpaymodes (customerid,uid,cardnumber,cardname,expirydate,bankname,ibannumber,status,createdby,createddate,updatedby,updateddate,carddefault)  values(@customerid,@uid,@cardnumber,@cardname,@expirydate,@bankname," +
+                                "@ibannumber,@status,@createdby,@createddate,@updatedby,@updateddate,@carddefault)", connection);
                             customer_card.Parameters.AddWithValue("@customerid", obj_customerpaymode.customerid);
                             customer_card.Parameters.AddWithValue("@uid", obj_customerpaymode.uid);
                             customer_card.Parameters.AddWithValue("@cardnumber", sb.ToString());
@@ -352,6 +352,7 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
                             customer_card.Parameters.AddWithValue("@createddate", DateTime.Now);
                             customer_card.Parameters.AddWithValue("@updatedby", 0);
                             customer_card.Parameters.AddWithValue("@updateddate", DateTime.Now);
+                            customer_card.Parameters.AddWithValue("@carddefault", 0);
                             var output = customer_card.ExecuteNonQuery();
                             if (output > 0)
                             {
@@ -387,8 +388,8 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
 
                         }
 
-                        NpgsqlCommand customer_card = new NpgsqlCommand("insert into customerpaymodes (customerid,uid,cardnumber,cardname,expirydate,bankname,ibannumber,status,createdby,createddate,updatedby,updateddate)  values(@customerid,@uid,@cardnumber,@cardname,@expirydate,@bankname," +
-                        "@ibannumber,@status,@createdby,@createddate,@updatedby,@updateddate)", connection);
+                        NpgsqlCommand customer_card = new NpgsqlCommand("insert into customerpaymodes (customerid,uid,cardnumber,cardname,expirydate,bankname,ibannumber,status,createdby,createddate,updatedby,updateddate,carddefault)  values(@customerid,@uid,@cardnumber,@cardname,@expirydate,@bankname," +
+                        "@ibannumber,@status,@createdby,@createddate,@updatedby,@updateddate,@carddefault)", connection);
                         customer_card.Parameters.AddWithValue("@customerid", obj_customerpaymode.customerid);
                         customer_card.Parameters.AddWithValue("@uid", obj_customerpaymode.uid);
                         customer_card.Parameters.AddWithValue("@cardnumber", sb.ToString());
@@ -402,6 +403,7 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
                         customer_card.Parameters.AddWithValue("@createddate", DateTime.Now);
                         customer_card.Parameters.AddWithValue("@updatedby", 0);
                         customer_card.Parameters.AddWithValue("@updateddate", DateTime.Now);
+                        customer_card.Parameters.AddWithValue("@carddefault", 0);
                         var output = customer_card.ExecuteNonQuery();
                         if (output > 0)
                         {
@@ -489,7 +491,7 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
 u.email as uiddesc
  from GetTable(NULL::public.customerpaymodes,@cid) a 
  left join customermasters u on a.uid=u.uid
- where a.customerid=@id";
+ where a.customerid=@id order by carddefault=1  desc";
                     var result = connection.Query<dynamic>(SQL, parameters);
                     //var obj_customerpaymode = result.FirstOrDefault();
                     //var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customerpaymodes'";
@@ -516,7 +518,10 @@ u.email as uiddesc
             {
                 connection.Open();
                 NpgsqlCommand cardDefault = new NpgsqlCommand("select payid from customerpaymodes where customerid='" + model.customerid + "' and carddefault=1 ", connection);
-                var updateDefault = cardDefault.ExecuteScalar().ToString();
+                //NpgsqlDataAdapter ad = new NpgsqlDataAdapter("select payid from customerpaymodes where customerid='" + model.customerid + "' and carddefault=1 ", connection);
+                //DataTable ds = new DataTable();
+                //ad.Fill(ds);
+                var updateDefault =cardDefault.ExecuteScalar();
                 if (updateDefault != null)
                 {
                     NpgsqlCommand customer_cardupdate = new NpgsqlCommand("update customerpaymodes set carddefault=0 where customerid='" + model.customerid + "' and payid='" + updateDefault + "'", connection);

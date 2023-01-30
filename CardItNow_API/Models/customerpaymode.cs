@@ -51,8 +51,8 @@ namespace carditnow.Models
 
     public class cardDefault
     {
-        public int payid { get; set; }
-        public int customerid { get; set; }
+        public string payid { get; set; }
+        public string customerid { get; set; }
     }
 }
 

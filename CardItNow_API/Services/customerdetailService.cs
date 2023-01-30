@@ -384,7 +384,8 @@ s.cityname as cityiddesc,
                 };
 
                 httpClient.DefaultRequestHeaders.Add("ContentType", "application/json");
-                var plainTextBytes = Encoding.UTF8.GetBytes("a29549da1851e142d4c02fc2892e7fbf00d4b6754efb1eefbb73974736aa7063:6siOxNL792NQ1fXONgAgk5wfi8GHVc9f");
+                //var plainTextBytes = Encoding.UTF8.GetBytes("a29549da1851e142d4c02fc2892e7fbf00d4b6754efb1eefbb73974736aa7063:6siOxNL792NQ1fXONgAgk5wfi8GHVc9f");//Demo Server Details Aninda sroy account 
+                var plainTextBytes = Encoding.UTF8.GetBytes("73rVpVfj5NhvZsqHJdS5XfGojClaxV6FvFGzB7RWrEPU38QRXe1673365240:$2y$10$ImsBIRFhTNNQYmgYfkXxPuOB1VQoP0tgDc6UpQOuh6bc2xgUrdFZK"); //Production Server Details Rita Ganesh account
                 string val = Convert.ToBase64String(plainTextBytes);
                 httpClient.DefaultRequestHeaders.Add("Authorization", "Basic " + val);
                 var requestcontent =new ByteArrayContent(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(shuftiproRequestView)));

@@ -194,13 +194,13 @@ namespace carditnow.Controllers
         }
 
         [HttpPost("ProcessDocument")]
-        public async Task<ActionResult<IEnumerable<Object>>> ProcessDocument(string email, int doucumenttype, string document, string documentid, string selfie)
+        public async Task<ActionResult<IEnumerable<Object>>> ProcessDocument(processdocument model)
         {
             try
             {
-                if (!string.IsNullOrEmpty(email))
+                if (!string.IsNullOrEmpty(model.email))
                 {
-                    var result = _customermasterService.ProcessDocument(email, doucumenttype, document, documentid, selfie);
+                    var result = _customermasterService.ProcessDocument(model);
                     return Ok(result);
                 }
                 else

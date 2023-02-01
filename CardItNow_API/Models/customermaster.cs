@@ -83,6 +83,15 @@ namespace carditnow.Models
         [Column(TypeName = "string")]
         public string otp { get; set; }
     }
+
+    public class processdocument
+    {
+        public string email { get; set; }
+        public int doucumenttype { get; set; }
+        public string document { get; set; }
+        public string documentid { get; set; }
+        public string selfie { get; set; }
+    }
     public class customermasterView
     {
         public customermaster data { get; set; }

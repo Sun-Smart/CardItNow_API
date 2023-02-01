@@ -358,7 +358,7 @@ namespace carditnow.Services
         }
 
 
-        public string ProcessDocument(string email, int doucumenttype, string document, string documentid, string selfie)
+        public string ProcessDocument(processdocument model)
         {
             try
             {
@@ -366,7 +366,7 @@ namespace carditnow.Services
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
                     connection.Open();
-                    var get_cuscode = @"select customerid from customermasters where email='" + email + "' ";
+                    var get_cuscode = @"select customerid from customermasters where email='" + model.email + "' ";
                     var result = connection.ExecuteScalar(get_cuscode, connection);
                     if ((result != null) || (Convert.ToInt32(result) > 0))
                     {
@@ -379,8 +379,8 @@ namespace carditnow.Services
 
                             NpgsqlCommand inst_cd = new NpgsqlCommand("update customerdetails set identificationdocumenttype=@identificationdocumenttype,idnumber=@idnumber,updatedby=@updatedby,updateddate=@updateddate", connection);
                             inst_cd.Parameters.AddWithValue("@customerdetailid", result_customerdetails);
-                            inst_cd.Parameters.AddWithValue("@identificationdocumenttype", doucumenttype);
-                            inst_cd.Parameters.AddWithValue("@idnumber", documentid);
+                            inst_cd.Parameters.AddWithValue("@identificationdocumenttype",model.doucumenttype);
+                            inst_cd.Parameters.AddWithValue("@idnumber", model.documentid);
                             inst_cd.Parameters.AddWithValue("@updatedby", result_customerdetails);
                             inst_cd.Parameters.AddWithValue("@updateddate", DateTime.Now);
                             var output = inst_cd.ExecuteNonQuery();
@@ -401,8 +401,8 @@ namespace carditnow.Services
                             inst_cd.Parameters.AddWithValue("@customerid", result);
                             inst_cd.Parameters.AddWithValue("@type", 1);
                             inst_cd.Parameters.AddWithValue("@uid", 2);
-                            inst_cd.Parameters.AddWithValue("@identificationdocumenttype", doucumenttype);
-                            inst_cd.Parameters.AddWithValue("@idnumber", documentid);
+                            inst_cd.Parameters.AddWithValue("@identificationdocumenttype", model.doucumenttype);
+                            inst_cd.Parameters.AddWithValue("@idnumber", model.documentid);
                             inst_cd.Parameters.AddWithValue("@createdby", result);
                             inst_cd.Parameters.AddWithValue("@createddate", DateTime.Now);
                             var output = inst_cd.ExecuteNonQuery();

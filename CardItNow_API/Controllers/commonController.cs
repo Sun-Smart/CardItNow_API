@@ -1,4 +1,5 @@
 ﻿using carditnow.Controllers;
+using CardItNow.Models;
 using CardItNow.Services;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +15,7 @@ namespace CardItNow.Controllers
     [ApiController]
     public class commonController : baseController
     {
-        
+
 
         private ILoggerManager _logger;
         private readonly IcommonService _commonService;
@@ -22,7 +23,7 @@ namespace CardItNow.Controllers
         private int uid = 0;
         private string uname = "";
         private string uidemail = "";
-        public commonController(IHttpContextAccessor objhttpContextAccessor,IcommonService commonservices, ILoggerManager logger) : base(logger)
+        public commonController(IHttpContextAccessor objhttpContextAccessor, IcommonService commonservices, ILoggerManager logger) : base(logger)
         {
             _logger = logger;
             _commonService = commonservices;
@@ -32,7 +33,7 @@ namespace CardItNow.Controllers
             uidemail = "";
             if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
             if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
-           
+
         }
         [HttpGet]
         [Route("Getdocumenttype")]
@@ -56,6 +57,22 @@ namespace CardItNow.Controllers
         {
             var result = _commonService.GetPurposeList();
             return result;
+        }
+
+        [HttpGet]
+        [Route("Sociallogin")]
+        public dynamic Sociallogin(sociallogin model)
+        {
+            var result = _commonService.Sociallogin(model);
+            return result;
+        }
+        [HttpPost]
+        [Route("SaveSocialMedia")]
+        public dynamic SaveSocial(Savesocial model)
+        {
+            var result = _commonService.SaveSocial(model);
+            return result;
+
         }
     }
 }

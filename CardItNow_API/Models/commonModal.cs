@@ -14,6 +14,19 @@
     {
         public string purpose { get; set; }
     }
+    public class sociallogin
+    {
+        public string email { get; set; }
+    }
+    public class Savesocial
+    {
+        public string email { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+        public string socialid { get; set; }
+        public string mediatype { get; set; }
+       // public string avatarURL { get; set; }
+    }
 
 
 }

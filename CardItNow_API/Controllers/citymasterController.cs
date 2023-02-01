@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace carditnow.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("carditnowapi/[controller]")]
     [ApiController]
     public class citymasterController : ControllerBase

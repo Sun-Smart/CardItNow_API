@@ -166,15 +166,15 @@ namespace carditnow.Services
 
                     if (dbEntry != null)
                     {
-                        dbEntry.otp = Convert.ToString(TACNo);
-                        dbEntry.updateddate = DateTime.Now;
-                        dbEntry.updatedby = 0;
-                        dbEntry.mode = "m";
-                        dbEntry.type = "c";
-                        dbEntry.status = "N";
-                        dbEntry.mobile = "000000";
-                        OTPUpdated = _context.SaveChanges() > 0;
-                        //return "Success";
+                        //dbEntry.otp = Convert.ToString(TACNo);
+                        //dbEntry.updateddate = DateTime.Now;
+                        //dbEntry.updatedby = 0;
+                        //dbEntry.mode = "R";
+                        //dbEntry.type = "c";
+                        //dbEntry.status = "N";
+                        //dbEntry.mobile = "000000";
+                        //OTPUpdated = _context.SaveChanges() > 0;
+                        return "Your account already register";
                     }
 
                 }
@@ -183,8 +183,8 @@ namespace carditnow.Services
                     var cus_master = new customermaster();
                     cus_master.email = email;
                     cus_master.createdby = 0;
-                    cus_master.mode = "m";
-                    cus_master.uid = "Test" + DateTime.Now.Second.ToString();
+                    cus_master.mode = "R";
+                    cus_master.uid = "P" + DateTime.Now.Second.ToString();
                     cus_master.type = "c";
                     cus_master.status = "N";
                     cus_master.mobile = "000000";
@@ -258,7 +258,7 @@ namespace carditnow.Services
                         dbEntry.Tpin = password.ToString();
                         dbEntry.updateddate = DateTime.Now;
                         dbEntry.updatedby = 0;
-                        dbEntry.mode = "m";
+                        dbEntry.mode = "R";
                         dbEntry.type = "c";
                         dbEntry.status = "N";
                         dbEntry.mobile = "000000";
@@ -272,8 +272,8 @@ namespace carditnow.Services
                     var cus_master = new customermaster();
                     cus_master.email = email;
                     cus_master.createdby = 0;
-                    cus_master.mode = "m";
-                    cus_master.uid = "Test" + DateTime.Now.Second.ToString();
+                    cus_master.mode = "R";
+                    cus_master.uid = "P" + DateTime.Now.Second.ToString();
                     cus_master.type = "c";
                     cus_master.status = "N";
                     cus_master.mobile = "000000";
@@ -322,8 +322,8 @@ namespace carditnow.Services
                     var cus_master = new customermaster();
                     cus_master.email = email;
                     cus_master.createdby = 0;
-                    cus_master.mode = "m";
-                    cus_master.uid = "Test" + DateTime.Now.Second.ToString();
+                    cus_master.mode = "R";
+                    cus_master.uid = "P" + DateTime.Now.Second.ToString();
                     cus_master.type = "c";
                     cus_master.mobile = "000000";
                     cus_master.createddate = DateTime.Now;

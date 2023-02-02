@@ -83,7 +83,8 @@ namespace nTireBO.Services
                 new Claim ("countrycode", user.countrycode == null? "": user.countrycode.ToString ()),
                 new Claim ("layoutpage", user.layoutpage == null? "": user.layoutpage.ToString ()),
                 new Claim ("theme", user.theme == null? "": user.theme.ToString ()),
-                new Claim ("logindate", DateTime.Now.ToString ())
+                new Claim ("logindate", DateTime.Now.ToString ()),
+                new Claim ("status", user.status == null? "": user.status.ToString ())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("veryVerySecretKey")); //_config["Jwt:Key"]
@@ -105,9 +106,12 @@ namespace nTireBO.Services
             string key = login.email;
             try
             {
+                CustomercrCredential c = new CustomercrCredential();
                 using (var connection = new NpgsqlConnection(Helper.Connectionstring))
                 {
+                    // CustomercrCredential c = new CustomercrCredential();
                     UserCredential u = new UserCredential();
+                   // CustomercrCredential c = new CustomercrCredential();
                    // customermaster cm = new carditnow.Models.customermaster();
                     if (key == "sunsmart")
                     {
@@ -154,6 +158,8 @@ namespace nTireBO.Services
                             u.userroleid = 6;
                             u.language = "en";
                             u.email = objusermaster.email;
+                            u.status = objusermaster.status;
+                            
                         }
                         else
                         {
@@ -168,14 +174,24 @@ namespace nTireBO.Services
                             var objusermaster = result_customer.FirstOrDefault();
 
                             u.pkcol = objusermaster.pkcol;
-                            
-
-                            u.companyid = 1;                            
+                            u.companyid = 1;
                             u.userid = objusermaster.customerid;
-                            //u.username = objusermaster.username;
+                            u.username = objusermaster.firstname;
                             u.userroleid = 6;
                             u.language = "en";
                             u.email = objusermaster.email;
+                            u.status = objusermaster.status;
+
+
+                            //c.customerid = objusermaster.customerid;
+                            //c.uid = objusermaster.uid;
+                            //c.type = objusermaster.type;
+                            //c.mode = objusermaster.mode;
+                            //c.firstname = objusermaster.firstname;
+                            //c.lastname = objusermaster.lastname;
+                            //c.email = objusermaster.email;
+
+                            //return c;
                         }
                         if (!buserfound) throw new Exception("User not found");
                     }

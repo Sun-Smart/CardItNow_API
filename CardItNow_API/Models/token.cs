@@ -70,6 +70,8 @@ namespace nTireBO.Models
 
         [Column(TypeName = "string")]
         public string finyeardesc { get; set; }
+
+        public string status { get; set; }
     }
 
     public class LoginModel
@@ -87,6 +89,19 @@ namespace nTireBO.Models
     {
         public string password { get; set; }
         public string sptoken { get; set; }
+    }
+
+    public class CustomercrCredential
+    {
+        public string pkcol { get; set; }
+        public int customerid { get; set; }
+        public string uid { get; set; }
+        public string mode { get; set; }
+        public string type { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+        public string  email{ get; set; }
+        //public int MyProperty { get; set; }
     }
 }
 

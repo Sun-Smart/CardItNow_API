@@ -485,7 +485,7 @@ namespace SunSmartnTireProducts.Helpers
 
                                 emailClient.Authenticate("srimathi@sunsmartglobal.com", "sender@123$");
                                 */
-                message.From.Add(new MailboxAddress("SunSmart", "sunsmart.india@gmail.com"));
+                message.From.Add(new MailboxAddress("SunSmart", "support@sunsmartglobal.com"));
 
                 message.Subject = "Notify from " + fromname;
                 //We will say we are sending HTML. But there are options for plaintext etc. 
@@ -503,7 +503,7 @@ namespace SunSmartnTireProducts.Helpers
                     //Remove any OAuth functionality as we won't be using it. 
                     emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
 
-                    emailClient.Authenticate("sunsmart.india@gmail.com", "zvgwzuxonozppqsr");
+                    emailClient.Authenticate("support@sunsmartglobal.com", "ecqsufegzoucluji");
 
                     emailClient.Send(message);
 

@@ -147,7 +147,6 @@ namespace carditnow.Services
             return intValue;
         }
 
-
         public string SendOTP(string email)
         {
             //GetRandomNumber();
@@ -782,6 +781,45 @@ s.avatarname as defaultavatardesc from GetTable(NULL::public.customermasters,@ci
                 _logger.LogError($"Service:customermaster_Exists(int id) {ex}");
                 return false;
             }
+        }
+
+        public dynamic Customerauth(customerauth model)
+        {
+            var sList = new List<customerlist>();
+            try
+            {
+                _logger.LogInfo("Getting into Get Document Type api");
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    NpgsqlCommand inst_cd = new NpgsqlCommand("select  email,password from customermasters where customerid ='"+model.customerid+"' ", connection);
+                    NpgsqlDataAdapter sda = new NpgsqlDataAdapter(inst_cd);
+                    DataTable dt = new DataTable();
+                    sda.Fill(dt);
+                    if (dt.Rows.Count > 0)
+                    {
+                        foreach (DataRow dr in dt.Rows)
+                        {
+                            sList.Add(new customerlist
+                            {
+                                email = dr["email"].ToString(),
+                                accescode = dr["password"].ToString()
+
+                            });
+                            
+                        }
+                    }
+                    connection.Close();
+                    connection.Dispose();
+                }
+                return sList;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+            }
+            return sList;
+            return null;
         }
     }
 }

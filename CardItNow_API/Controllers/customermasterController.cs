@@ -239,6 +239,7 @@ namespace carditnow.Controllers
 
         }
 
+
         [HttpGet("e/{sid}")]
         public async Task<ActionResult<customermaster>> Get_customermaster(string sid)
         {
@@ -490,6 +491,15 @@ namespace carditnow.Controllers
             {
                 return HandleError(ex, "Delete");
             }
+        }
+
+        [HttpPost]
+        [Route("Customerauthendication")]
+        public dynamic Customerauth(customerauth model)
+        {
+            var result = _customermasterService.Customerauth(model);
+            return result;
+
         }
     }
 }

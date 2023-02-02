@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace carditnow.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("carditnowapi/[controller]")]
     [ApiController]
     public class geographymasterController : ControllerBase
@@ -36,11 +36,14 @@ namespace carditnow.Controllers
            // uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
             uname = "";
             uidemail = "";
-            if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
-            if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
-            _geographymasterService = obj_geographymasterService;
-            _citymasterService = obj_citymasterService;
-            _geoaccessService = obj_geoaccessService;
+            if (objhttpContextAccessor.HttpContext.User.Claims.Any())
+            {
+                if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
+                if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
+                _geographymasterService = obj_geographymasterService;
+                _citymasterService = obj_citymasterService;
+                _geoaccessService = obj_geoaccessService;
+            }
         }
 
         // GET: api/geographymaster

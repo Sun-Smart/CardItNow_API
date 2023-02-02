@@ -69,7 +69,7 @@ namespace nTireBOWebAPI.Controllers
         [HttpPost]
         //[GzipCompression]
         [Route("forgot")]
-        public async void forgot([FromBody] ForgotPassword pwdform)
+        public async void forgot_pass([FromBody] ForgotPassword pwdform)
         {
             var claims = new[] {
                 new Claim ("email", pwdform.email.ToString ())
@@ -78,7 +78,6 @@ namespace nTireBOWebAPI.Controllers
             string data = "Please follow this link to reset your password:<p><a href='http://localhost/ntire/SSnTireApp/#/resetpassword?sptoken=" + tokenString + "'>http://localhost/ntire/SSnTireApp/#/resetpassword?sptoken=" + tokenString + "</a>";
             Helper.Email(data, pwdform.email.ToString(), "User", "SunSmart");
         }
-
         [HttpPost]
         //[GzipCompression]
         [Route("change")]

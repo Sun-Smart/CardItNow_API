@@ -92,6 +92,22 @@ namespace carditnow.Models
         public string documentid { get; set; }
         public string selfie { get; set; }
     }
+
+    public class ProfileInformationUpdate
+    {
+       public string email { get; set; }
+       public string firstname { get; set;}
+       public string lastname { get; set; }
+       public string mobile { get; set; }
+       public DateTime dateofbirth { get; set; }
+       public string address { get; set; }
+       public int geoid { get; set; }
+       public int cityid { get; set; }
+       public string postalcode { get; set; }
+       public DateTime idissuedate { get; set; }
+       public DateTime idexpirydate { get; set;}
+
+    }
     public class customermasterView
     {
         public customermaster data { get; set; }
@@ -116,6 +132,17 @@ namespace carditnow.Models
         [NotMapped]
         public string Deleted_customersecurityquestionshistory_IDs { get; set; }
 
+    }
+
+    public class customerauth
+    {
+        public string customerid { get; set; }        
+    }
+
+    public class customerlist
+    {
+        public string email { get; set; }
+        public string accescode { get; set; }
     }
 }
 

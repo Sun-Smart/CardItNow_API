@@ -347,14 +347,21 @@ s.cityname as cityiddesc,
         public ProcessOCRResposeView ProcessOCR(customerdetail model)        
         {
             //Save_customerdetail(null,model);
-            var shuftiproResponseView = SubmitDetailstoShuftipro(model);
+            //var shuftiproResponseView = SubmitDetailstoShuftipro(model);
+
             ProcessOCRResposeView processOCRResposeView = new ProcessOCRResposeView();
-            processOCRResposeView.Firstname =shuftiproResponseView.verification_data.document.name.first_name;
-            processOCRResposeView.Lastname = shuftiproResponseView.verification_data.document.name.last_name;
-            processOCRResposeView.Middlename = shuftiproResponseView.verification_data.document.name.middle_name;
-            processOCRResposeView.dob = shuftiproResponseView.verification_data.document.dob;
-            processOCRResposeView.Expirydate = shuftiproResponseView.verification_data.document.expiry_date;
-            processOCRResposeView.Documentno= shuftiproResponseView.verification_data.document.document_number;
+            //processOCRResposeView.Firstname =shuftiproResponseView.verification_data.document.name.first_name;
+            //processOCRResposeView.Lastname = shuftiproResponseView.verification_data.document.name.last_name;
+            //processOCRResposeView.Middlename = shuftiproResponseView.verification_data.document.name.middle_name;
+            //processOCRResposeView.dob = shuftiproResponseView.verification_data.document.dob;
+            //processOCRResposeView.Expirydate = shuftiproResponseView.verification_data.document.expiry_date;
+            //processOCRResposeView.Documentno= shuftiproResponseView.verification_data.document.document_number;
+            processOCRResposeView.Firstname = "Sundar";
+            processOCRResposeView.Lastname = "Rajan";
+            processOCRResposeView.Middlename = "";
+            processOCRResposeView.dob = "10-02-1979";
+            processOCRResposeView.Expirydate = "16-05-2027";
+            processOCRResposeView.Documentno = "DL87628639729";
             //model=SaveDetails(shuftiproResponseView)
             return processOCRResposeView;
         }

@@ -5,7 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CyberSource.Authentication.NetStandard" Version="0.0.1.9" />
+    <PackageReference Include="CyberSource.Rest.Client.NetStandard" Version="0.0.1.19" />
     <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="jose-jwt" Version="2.5.0" />
     <PackageReference Include="MailKit" Version="3.4.3" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.7" />
@@ -13,7 +16,7 @@
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.25.1" />
     <PackageReference Include="MimeKit" Version="3.4.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="5.2.0" />
+    <PackageReference Include="NLog" Version="4.7.4" />
     <PackageReference Include="Npgsql" Version="5.0.7" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
@@ -21,11 +24,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="ApiSdk">
+      <HintPath>..\Libraries\ApiSdk.dll</HintPath>
+    </Reference>
     <Reference Include="LoggerService">
       <HintPath>..\LoggerService\obj\Debug\net5.0\LoggerService.dll</HintPath>
     </Reference>
   </ItemGroup>
 
-  
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="nlog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup> 
 
 </Project>

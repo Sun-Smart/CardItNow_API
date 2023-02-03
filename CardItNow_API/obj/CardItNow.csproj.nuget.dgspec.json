@@ -1,25 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "E:\\00_DevSource\\CarditNow\\CardItNow_API\\CardItNow.csproj": {}
+    "E:\\Ramesh\\Github\\CardItNow_API\\CardItNow_API\\CardItNow.csproj": {}
   },
   "projects": {
-    "E:\\00_DevSource\\CarditNow\\CardItNow_API\\CardItNow.csproj": {
+    "E:\\Ramesh\\Github\\CardItNow_API\\CardItNow_API\\CardItNow.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\00_DevSource\\CarditNow\\CardItNow_API\\CardItNow.csproj",
+        "projectUniqueName": "E:\\Ramesh\\Github\\CardItNow_API\\CardItNow_API\\CardItNow.csproj",
         "projectName": "CardItNow",
-        "projectPath": "E:\\00_DevSource\\CarditNow\\CardItNow_API\\CardItNow.csproj",
-        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "E:\\00_DevSource\\CarditNow\\CardItNow_API\\obj\\",
+        "projectPath": "E:\\Ramesh\\Github\\CardItNow_API\\CardItNow_API\\CardItNow.csproj",
+        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
+        "outputPath": "E:\\Ramesh\\Github\\CardItNow_API\\CardItNow_API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
           "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
         ],
         "configFilePaths": [
-          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -46,6 +44,14 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "CyberSource.Authentication.NetStandard": {
+              "target": "Package",
+              "version": "[0.0.1.9, )"
+            },
+            "CyberSource.Rest.Client.NetStandard": {
+              "target": "Package",
+              "version": "[0.0.1.19, )"
+            },
             "Dapper": {
               "target": "Package",
               "version": "[2.0.123, )"
@@ -74,9 +80,9 @@
               "target": "Package",
               "version": "[3.4.3, )"
             },
-            "NLog.Extensions.Logging": {
+            "NLog": {
               "target": "Package",
-              "version": "[5.2.0, )"
+              "version": "[4.7.4, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
@@ -97,6 +103,10 @@
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
               "version": "[6.25.1, )"
+            },
+            "jose-jwt": {
+              "target": "Package",
+              "version": "[2.5.0, )"
             }
           },
           "imports": [
@@ -117,7 +127,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.404\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }

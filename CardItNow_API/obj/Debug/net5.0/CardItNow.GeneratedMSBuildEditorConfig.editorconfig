@@ -7,4 +7,4 @@ build_property.PublishSingleFile =
 build_property.IncludeAllContentForSelfExtract = 
 build_property._SupportedPlatformList = Android,iOS,Linux,macOS,Windows
 build_property.RootNamespace = CardItNow
-build_property.ProjectDir = E:\00_DevSource\CarditNow\CardItNow_API\
+build_property.ProjectDir = E:\Ramesh\Github\CardItNow_API\CardItNow_API\

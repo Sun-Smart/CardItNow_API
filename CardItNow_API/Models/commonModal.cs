@@ -27,13 +27,17 @@
         public string mediatype { get; set; }
        // public string avatarURL { get; set; }
     }
-
-    public class forgotpass
+    public class changepasscode
     {
         public string email { get; set; }
-        public string customerid { get; set; }
+        //public int customerid { get; set; }
         public string otp { get; set; }
-        public string tpin { get; set; }
     }
 
+    public class validatepass
+    {
+        public string email { get; set; }
+        public string  passcode { get; set; }
+
+    }
 }

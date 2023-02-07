@@ -74,5 +74,23 @@ namespace CardItNow.Controllers
             return result;
 
         }
+
+        [HttpPost]
+        [Route("ForgotPasscode")]
+        public dynamic forgotpass(Savesocial model)
+        {
+            var result = _commonService.forgotpass(model);
+            return result;
+
+        }
+
+        [HttpPost]
+        [Route("Changepass")]
+        public dynamic changepasscode(changepasscode model)
+        {
+            var result = _commonService.ChangePass(model);
+            return result;
+
+        }
     }
 }

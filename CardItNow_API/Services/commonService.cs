@@ -10,6 +10,10 @@ using System.Linq;
 using CardItNow.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Mail;
+using System.Net;
+using System.Text;
+using carditnow.Models;
 
 namespace CardItNow.Services
 {
@@ -303,5 +307,192 @@ namespace CardItNow.Services
             return null;
         }
 
+        public decimal GetRandomNumber()
+        {
+            Random objRandom = new Random();
+            int intValue = objRandom.Next(100000, 999999);
+            return intValue;
+        }
+
+        public string forgotpass(Savesocial model)
+        {
+            try
+            {
+
+                _logger.LogInfo("Getting into Forgot Passcode(string email) api");
+
+                decimal TACNo = GetRandomNumber();
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    NpgsqlCommand CheckExists_social_media = new NpgsqlCommand("select count(email) from customermasters where email='" + model.email + "'", connection);
+                    var exists_result = CheckExists_social_media.ExecuteScalar().ToString();
+                    if (int.Parse(exists_result) > 0)
+                    {
+                        NpgsqlCommand update_otp = new NpgsqlCommand("update customermasters set otp='" + TACNo + "'where email='" + model.email + "'", connection);
+                        var update_result = update_otp.ExecuteNonQuery().ToString();
+                        if (int.Parse(update_result) > 0)
+                        {
+                            string subject = "CarditNow Forgot passcode OTP ";
+                            StringBuilder sb = new StringBuilder();
+                            SmtpClient smtp = new SmtpClient();
+                            smtp.EnableSsl = true;
+                            smtp.UseDefaultCredentials = false;
+                            sb.Append("Dear Customer,");
+                            sb.Append("<br/>");
+                            sb.Append("<br/>");
+                            sb.Append("Your forgot passcode OTP to send your Registration email account,Please visit your register email : ");
+                            sb.Append("<b>");
+                            sb.Append(TACNo);
+                            sb.Append("</b>");
+                            sb.Append("<br/>");
+                            sb.Append("<br/>");
+                            sb.Append("Regards,");
+                            sb.Append("<br/>");
+                            sb.Append("SunSmart Global");
+                            SendEmail(model.email, subject, sb.ToString());
+                            //Helper.SendEmail();
+                            //return "Success";
+                            var result1 = new
+                            {
+                                status = "success",
+                                data = "",   /* Application-specific data would go here. */
+                                message = "OTP has been send to register email id" /* Or optional success message */
+                            };
+                            return JsonConvert.SerializeObject(result1);
+                        }
+                    }
+                    else
+                    {
+                        var result1 = new
+                        {
+                            status = "fail",
+                            data = "",   /* Application-specific data would go here. */
+                            message = "Forgot email ID not avilable in CarditNow App" /* Or optional success message */
+                        };
+                        return JsonConvert.SerializeObject(result1);
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+                throw ex;
+            }
+            return null;
+        }
+
+        public void SendEmail(string toemail, string subject, string htmlString)
+        {
+            //string _fromemail = @"support@myskillstree.com";
+            // string _password = @"SupMyST123";//
+
+            string _fromemail = @"support@sunsmartglobal.com";
+            string _password = @"ecqsufegzoucluji";
+            try
+            {
+                MailMessage message = new MailMessage();
+                SmtpClient smtp = new SmtpClient();
+                message.From = new MailAddress(_fromemail);
+                message.To.Add(new MailAddress(toemail));
+                message.Subject = subject;
+                message.IsBodyHtml = true; //to make message body as html  
+                message.Body = htmlString;
+                smtp.Port = 587;
+                smtp.Host = "smtp.gmail.com"; //for gmail host  
+                smtp.EnableSsl = true;
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = new NetworkCredential(_fromemail, _password);
+                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtp.Send(message);
+                smtp.Dispose();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  SendEmail \r\n {ex}");
+                throw ex;
+            }
+        }
+
+        public string ChangePass(changepasscode model)
+        {
+            try
+            {
+
+                _logger.LogInfo("Getting into Forgot Passcode(string email) api");
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    NpgsqlCommand CheckExists_customer = new NpgsqlCommand("select password,tpin from customermasters where email='" + model.email + "'", connection);
+                    NpgsqlDataAdapter get_customer = new NpgsqlDataAdapter(CheckExists_customer);
+                    DataTable dt = new DataTable();
+                    get_customer.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        if (!string.IsNullOrEmpty(dt.Rows[0][0].ToString()))
+                        {
+                            var t = dt.Rows[0][1].ToString();
+                            if (t != model.otp)
+                            {
+
+                                NpgsqlCommand update_loginPass_Code = new NpgsqlCommand("update customermasters set password='" + model.otp + "',tpin='" + model.otp + "' where email='" + model.email + "'", connection);
+                                var update_result = update_loginPass_Code.ExecuteNonQuery().ToString();
+                                if (int.Parse(update_result) > 0)
+                                {
+                                    var result1 = new
+                                    {
+                                        status = "success",
+                                        data = "",   /* Application-specific data would go here. */
+                                        message = "OTP verified successfully" /* Or optional success message */
+                                    };
+                                    return JsonConvert.SerializeObject(result1);
+                                }
+                            }
+                            else
+                            {
+                                var result1 = new
+                                {
+                                    status = "fail",
+                                    data = "",   /* Application-specific data would go here. */
+                                    message = "Old passcode and New passcode same" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
+                            }
+                        }
+                        else
+                        {
+                            NpgsqlCommand update_loginPass_Code = new NpgsqlCommand("update customermasters set password='" + model.otp + "',tpin='" + model.otp + "' where email='" + model.email + "'", connection);
+                            var update_result = update_loginPass_Code.ExecuteNonQuery().ToString();
+                            if (int.Parse(update_result) > 0)
+                            {
+                                var result1 = new
+                                {
+                                    status = "success",
+                                    data = "",   /* Application-specific data would go here. */
+                                    message = "Passcode updated successfully" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
+                            }
+                        }
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+                throw ex;
+            }
+            return null;
+        }
+
+        public dynamic Customerauth(customerauth model)
+        {
+            throw new NotImplementedException();
+        }
+
+        
     }
 }

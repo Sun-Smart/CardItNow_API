@@ -16,6 +16,10 @@ namespace CardItNow.Services
         dynamic GetPurposeList();
         dynamic Sociallogin(sociallogin model);
         dynamic SaveSocial(Savesocial model);
+        string forgotpass(Savesocial model);
+        dynamic Customerauth(customerauth model);
+
+        string ChangePass(changepasscode model);
 
     }
 }

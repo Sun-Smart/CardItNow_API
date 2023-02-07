@@ -316,6 +316,75 @@ t.termdetails as termiddesc from GetTable(NULL::public.customertermsacceptances,
                 return false;
             }
         }
+
+        public dynamic customeracceptancetermscondition(Customeracceptanceterms model)
+        {
+            _logger.LogInfo("Getting into Forgot Passcode(string email) api");
+            using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+            {
+                connection.Open();
+                NpgsqlCommand CheckExists_customer = new NpgsqlCommand("select max(termid) from customertermsacceptances where customerid='" + model.customerid + "'", connection);
+                NpgsqlDataAdapter get_customer = new NpgsqlDataAdapter(CheckExists_customer);
+                DataTable dt = new DataTable();
+                get_customer.Fill(dt);
+                if (dt.Rows.Count > 0)
+                {
+                    if (!string.IsNullOrEmpty(dt.Rows[0][0].ToString()))
+                    {
+                        var t = dt.Rows[0][0].ToString();
+                        if (int.Parse(t) < model.termid)
+                        {
+
+                            NpgsqlCommand update_loginPass_Code = new NpgsqlCommand("update customertermsacceptances set termid='" + model.termid + "',dateofacceptance='" + model.dateofacceptance + "',status='A',updatedby='"+model.customerid+"',updateddate='"+model.dateofacceptance+"' where customerid='" + model.customerid + "'", connection);
+                            var update_result = update_loginPass_Code.ExecuteNonQuery().ToString();
+                            if (int.Parse(update_result) > 0)
+                            {
+                                var result1 = new
+                                {
+                                    status = "success",
+                                    data = "",   /* Application-specific data would go here. */
+                                    message = "Temrs and Conditions updated successfully" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
+                            }
+                        }
+                        else
+                        {
+                            var result1 = new
+                            {
+                                status = "fail",
+                                data = "",   /* Application-specific data would go here. */
+                                message = "Old passcode and New passcode same" /* Or optional success message */
+                            };
+                            return JsonConvert.SerializeObject(result1);
+                        }
+                    }
+                    else
+                    {
+                        NpgsqlCommand update_terms = new NpgsqlCommand("insert into customertermsacceptances(termid,version,customerid,dateofacceptance,status,createdby,createddate) values(@termid,@version,@customerid,@dateofacceptance,@status,@createdby,@createddate)", connection);
+                        update_terms.Parameters.AddWithValue("@termid",model.termid);
+                        update_terms.Parameters.AddWithValue("@version",0);
+                        update_terms.Parameters.AddWithValue("@customerid",model.customerid);
+                        update_terms.Parameters.AddWithValue("@dateofacceptance",model.dateofacceptance);
+                        update_terms.Parameters.AddWithValue("@status","A");
+                        update_terms.Parameters.AddWithValue("@createdby",model.customerid);
+                        update_terms.Parameters.AddWithValue("@createddate",model.dateofacceptance);
+                        var insert_result = update_terms.ExecuteNonQuery().ToString();
+                        if (int.Parse(insert_result) > 0)
+                        {
+                            var result1 = new
+                            {
+                                status = "success",
+                                data = "",   /* Application-specific data would go here. */
+                                message = "Accept terms updated successfully" /* Or optional success message */
+                            };
+                            return JsonConvert.SerializeObject(result1);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
 

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace carditnow.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("carditnowapi/[controller]")]
     [ApiController]
     public class customertermsacceptanceController : ControllerBase
@@ -32,15 +32,18 @@ namespace carditnow.Controllers
         {
             _customertermsacceptanceService = obj_customertermsacceptanceService;
             _logger = logger;
-            cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
-            uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
-            uname = "";
-            uidemail = "";
-            if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
-            if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
-            _customertermsacceptanceService = obj_customertermsacceptanceService;
-            _termsmasterService = obj_termsmasterService;
-            _customermasterService = obj_customermasterService;
+            if (objhttpContextAccessor.HttpContext.User.Claims.Any())
+            {
+                cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
+                uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
+                uname = "";
+                uidemail = "";
+                if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
+                if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
+                _customertermsacceptanceService = obj_customertermsacceptanceService;
+                _termsmasterService = obj_termsmasterService;
+                _customermasterService = obj_customermasterService;
+            }
         }
 
         // GET: api/customertermsacceptance
@@ -235,6 +238,16 @@ namespace carditnow.Controllers
                 _logger.LogError($"Controller: Delete(int id) {ex}");
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "Delete " + ex.Message + "  " + ex.InnerException?.Message);
             }
+        }
+
+        [HttpPost]
+        [Route("CustomeracceptTerms")]
+    
+        public dynamic customeracceptancetermscondition(Customeracceptanceterms model)
+        {
+            var result = _customertermsacceptanceService.customeracceptancetermscondition(model);
+            return result;
+
         }
     }
 }

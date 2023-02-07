@@ -45,5 +45,14 @@ namespace carditnow.Models
 public customertermsacceptance data{ get; set; }
 
     }
+
+    public class Customeracceptanceterms
+    {
+        public int? customerid { get; set; }
+        public int? termid { get; set; }
+        public int? version { get; set; }
+        public DateTime dateofacceptance { get; set; }
+        public string status { get; set; }
+    }
 }
 

@@ -215,9 +215,28 @@ namespace carditnow.Services
                     sb.Append("SunSmart Global");
                     SendEmail(email, subject, sb.ToString());
                     //Helper.SendEmail();
-                    return "Success";
+                    //return "Success";
+                    var result1 = new
+                    {
+                        status = "success",
+                        data = "",   /* Application-specific data would go here. */
+                        message = "succesfully save record" /* Or optional success message */
+                    };
+                    return JsonConvert.SerializeObject(result1);
                 }
-                else { return "Failed"; }
+                else
+                {
+                    var result1 = new
+                    {
+                        status = "success",
+                        data = "",   /* Application-specific data would go here. */
+                        message = "succesfully save record" /* Or optional success message */
+                    };
+                    return JsonConvert.SerializeObject(result1);
+
+
+                    //return "Failed";
+                }
 
 
                 #region
@@ -284,7 +303,14 @@ namespace carditnow.Services
                     _context.SaveChanges();
                     //return "Success";
                 }
-                return "Success";
+                //return "Success";
+                var result1 = new
+                {
+                    status = "success",
+                    data = "",   /* Application-specific data would go here. */
+                    message = "succesfully save record" /* Or optional success message */
+                };
+                return JsonConvert.SerializeObject(result1);
             }
 
             catch (Exception ex)
@@ -333,7 +359,14 @@ namespace carditnow.Services
                     _context.SaveChanges();
                     //return "Success";
                 }
-                return "Success";
+                //return "Success";
+                var result1 = new
+                {
+                    status = "success",
+                    data = "",   /* Application-specific data would go here. */
+                    message = "succesfully save record" /* Or optional success message */
+                };
+                return JsonConvert.SerializeObject(result1);
                 #region
                 //using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 //{
@@ -378,18 +411,32 @@ namespace carditnow.Services
 
                             NpgsqlCommand inst_cd = new NpgsqlCommand("update customerdetails set identificationdocumenttype=@identificationdocumenttype,idnumber=@idnumber,updatedby=@updatedby,updateddate=@updateddate", connection);
                             inst_cd.Parameters.AddWithValue("@customerdetailid", result_customerdetails);
-                            inst_cd.Parameters.AddWithValue("@identificationdocumenttype",model.doucumenttype);
+                            inst_cd.Parameters.AddWithValue("@identificationdocumenttype", model.doucumenttype);
                             inst_cd.Parameters.AddWithValue("@idnumber", model.documentid);
                             inst_cd.Parameters.AddWithValue("@updatedby", result_customerdetails);
                             inst_cd.Parameters.AddWithValue("@updateddate", DateTime.Now);
                             var output = inst_cd.ExecuteNonQuery();
                             if (output > 0)
                             {
-                                return "Success";
+                                //return "Success";
+                                var result1 = new
+                                {
+                                    status = "success",
+                                    data = "",   /* Application-specific data would go here. */
+                                    message = "succesfully save record" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
                             }
                             else
                             {
-                                return "fail";
+                                //return "fail";
+                                var result1 = new
+                                {
+                                    status = "fail",
+                                    data = "",   /* Application-specific data would go here. */
+                                    message = "not succesfully record" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
                             }
                         }
                         else
@@ -407,11 +454,25 @@ namespace carditnow.Services
                             var output = inst_cd.ExecuteNonQuery();
                             if (output > 0)
                             {
-                                return "Success";
+                                //return "Success";
+                                var result1 = new
+                                {
+                                    status = "success",
+                                    data = "",   /* Application-specific data would go here. */
+                                    message = "succesfully save record" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
                             }
                             else
                             {
-                                return "fail";
+                                //return "fail";
+                                var result1 = new
+                                {
+                                    status = "fail",
+                                    data = "",   /* Application-specific data would go here. */
+                                    message = "not succesfully record" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
                             }
                         }
                     }
@@ -434,7 +495,7 @@ namespace carditnow.Services
         }
 
 
-        public string UpdateProfileInformation(string email, string firstname, string lastname, string mobile, DateTime dateofbirth, string address, int geoid, int cityid, string postalcode, DateTime idissuedate, DateTime idexpirydate)
+        public string UpdateProfileInformation(string email, string firstname, string lastname, string mobile, DateTime dateofbirth, string address, int geoid, int cityid, string postalcode, DateTime idissuedate, DateTime idexpirydate, string nickname)
         {
             try
             {
@@ -447,13 +508,14 @@ namespace carditnow.Services
                     if ((result != null) || (Convert.ToInt32(result) > 0))
                     {
 
-                        NpgsqlCommand update_cus = new NpgsqlCommand(@"update customermasters set firstname=@firstname,lastname=@lastname,mobile=@mobile,dob=@dob where email=@email", connection);
+                        NpgsqlCommand update_cus = new NpgsqlCommand(@"update customermasters set firstname=@firstname,lastname=@lastname,mobile=@mobile,dob=@dob,nickname=@nickname where email=@email", connection);
                         update_cus.CommandType = CommandType.Text;
                         update_cus.Parameters.AddWithValue("@email", email);
                         update_cus.Parameters.AddWithValue("@firstname", firstname);
                         update_cus.Parameters.AddWithValue("@lastname", lastname);
                         update_cus.Parameters.AddWithValue("@mobile", mobile);
                         update_cus.Parameters.AddWithValue("@dob", dateofbirth);
+                        update_cus.Parameters.AddWithValue("@nickname", nickname);
                         int rowAfftect = update_cus.ExecuteNonQuery();
                         var get_customerdetails = @"select * from customerdetails where customerid='" + result + "'";
                         var result_customerdetails = connection.ExecuteScalar(get_customerdetails, connection);
@@ -461,7 +523,7 @@ namespace carditnow.Services
                         {
                             NpgsqlCommand update_cusdetails = new NpgsqlCommand(@"update customerdetails set address=@address,geoid=@geoid,cityid=@cityid,postalcode=@postalcode,
                              idissuedate=@idissudate,idexpirydate=@idexpirydate,createdby=@createdby,
-                            createddate=@createddate where customerid=@customerid", connection);
+                            createddate=@createddate,nickname=@nickname where customerid=@customerid", connection);
                             update_cus.CommandType = CommandType.Text;
                             update_cus.Parameters.AddWithValue("@customerid", result);
                             update_cus.Parameters.AddWithValue("@address", address);
@@ -470,17 +532,32 @@ namespace carditnow.Services
                             update_cus.Parameters.AddWithValue("@postalcode", postalcode);
                             update_cus.Parameters.AddWithValue("@idissudate", idissuedate);
                             update_cus.Parameters.AddWithValue("@idexpirydate", idexpirydate);
-                            //update_cus.Parameters.AddWithValue("@createdby", createdby);
-                            //update_cus.Parameters.AddWithValue("@createddate", createddate);
+                            update_cus.Parameters.AddWithValue("@nickname", nickname);
+                            update_cus.Parameters.AddWithValue("@createdby", result);
+                            update_cus.Parameters.AddWithValue("@createddate", DateTime.Now);
                             //connection.Open();
                             int customerdetailsUpdate = update_cus.ExecuteNonQuery();
                             if (customerdetailsUpdate > 0)
                             {
-                                return "Success";
+                                //return "Success";
+                                var result1 = new
+                                {
+                                    status = "success",
+                                    data = "null",/* Application-specific data would go here. */
+                                    message = "succesfully saved record" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
                             }
                             else
                             {
-                                return "fail";
+                                //return "fail";
+                                var result1 = new
+                                {
+                                    status = "fail",
+                                    data = "null",/* Application-specific data would go here. */
+                                    message = "not succesfully saved record" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
                             }
                         }
                         else
@@ -495,16 +572,31 @@ namespace carditnow.Services
                             inst_cd.Parameters.AddWithValue("@postalcode", postalcode);
                             inst_cd.Parameters.AddWithValue("@idissudate", idissuedate);
                             inst_cd.Parameters.AddWithValue("@idexpirydate", idexpirydate);
-                            //inst_cd.Parameters.AddWithValue("@createdby", createdby);
-                            //inst_cd.Parameters.AddWithValue("@createddate", createddate);
+                            //update_cus.Parameters.AddWithValue("@nickname", nickname);
+                            inst_cd.Parameters.AddWithValue("@createdby", result);
+                            inst_cd.Parameters.AddWithValue("@createddate", DateTime.Now);
                             var output = inst_cd.ExecuteNonQuery();
                             if (output > 0)
                             {
-                                return "Success";
+                                //return "Success";
+                                var result1 = new
+                                {
+                                    status = "success",
+                                    data = "null",/* Application-specific data would go here. */
+                                    message = "succesfully saved record" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
                             }
                             else
                             {
-                                return "fail";
+                                //return "fail";
+                                var result1 = new
+                                {
+                                    status = "fail",
+                                    data = "null",/* Application-specific data would go here. */
+                                    message = "not succesfully saved record" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
                             }
                         }
                     }
@@ -792,7 +884,7 @@ s.avatarname as defaultavatardesc from GetTable(NULL::public.customermasters,@ci
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
                     connection.Open();
-                    NpgsqlCommand inst_cd = new NpgsqlCommand("select  email,password from customermasters where customerid ='"+model.customerid+"' ", connection);
+                    NpgsqlCommand inst_cd = new NpgsqlCommand("select email,password from customermasters where email ='" + model.email + "' ", connection);
                     NpgsqlDataAdapter sda = new NpgsqlDataAdapter(inst_cd);
                     DataTable dt = new DataTable();
                     sda.Fill(dt);
@@ -806,19 +898,37 @@ s.avatarname as defaultavatardesc from GetTable(NULL::public.customermasters,@ci
                                 accescode = dr["password"].ToString()
 
                             });
-                            
+
                         }
+                        var result1 = new
+                        {
+                            status = "success",
+                            data = sList,   /* Application-specific data would go here. */
+                            message = "succesfully get record" /* Or optional success message */
+                        };
+                        return JsonConvert.SerializeObject(result1);
+                    }
+                    else
+                    {
+                        var result1 = new
+                        {
+                            status = "fail",
+                            data = sList,   /* Application-specific data would go here. */
+                            message = "record not available" /* Or optional success message */
+                        };
+                        return JsonConvert.SerializeObject(result1);
                     }
                     connection.Close();
                     connection.Dispose();
                 }
-                return sList;
+                //return sList;
+
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
             }
-            return sList;
+            //return sList;
             return null;
         }
     }

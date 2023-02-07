@@ -136,7 +136,7 @@ namespace carditnow.Models
 
     public class customerauth
     {
-        public string customerid { get; set; }        
+        public string email { get; set; }        
     }
 
     public class customerlist

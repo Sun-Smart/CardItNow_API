@@ -77,7 +77,16 @@ namespace carditnow.Services
                     var result = connection.Query<dynamic>(SQL, parameters);
                     connection.Close();
                     connection.Dispose();
-                    return result;
+                    //return result;
+                    
+                        var result1 = new
+                        {
+                            status = "success",
+                            data = result,   /* Application-specific data would go here. */
+                            message = "succesfully get record" /* Or optional success message */
+                        };
+                        return JsonConvert.SerializeObject(result1);
+                    
                 }
             }
             catch (Exception ex)
@@ -256,6 +265,7 @@ namespace carditnow.Services
 
 
         //saving of record
+        [Authorize]
         public dynamic Save_avatarmaster(string token, avatarmaster obj_avatarmaster)
         {
             _logger.LogInfo("Saving: Save_avatarmaster(string token,avatarmaster obj_avatarmaster) ");
@@ -327,6 +337,7 @@ namespace carditnow.Services
 
         // DELETE: avatarmaster/5
         //delete process
+        [Authorize]
         public dynamic Delete(int id)
         {
             try
@@ -416,11 +427,25 @@ namespace carditnow.Services
                             var output = inst_cd.ExecuteNonQuery();
                             if (output > 0)
                             {
-                                return "Success";
+                                //return "Success";
+                                var result1 = new
+                                {
+                                    status = "success",
+                                    data = "",   /* Application-specific data would go here. */
+                                    message = "succesfully get record" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
                             }
                             else
                             {
-                                return "fail";
+                                //return "fail";
+                                var result1 = new
+                                {
+                                    status = "fail",
+                                    data = "",   /* Application-specific data would go here. */
+                                    message = "succesfully get record" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
                             }
                         }
 
@@ -453,11 +478,25 @@ namespace carditnow.Services
                     var output = inst_cd.ExecuteNonQuery();
                     if (output > 0)
                     {
-                        return  "Success";
+                        //return  "Success";
+                        var result1 = new
+                        {
+                            status = "success",
+                            data = "",   /* Application-specific data would go here. */
+                            message = "succesfully get record" /* Or optional success message */
+                        };
+                        return JsonConvert.SerializeObject(result1);
                     }
                     else
                     {
-                        return "fail";
+                        //return "fail";
+                        var result1 = new
+                        {
+                            status = "success",
+                            data = "",   /* Application-specific data would go here. */
+                            message = "succesfully get record" /* Or optional success message */
+                        };
+                        return JsonConvert.SerializeObject(result1);
                     }
                 }
             }
@@ -497,10 +536,24 @@ namespace carditnow.Services
 
                             });
                         }
+                        var result1 = new
+                        {
+                            status = "success",
+                            data = sList,   /* Application-specific data would go here. */
+                            message = "succesfully get record" /* Or optional success message */
+                        };
+                        return JsonConvert.SerializeObject(result1);
 
                     }
                     else
                     {
+                        var result1 = new
+                        {
+                            status = "fail",
+                            data = "",   /* Application-specific data would go here. */
+                            message = "not succesfully get record" /* Or optional success message */
+                        };
+                        return JsonConvert.SerializeObject(result1);
                     }
                 }
 
@@ -509,7 +562,7 @@ namespace carditnow.Services
             {
                 //Log error
             }
-            return sList;
+            return null;
         }
 
     }

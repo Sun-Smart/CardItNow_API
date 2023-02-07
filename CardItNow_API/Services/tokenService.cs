@@ -60,6 +60,7 @@ namespace nTireBO.Services
 
         public string BuildToken(UserCredential user)
         {
+            
             var claims = new[] {
                 new Claim ("companyid", user.companyid == null? "": user.companyid.ToString ()),
                 new Claim ("pkcol", user.pkcol == null? "": user.pkcol),

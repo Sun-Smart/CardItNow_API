@@ -46,7 +46,7 @@ namespace carditnow.Controllers
 
 
         // GET: api/avatarmaster
-        [Authorize]
+        //[Authorize]
         [HttpGet]
         public async Task<ActionResult<dynamic>> Get_avatarmasters()
         {

@@ -28,5 +28,12 @@
        // public string avatarURL { get; set; }
     }
 
+    public class forgotpass
+    {
+        public string email { get; set; }
+        public string customerid { get; set; }
+        public string otp { get; set; }
+        public string tpin { get; set; }
+    }
 
 }

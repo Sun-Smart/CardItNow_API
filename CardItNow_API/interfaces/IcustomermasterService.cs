@@ -17,7 +17,7 @@ namespace carditnow.Services
         IEnumerable<Object> GetListBy_customerid(int customerid);
         string SendOTP(string email);
         string ProcessDocument(processdocument model);
-       public string UpdateProfileInformation(string email, string firstname, string lastname, string mobile, DateTime dateofbirth, string address, int geoid, int cityid, string postalcode, DateTime idissuedate, DateTime idexpirydate);        
+       public string UpdateProfileInformation(string email, string firstname, string lastname, string mobile, DateTime dateofbirth, string address, int geoid, int cityid, string postalcode, DateTime idissuedate, DateTime idexpirydate,string nickname);        
        
         string PasswordSet(string email,string password);
         string SetPinConfig(string email, string pin);

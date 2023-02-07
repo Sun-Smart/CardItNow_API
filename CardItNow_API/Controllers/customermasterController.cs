@@ -217,13 +217,13 @@ namespace carditnow.Controllers
         }
 
         [HttpPost("UpdateProfileInformation")]
-        public async Task<ActionResult<IEnumerable<Object>>> UpdateProfileInformation(string email, string firstname, string lastname, string mobile, DateTime dateofbirth, string address, int geoid, int cityid, string postalcode, DateTime idissuedate, DateTime idexpirydate)
+        public async Task<ActionResult<IEnumerable<Object>>> UpdateProfileInformation(string email, string firstname, string lastname, string mobile, DateTime dateofbirth, string address, int geoid, int cityid, string postalcode, DateTime idissuedate, DateTime idexpirydate,string nickname)
         {
             try
             {
                 if (!string.IsNullOrEmpty(email))
                 {
-                    var result = _customermasterService.UpdateProfileInformation(email, firstname, lastname, mobile, dateofbirth, address, geoid, cityid, postalcode, idissuedate, idexpirydate);
+                    var result = _customermasterService.UpdateProfileInformation(email, firstname, lastname, mobile, dateofbirth, address, geoid, cityid, postalcode, idissuedate, idexpirydate,nickname);
                     return Ok(result);
                 }
                 else

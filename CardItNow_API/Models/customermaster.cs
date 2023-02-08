@@ -38,7 +38,7 @@ namespace carditnow.Models
         public string password { get; set; }
 
         [Column(TypeName = "string")]
-        public string Tpin { get; set; }
+        public string tpin { get; set; }
         [Column(TypeName = "string")]
         public string mobile { get; set; }
         [Column(TypeName = "DateTime")]
@@ -95,17 +95,18 @@ namespace carditnow.Models
 
     public class ProfileInformationUpdate
     {
-       public string email { get; set; }
-       public string firstname { get; set;}
-       public string lastname { get; set; }
-       public string mobile { get; set; }
-       public DateTime dateofbirth { get; set; }
-       public string address { get; set; }
-       public int geoid { get; set; }
-       public int cityid { get; set; }
-       public string postalcode { get; set; }
-       public DateTime idissuedate { get; set; }
-       public DateTime idexpirydate { get; set;}
+        public string email { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+        public string nickname { get; set; }
+        public string mobile { get; set; }
+        public DateTime dateofbirth { get; set; }
+        public string address { get; set; }
+        public int geoid { get; set; }
+        public int cityid { get; set; }
+        public string postalcode { get; set; }
+        public DateTime idissuedate { get; set; }
+        public DateTime idexpirydate { get; set; }
 
     }
     public class customermasterView
@@ -136,7 +137,7 @@ namespace carditnow.Models
 
     public class customerauth
     {
-        public string email { get; set; }        
+        public string email { get; set; }
     }
 
     public class customerlist

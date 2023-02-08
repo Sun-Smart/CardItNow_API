@@ -273,7 +273,7 @@ namespace carditnow.Services
                     if (dbEntry != null)
                     {
                         dbEntry.password = password.ToString();
-                        dbEntry.Tpin = password.ToString();
+                        dbEntry.tpin = password.ToString();
                         dbEntry.updateddate = DateTime.Now;
                         dbEntry.updatedby = 0;
                         dbEntry.mode = "R";
@@ -297,7 +297,7 @@ namespace carditnow.Services
                     cus_master.mobile = "000000";
                     cus_master.createddate = DateTime.Now;
                     cus_master.password = password.ToString();
-                    cus_master.Tpin = password.ToString();
+                    cus_master.tpin = password.ToString();
                     _context.customermasters.Add(cus_master);
                     //OTPUpdated = _context.SaveChanges() > 0;
                     _context.SaveChanges();
@@ -332,7 +332,7 @@ namespace carditnow.Services
                     var dbEntry = _context.customermasters.Find(customers.FirstOrDefault().customerid);
                     if (dbEntry != null)
                     {
-                        dbEntry.Tpin = pin.ToString();
+                        dbEntry.tpin = pin.ToString();
                         dbEntry.password = pin.ToString();
                         dbEntry.updateddate = DateTime.Now;
                         dbEntry.updatedby = 0;
@@ -352,7 +352,7 @@ namespace carditnow.Services
                     cus_master.type = "c";
                     cus_master.mobile = "000000";
                     cus_master.createddate = DateTime.Now;
-                    cus_master.Tpin = pin.ToString();
+                    cus_master.tpin = pin.ToString();
                     cus_master.password = pin.ToString();
                     _context.customermasters.Add(cus_master);
                     //OTPUpdated = _context.SaveChanges() > 0;
@@ -495,7 +495,7 @@ namespace carditnow.Services
         }
 
 
-        public string UpdateProfileInformation(string email, string firstname, string lastname, string mobile, DateTime dateofbirth, string address, int geoid, int cityid, string postalcode, DateTime idissuedate, DateTime idexpirydate, string nickname)
+        public dynamic UpdateProfileInformation(ProfileInformationUpdate model)
         {
             try
             {
@@ -503,19 +503,19 @@ namespace carditnow.Services
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
                     connection.Open();
-                    var get_cuscode = @"select customerid from customermasters where email='" + email + "' ";
+                    var get_cuscode = @"select customerid from customermasters where email='" + model.email + "' ";
                     var result = connection.ExecuteScalar(get_cuscode, connection);
                     if ((result != null) || (Convert.ToInt32(result) > 0))
                     {
 
                         NpgsqlCommand update_cus = new NpgsqlCommand(@"update customermasters set firstname=@firstname,lastname=@lastname,mobile=@mobile,dob=@dob,nickname=@nickname where email=@email", connection);
                         update_cus.CommandType = CommandType.Text;
-                        update_cus.Parameters.AddWithValue("@email", email);
-                        update_cus.Parameters.AddWithValue("@firstname", firstname);
-                        update_cus.Parameters.AddWithValue("@lastname", lastname);
-                        update_cus.Parameters.AddWithValue("@mobile", mobile);
-                        update_cus.Parameters.AddWithValue("@dob", dateofbirth);
-                        update_cus.Parameters.AddWithValue("@nickname", nickname);
+                        update_cus.Parameters.AddWithValue("@email", model.email);
+                        update_cus.Parameters.AddWithValue("@firstname", model.firstname);
+                        update_cus.Parameters.AddWithValue("@lastname", model.lastname);
+                        update_cus.Parameters.AddWithValue("@mobile", model.mobile);
+                        update_cus.Parameters.AddWithValue("@dob", model.dateofbirth);
+                        update_cus.Parameters.AddWithValue("@nickname", model.nickname);
                         int rowAfftect = update_cus.ExecuteNonQuery();
                         var get_customerdetails = @"select * from customerdetails where customerid='" + result + "'";
                         var result_customerdetails = connection.ExecuteScalar(get_customerdetails, connection);
@@ -526,13 +526,13 @@ namespace carditnow.Services
                             createddate=@createddate,nickname=@nickname where customerid=@customerid", connection);
                             update_cus.CommandType = CommandType.Text;
                             update_cus.Parameters.AddWithValue("@customerid", result);
-                            update_cus.Parameters.AddWithValue("@address", address);
+                            update_cus.Parameters.AddWithValue("@address", model.address);
                             update_cus.Parameters.AddWithValue("@geoid", 1);
                             update_cus.Parameters.AddWithValue("@cityid", 2);
-                            update_cus.Parameters.AddWithValue("@postalcode", postalcode);
-                            update_cus.Parameters.AddWithValue("@idissudate", idissuedate);
-                            update_cus.Parameters.AddWithValue("@idexpirydate", idexpirydate);
-                            update_cus.Parameters.AddWithValue("@nickname", nickname);
+                            update_cus.Parameters.AddWithValue("@postalcode", model.postalcode);
+                            update_cus.Parameters.AddWithValue("@idissudate", model.idissuedate);
+                            update_cus.Parameters.AddWithValue("@idexpirydate", model.idexpirydate);
+                            update_cus.Parameters.AddWithValue("@nickname", model.nickname);
                             update_cus.Parameters.AddWithValue("@createdby", result);
                             update_cus.Parameters.AddWithValue("@createddate", DateTime.Now);
                             //connection.Open();
@@ -566,12 +566,12 @@ namespace carditnow.Services
                             //var Insert_customerdocument = "insert into customerdetails values";
                             NpgsqlCommand inst_cd = new NpgsqlCommand("insert into customerdetails (customerid,address,geoid,cityid,postalcode,idissuedate,idexpirydate) values(@customerid,@address,@geoid,@cityid,@postalcode,@idissudate,@idexpirydate)", connection);
                             inst_cd.Parameters.AddWithValue("@customerid", result);
-                            inst_cd.Parameters.AddWithValue("@address", address);
+                            inst_cd.Parameters.AddWithValue("@address", model.address);
                             inst_cd.Parameters.AddWithValue("@geoid", 1);
                             inst_cd.Parameters.AddWithValue("@cityid", 2);
-                            inst_cd.Parameters.AddWithValue("@postalcode", postalcode);
-                            inst_cd.Parameters.AddWithValue("@idissudate", idissuedate);
-                            inst_cd.Parameters.AddWithValue("@idexpirydate", idexpirydate);
+                            inst_cd.Parameters.AddWithValue("@postalcode", model.postalcode);
+                            inst_cd.Parameters.AddWithValue("@idissudate", model.idissuedate);
+                            inst_cd.Parameters.AddWithValue("@idexpirydate", model.idexpirydate);
                             //update_cus.Parameters.AddWithValue("@nickname", nickname);
                             inst_cd.Parameters.AddWithValue("@createdby", result);
                             inst_cd.Parameters.AddWithValue("@createddate", DateTime.Now);

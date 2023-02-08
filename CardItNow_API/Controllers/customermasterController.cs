@@ -217,13 +217,13 @@ namespace carditnow.Controllers
         }
 
         [HttpPost("UpdateProfileInformation")]
-        public async Task<ActionResult<IEnumerable<Object>>> UpdateProfileInformation(string email, string firstname, string lastname, string mobile, DateTime dateofbirth, string address, int geoid, int cityid, string postalcode, DateTime idissuedate, DateTime idexpirydate,string nickname)
+        public dynamic UpdateProfileInformation(ProfileInformationUpdate model)
         {
             try
             {
-                if (!string.IsNullOrEmpty(email))
+                if (!string.IsNullOrEmpty(model.email))
                 {
-                    var result = _customermasterService.UpdateProfileInformation(email, firstname, lastname, mobile, dateofbirth, address, geoid, cityid, postalcode, idissuedate, idexpirydate,nickname);
+                    var result = _customermasterService.UpdateProfileInformation(model);
                     return Ok(result);
                 }
                 else

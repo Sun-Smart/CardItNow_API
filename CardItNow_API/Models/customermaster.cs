@@ -145,5 +145,13 @@ namespace carditnow.Models
         public string email { get; set; }
         public string accescode { get; set; }
     }
+
+    public class suspendAccount
+    {
+        public int customerid { get; set; }
+        //public string customername { get; set; }
+        public string passcode { get; set; }
+
+    }
 }
 

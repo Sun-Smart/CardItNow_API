@@ -931,6 +931,120 @@ s.avatarname as defaultavatardesc from GetTable(NULL::public.customermasters,@ci
             //return sList;
             return null;
         }
+
+        public dynamic account_Suspend(suspendAccount model)
+        {
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    var get_cuscode = @"select password from customermasters where customerid='" + model.customerid + "' ";
+                    var result = connection.ExecuteScalar(get_cuscode, connection);
+                    if(!string.IsNullOrEmpty(result.ToString()))
+                    { 
+                        if(model.passcode==result.ToString())
+                        {
+                            NpgsqlCommand update_customer_status = new NpgsqlCommand("update customermasters set status='S' where customerid='" + model.customerid + "'", connection);
+                            var updateresult = update_customer_status.ExecuteNonQuery().ToString();
+                            if(int.Parse(updateresult)>0)
+                            {
+                                var result1 = new
+                                {
+                                    status = "success",
+                                    data = "",/* Application-specific data would go here. */
+                                    message = "Account suspended succesfully." /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
+                            }
+                        }
+                        else
+                        {
+                            var result1 = new
+                            {
+                                status = "fail",
+                                data = "",/* Application-specific data would go here. */
+                                message = "The customer passcode missmatch." /* Or optional success message */
+                            };
+                            return JsonConvert.SerializeObject(result1);
+                        }
+
+                    }
+                    else
+                    {
+                        var result1 = new
+                        {
+                            status = "fail",
+                            data = "null",/* Application-specific data would go here. */
+                            message = "Customer id is required." /* Or optional success message */
+                        };
+                        return JsonConvert.SerializeObject(result1);
+                    }
+
+                }
+            }
+            catch(Exception ex)
+            { }
+
+                return null;
+        }
+
+        public dynamic account_Suspend_Reactive(suspendAccount model)
+        {
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    var get_cuscode = @"select status from customermasters where customerid='" + model.customerid + "' ";
+                    var result = connection.ExecuteScalar(get_cuscode, connection);
+                    if (!string.IsNullOrEmpty(result.ToString()))
+                    {
+                        if (result.ToString()=="S")
+                        {
+                            NpgsqlCommand update_customer_status = new NpgsqlCommand("update customermasters set status='A' where customerid='" + model.customerid + "'", connection);
+                            var updateresult = update_customer_status.ExecuteNonQuery().ToString();
+                            if (int.Parse(updateresult) > 0)
+                            {
+                                var result1 = new
+                                {
+                                    status = "success",
+                                    data = "",/* Application-specific data would go here. */
+                                    message = "Account suspended succesfully." /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
+                            }
+                        }
+                        else
+                        {
+                            var result1 = new
+                            {
+                                status = "fail",
+                                data = "",/* Application-specific data would go here. */
+                                message = "The customer account not suspended,please contact CarditNow tech team." /* Or optional success message */
+                            };
+                            return JsonConvert.SerializeObject(result1);
+                        }
+
+                    }
+                    else
+                    {
+                        var result1 = new
+                        {
+                            status = "fail",
+                            data = "null",/* Application-specific data would go here. */
+                            message = "Customer id is required." /* Or optional success message */
+                        };
+                        return JsonConvert.SerializeObject(result1);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            { }
+
+            return null;
+        }
     }
 }
 

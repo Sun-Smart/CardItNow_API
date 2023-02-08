@@ -18,8 +18,8 @@ namespace CardItNow.Services
         dynamic SaveSocial(Savesocial model);
         string forgotpass(Savesocial model);
         dynamic Customerauth(customerauth model);
-
         string ChangePass(changepasscode model);
+        string otpvalidate(verify_otp model);
 
     }
 }

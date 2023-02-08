@@ -27,11 +27,17 @@
         public string mediatype { get; set; }
        // public string avatarURL { get; set; }
     }
+
+    public class verify_otp
+    {
+        public string email { get; set; }
+        public string otp { get; set; }
+    }
     public class changepasscode
     {
         public string email { get; set; }
         //public int customerid { get; set; }
-        public string otp { get; set; }
+        public string pin { get; set; }
     }
 
     public class validatepass

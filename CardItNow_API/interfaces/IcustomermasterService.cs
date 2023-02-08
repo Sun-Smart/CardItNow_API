@@ -27,7 +27,10 @@ namespace carditnow.Services
         dynamic Save_customermaster(string token, customermaster obj_customermaster);
         dynamic Delete(int id);
         dynamic Customerauth(customerauth model);
-        
+
+        dynamic account_Suspend(suspendAccount model);
+        dynamic account_Suspend_Reactive(suspendAccount model);
+
 
     }
 }

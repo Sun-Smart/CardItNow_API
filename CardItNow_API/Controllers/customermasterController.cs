@@ -256,6 +256,7 @@ namespace carditnow.Controllers
         }
 
         // GET: api/customermaster/5
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<customermaster>> Get_customermaster(int id)
         {
@@ -500,6 +501,53 @@ namespace carditnow.Controllers
             var result = _customermasterService.Customerauth(model);
             return result;
 
+        }
+        [Authorize]
+        [HttpPost]
+        [Route("AccountSuspend")]
+        public dynamic customeraccountsuspend(suspendAccount model)
+        {
+            if( (model.customerid!=null) && (Convert.ToString(model.customerid)!=""))
+            {
+                var result = _customermasterService.account_Suspend(model);
+                return result;
+            }
+            else
+            {
+                var result1 = new
+                {
+                    status = "fail",
+                    data = "null",/* Application-specific data would go here. */
+                    message = "The customer id is null or empty." /* Or optional success message */
+                };
+                return JsonConvert.SerializeObject(result1);
+            }
+            return null;
+        }
+
+        //account_Suspend_Reactive
+
+        [Authorize]
+        [HttpPost]
+        [Route("AccountReactive")]
+        public dynamic account_Suspend_Reactive(suspendAccount model)
+        {
+            if ((model.customerid.ToString() != null) && (Convert.ToString(model.customerid) != ""))
+            {
+                var result = _customermasterService.account_Suspend_Reactive(model);
+                return result;
+            }
+            else
+            {
+                var result1 = new
+                {
+                    status = "fail",
+                    data = "null",/* Application-specific data would go here. */
+                    message = "The customer id is null or empty." /* Or optional success message */
+                };
+                return JsonConvert.SerializeObject(result1);
+            }
+            return null;
         }
     }
 }

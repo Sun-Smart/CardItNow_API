@@ -415,6 +415,56 @@ namespace CardItNow.Services
             }
         }
 
+        public string otpvalidate(verify_otp model)
+        {
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    NpgsqlCommand CheckExists_customer = new NpgsqlCommand("select otp from customermasters where email='" +model.email + "'", connection);
+                    NpgsqlDataAdapter get_customer = new NpgsqlDataAdapter(CheckExists_customer);
+                    DataTable dt = new DataTable();
+                    get_customer.Fill(dt);
+                    if (dt.Rows.Count > 0)
+                    {
+                        if (!string.IsNullOrEmpty(dt.Rows[0][0].ToString()))
+                        {
+                            var t = dt.Rows[0][0].ToString();
+                            if (t == model.otp)
+                            {
+                                var result1 = new
+                                {
+                                    status = "success",
+                                    data = "",   /* Application-specific data would go here. */
+                                    message = "OTP verified successfully" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
+                            }
+                            else
+                            {
+                                {
+                                    var result1 = new
+                                    {
+                                        status = "fail",
+                                        data = "",   /* Application-specific data would go here. */
+                                        message = "OTP missmatch" /* Or optional success message */
+                                    };
+                                    return JsonConvert.SerializeObject(result1);
+                                }
+                            }
+
+                            connection.Close();
+                            connection.Dispose();
+                        }
+                    }
+                }
+            }
+            catch
+            { }
+            return null;
+        }
+
         public string ChangePass(changepasscode model)
         {
             try
@@ -433,11 +483,11 @@ namespace CardItNow.Services
                     {
                         if (!string.IsNullOrEmpty(dt.Rows[0][0].ToString()))
                         {
-                            var t = dt.Rows[0][1].ToString();
-                            if (t != model.otp)
+                            var t = dt.Rows[0][0].ToString();
+                            if (t != model.pin)
                             {
 
-                                NpgsqlCommand update_loginPass_Code = new NpgsqlCommand("update customermasters set password='" + model.otp + "',tpin='" + model.otp + "' where email='" + model.email + "'", connection);
+                                NpgsqlCommand update_loginPass_Code = new NpgsqlCommand("update customermasters set password='" + model.pin + "',tpin='" + model.pin + "' where email='" + model.email + "'", connection);
                                 var update_result = update_loginPass_Code.ExecuteNonQuery().ToString();
                                 if (int.Parse(update_result) > 0)
                                 {
@@ -445,7 +495,7 @@ namespace CardItNow.Services
                                     {
                                         status = "success",
                                         data = "",   /* Application-specific data would go here. */
-                                        message = "OTP verified successfully" /* Or optional success message */
+                                        message = "Passcode Changed successfully" /* Or optional success message */
                                     };
                                     return JsonConvert.SerializeObject(result1);
                                 }
@@ -463,7 +513,7 @@ namespace CardItNow.Services
                         }
                         else
                         {
-                            NpgsqlCommand update_loginPass_Code = new NpgsqlCommand("update customermasters set password='" + model.otp + "',tpin='" + model.otp + "' where email='" + model.email + "'", connection);
+                            NpgsqlCommand update_loginPass_Code = new NpgsqlCommand("update customermasters set password='" + model.pin + "',tpin='" + model.pin + "' where email='" + model.email + "'", connection);
                             var update_result = update_loginPass_Code.ExecuteNonQuery().ToString();
                             if (int.Parse(update_result) > 0)
                             {
@@ -493,6 +543,6 @@ namespace CardItNow.Services
             throw new NotImplementedException();
         }
 
-        
+
     }
 }

@@ -4,6 +4,7 @@ using CardItNow.Services;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,6 +92,27 @@ namespace CardItNow.Controllers
             var result = _commonService.ChangePass(model);
             return result;
 
+        }
+        [HttpPost]
+        [Route("ForgotOTPvalidate")]
+        public string otpvalidate(verify_otp model)
+        {
+            if (!string.IsNullOrEmpty(model.email))
+            {
+                var result = _commonService.otpvalidate(model);
+                return result;
+            }
+            else
+            {
+                var result1 = new
+                {
+                    status = "fail",
+                    data = "",   /* Application-specific data would go here. */
+                    message = "Register email id required" /* Or optional success message */
+                };
+                return JsonConvert.SerializeObject(result1);
+            }
+           
         }
     }
 }

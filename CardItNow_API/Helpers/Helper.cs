@@ -141,7 +141,10 @@ namespace SunSmartnTireProducts.Helpers
         //Server=127.0.0.1;Port=5432;User Id=postgres;Password=Smart123$;Database=SmartOffice
         //31697
         static string pwd = "ThePasswordToDecryptAndEncryptTheFile".ToString();
-        public static string Connectionstring = "Server=172.107.203.228;Port=5432;User Id=postgres;Password=Smart@123$;Database=CardItNow;";
+       // public static string Connectionstring = "Server=172.107.203.228;Port=5432;User Id=postgres;Password=Smart@123$;Database=CardItNow;";
+
+
+        public static string Connectionstring = "Server=172.107.203.171;Port=5432;User Id=postgres;Password=123456;Database=CarditNow;";
         //public static ILuceneService luceneservice=new LuceneService();
 
 

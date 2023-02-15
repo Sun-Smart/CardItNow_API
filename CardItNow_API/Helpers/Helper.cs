@@ -144,7 +144,7 @@ namespace SunSmartnTireProducts.Helpers
        // public static string Connectionstring = "Server=172.107.203.228;Port=5432;User Id=postgres;Password=Smart@123$;Database=CardItNow;";
 
 
-        public static string Connectionstring = "Server=172.107.203.171;Port=5432;User Id=postgres;Password=123456;Database=CarditNow;";
+        public static string Connectionstring = "Server=172.107.203.171;Port=5432;User Id=postgres;Password=123456;Database=CardItNow;";
         //public static ILuceneService luceneservice=new LuceneService();
 
 
@@ -488,7 +488,8 @@ namespace SunSmartnTireProducts.Helpers
 
                                 emailClient.Authenticate("srimathi@sunsmartglobal.com", "sender@123$");
                                 */
-                message.From.Add(new MailboxAddress("SunSmart", "support@sunsmartglobal.com"));
+               // message.From.Add(new MailboxAddress("SunSmart", "support@sunsmartglobal.com"));
+                message.From.Add(new MailboxAddress("SunSmart", "pprakash@sunsmartglobal.com"));
 
                 message.Subject = "Notify from " + fromname;
                 //We will say we are sending HTML. But there are options for plaintext etc. 
@@ -506,7 +507,8 @@ namespace SunSmartnTireProducts.Helpers
                     //Remove any OAuth functionality as we won't be using it. 
                     emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
 
-                    emailClient.Authenticate("support@sunsmartglobal.com", "ecqsufegzoucluji");
+                   // emailClient.Authenticate("support@sunsmartglobal.com", "ecqsufegzoucluji");
+                    emailClient.Authenticate("pprakash@sunsmartglobal.com", "dtrhxbwaorkbtyia");
 
                     emailClient.Send(message);
 

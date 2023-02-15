@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Carditnow\\CardItNow_API\\CardItNow_API_new\\CardItNow_API\\CardItNow.csproj": {}
+    "E:\\00_DevSource\\MobileApp\\GitHub\\CardItNow\\CardItNow_API\\CardItNow_API\\CardItNow.csproj": {}
   },
   "projects": {
-    "E:\\Carditnow\\CardItNow_API\\CardItNow_API_new\\CardItNow_API\\CardItNow.csproj": {
+    "E:\\00_DevSource\\MobileApp\\GitHub\\CardItNow\\CardItNow_API\\CardItNow_API\\CardItNow.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Carditnow\\CardItNow_API\\CardItNow_API_new\\CardItNow_API\\CardItNow.csproj",
+        "projectUniqueName": "E:\\00_DevSource\\MobileApp\\GitHub\\CardItNow\\CardItNow_API\\CardItNow_API\\CardItNow.csproj",
         "projectName": "CardItNow",
-        "projectPath": "E:\\Carditnow\\CardItNow_API\\CardItNow_API_new\\CardItNow_API\\CardItNow.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "E:\\Carditnow\\CardItNow_API\\CardItNow_API_new\\CardItNow_API\\obj\\",
+        "projectPath": "E:\\00_DevSource\\MobileApp\\GitHub\\CardItNow\\CardItNow_API\\CardItNow_API\\CardItNow.csproj",
+        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+        "outputPath": "E:\\00_DevSource\\MobileApp\\GitHub\\CardItNow\\CardItNow_API\\CardItNow_API\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
+        ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
@@ -125,7 +129,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.404\\RuntimeIdentifierGraph.json"
         }
       }
     }

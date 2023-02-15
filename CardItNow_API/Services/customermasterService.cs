@@ -621,8 +621,12 @@ namespace carditnow.Services
             //string _fromemail = @"support@myskillstree.com";
             // string _password = @"SupMyST123";//
 
-            string _fromemail = @"support@sunsmartglobal.com";
-            string _password = @"ecqsufegzoucluji";
+          //  string _fromemail = @"support@sunsmartglobal.com";
+          //  string _password = @"ecqsufegzoucluji";
+
+            string _fromemail = @"pprakash@sunsmartglobal.com";
+            string _password = @"dtrhxbwaorkbtyia";
+
             try
             {
                 MailMessage message = new MailMessage();

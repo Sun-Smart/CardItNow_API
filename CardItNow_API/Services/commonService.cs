@@ -14,6 +14,7 @@ using System.Net.Mail;
 using System.Net;
 using System.Text;
 using carditnow.Models;
+using Dapper;
 
 namespace CardItNow.Services
 {
@@ -22,15 +23,17 @@ namespace CardItNow.Services
         private readonly IConfiguration Configuration;
         private ILoggerManager _logger;
         private IHttpContextAccessor httpContextAccessor;
+        private readonly customerdetailContext _context_cd;
         int cid = 0;
         int uid = 0;
         string uname = "";
         string uidemail = "";
-        public commonService(IConfiguration configuration, ILoggerManager logger, IHttpContextAccessor objhttpContextAccessor)
+        public commonService(IConfiguration configuration, customerdetailContext contextdb, ILoggerManager logger, IHttpContextAccessor objhttpContextAccessor)
         {
             Configuration = configuration;
 
             _logger = logger;
+            _context_cd = contextdb;
             this.httpContextAccessor = objhttpContextAccessor;
             if (httpContextAccessor.HttpContext.User.Claims.Any())
             {
@@ -190,6 +193,13 @@ namespace CardItNow.Services
         {
             try
             {
+                int custid = 0;
+                string custmid = string.Empty;
+                int geonumber = 0;
+                int geid = 0;
+                string geoids = string.Empty;
+               // geid = Convert.ToInt32(geoid);
+
                 _logger.LogInfo("Getting into Save social api Type Login");
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
@@ -205,7 +215,8 @@ namespace CardItNow.Services
                         inst_social_media.Parameters.AddWithValue("@firstname", model.firstname);
                         inst_social_media.Parameters.AddWithValue("@lastname", model.lastname);
                         inst_social_media.Parameters.AddWithValue("@email", model.email);
-                        inst_social_media.Parameters.AddWithValue("@mobile", "000000");
+                       // inst_social_media.Parameters.AddWithValue("@mobile", "000000");
+                        inst_social_media.Parameters.AddWithValue("@mobile", model.mobile);
                         if (model.mediatype == "Google")
                         {
                             inst_social_media.Parameters.AddWithValue("@googleid", model.socialid);
@@ -226,12 +237,43 @@ namespace CardItNow.Services
                         inst_social_media.Parameters.AddWithValue("@createddate", DateTime.Now);
                         inst_social_media.Parameters.AddWithValue("@createdby", 1);
                         var result = inst_social_media.ExecuteNonQuery().ToString();
+
+                       
+                            var parameters_customerid = new { @cid = cid, @uid = uid, @email = model.email };
+                            var SQL1 = "  select pk_encode(m.customerid) as pkcol,m.customerid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
+                            var result2 = connection.Query<dynamic>(SQL1, parameters_customerid);
+                            var obj_cutomerid = result2.FirstOrDefault();
+                            custid = obj_cutomerid.customerid;
+                            geonumber = obj_cutomerid.geoid;
+                            custmid = custid.ToString();
+                            geoids = geonumber.ToString();
+
+
+                        var cus_detail = new customerdetail();
+                        cus_detail.geoid = model.geoid;
+                        cus_detail.customerid = custid;
+                        _context_cd.customerdetails.Add(cus_detail);
+                        _context_cd.SaveChanges();
+
+
+                        var parameters_customerid2 = new { @cid = cid, @uid = uid, @email = model.email };
+                        var SQL2 = "  select pk_encode(m.customerid) as pkcol,m.customerid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
+                        var result3 = connection.Query<dynamic>(SQL2, parameters_customerid);
+                        var obj_cutomerid2 = result3.FirstOrDefault();
+                        custid = obj_cutomerid2.customerid;
+                        geonumber = obj_cutomerid2.geoid;
+                        custmid = custid.ToString();
+                        geoids = geonumber.ToString();
+
+
                         if (int.Parse(result) > 0)
                         {
                             var result1 = new
                             {
                                 status = "success",
-                                data = "null",/* Application-specific data would go here. */
+                                data = "null",
+                                customerid= custmid,
+                                geoid= geoids,/* Application-specific data would go here. */
                                 message = "Succesfully saved record" /* Or optional success message */
                             };
                             return JsonConvert.SerializeObject(result1);

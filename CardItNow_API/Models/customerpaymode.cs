@@ -42,6 +42,15 @@ namespace carditnow.Models
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
         public DateTime? updateddate{ get; set; }
+
+
+        [NotMapped]
+        [Column(TypeName = "string")]
+        public string customertype { get; set; }
+
+        [NotMapped]
+        [Column(TypeName = "string")]
+        public string Type { get; set; }
     }
     public class customerpaymodeView
     {

@@ -82,6 +82,13 @@ namespace carditnow.Models
 
         [Column(TypeName = "string")]
         public string otp { get; set; }
+
+        [NotMapped]
+        [Column(TypeName = "string")]
+        public string geoid { get; set; }
+
+        [Column(TypeName = "bool")]
+        public bool customervisible { get; set; }
     }
 
     public class processdocument

@@ -344,6 +344,15 @@ s.cityname as cityiddesc,
             }
         }
 
+
+       
+
+
+
+
+
+
+
         public ProcessOCRResposeView ProcessOCR(customerdetail model)        
         {
             //Save_customerdetail(null,model);

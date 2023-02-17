@@ -329,6 +329,15 @@ namespace carditnow.Controllers
             }
         }
 
+
+       
+
+
+
+
+
+
+
         // DELETE: api/customerdetail/5
         [HttpDelete]
         [Route("{id}")]

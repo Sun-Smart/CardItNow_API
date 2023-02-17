@@ -72,6 +72,32 @@ namespace nTireBO.Models
         public string finyeardesc { get; set; }
 
         public string status { get; set; }
+
+
+        [Column(TypeName = "string")]
+        public string firstname { get; set; }
+
+
+        [Column(TypeName = "string")]
+        public string lastname { get; set; }
+
+
+        [Column(TypeName = "string")]
+        public string nickname { get; set; }
+
+
+        [Column(TypeName = "int")]
+        public int geoid { get; set; }
+
+
+        [Column(TypeName = "string")]
+        public string profileimage { get; set; }
+
+        [Column(TypeName = "string")]
+        public string customertype { get; set; }
+
+        [Column(TypeName = "string")]
+        public string mobile { get; set; }
     }
 
     public class LoginModel

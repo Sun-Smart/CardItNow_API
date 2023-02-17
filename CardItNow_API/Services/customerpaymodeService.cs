@@ -26,6 +26,8 @@ using System.Text;
 using LoggerService;
 using nTireBO.Services;
 using carditnow.Services;
+using CardItNow.Services;
+using CardItNow.ViewModel;
 
 namespace carditnow.Services
 {
@@ -329,44 +331,81 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
                 _logger.LogInfo("Getting into SaveCutomerCardDeatils api");
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
+                    string state = string.Empty;
+                    string CardNoMasked = string.Empty;
                     connection.Open();
+
+
+
+                    NpgsqlCommand upd_customermaster = new NpgsqlCommand("update customermasters set mode=@mode,type=@type where customerid=@customerid", connection);
+                    upd_customermaster.Parameters.AddWithValue("@customerid", obj_customerpaymode.customerid);
+                    upd_customermaster.Parameters.AddWithValue("@mode", obj_customerpaymode.customertype);
+                    upd_customermaster.Parameters.AddWithValue("@type", obj_customerpaymode.Type);
+                    int result_upd = upd_customermaster.ExecuteNonQuery();
+
+
+
+
+
+
+
                     var get_cuscode = @"select cardnumber from customerpaymodes where customerid='" + obj_customerpaymode.customerid + "' ";
                     var result = connection.ExecuteScalar(get_cuscode, connection);
                     if (result == null)
                     {
-                        if (!string.IsNullOrEmpty(obj_customerpaymode.cardnumber))
+                        //verify card shy
+
+                        var m = new CSCreateInstrumentIdentifierCardRequestViewModel();
+                        m.CardNo = obj_customerpaymode.cardnumber;
+
+                        var obj = new CyberSourceHelperService().CreateInstrumentIdentifierCard(m);
+                        state = obj.State.ToString();
+                        CardNoMasked = obj.CardNoMasked.ToString();
+                        //end
+                        if (state=="ACTIVE")
                         {
-                            MaskedNumber(obj_customerpaymode.cardnumber);
-                            NpgsqlCommand customer_card = new NpgsqlCommand("insert into customerpaymodes (customerid,uid,cardnumber,cardname,expirydate,bankname,ibannumber,status,createdby,createddate,updatedby,updateddate,carddefault)  values(@customerid,@uid,@cardnumber,@cardname,@expirydate,@bankname," +
-                                "@ibannumber,@status,@createdby,@createddate,@updatedby,@updateddate,@carddefault)", connection);
-                            customer_card.Parameters.AddWithValue("@customerid", obj_customerpaymode.customerid);
-                            customer_card.Parameters.AddWithValue("@uid", obj_customerpaymode.uid);
-                            customer_card.Parameters.AddWithValue("@cardnumber", sb.ToString());
-                            // customer_card.Parameters.AddWithValue("@cardname", obj_customerpaymode.cardname);
-                            customer_card.Parameters.AddWithValue("@cardname", obj_customerpaymode.cardname);
-                            customer_card.Parameters.AddWithValue("@expirydate", obj_customerpaymode.expirydate);
-                            customer_card.Parameters.AddWithValue("@bankname", obj_customerpaymode.bankname);
-                            customer_card.Parameters.AddWithValue("@ibannumber", obj_customerpaymode.ibannumber);
-                            customer_card.Parameters.AddWithValue("@status", "A");
-                            customer_card.Parameters.AddWithValue("@createdby", obj_customerpaymode.customerid);
-                            customer_card.Parameters.AddWithValue("@createddate", DateTime.Now);
-                            customer_card.Parameters.AddWithValue("@updatedby", 0);
-                            customer_card.Parameters.AddWithValue("@updateddate", DateTime.Now);
-                            customer_card.Parameters.AddWithValue("@carddefault", 0);
-                            var output = customer_card.ExecuteNonQuery();
-                            if (output > 0)
+
+
+                            if (!string.IsNullOrEmpty(obj_customerpaymode.cardnumber))
                             {
-                                return "Success";
+                               // MaskedNumber(obj_customerpaymode.cardnumber);
+                                NpgsqlCommand customer_card = new NpgsqlCommand("insert into customerpaymodes (customerid,uid,cardnumber,cardname,expirydate,bankname,ibannumber,status,createdby,createddate,updatedby,updateddate,carddefault)  values(@customerid,@uid,@cardnumber,@cardname,@expirydate,@bankname," +
+                                    "@ibannumber,@status,@createdby,@createddate,@updatedby,@updateddate,@carddefault)", connection);
+                                customer_card.Parameters.AddWithValue("@customerid", obj_customerpaymode.customerid);
+                                customer_card.Parameters.AddWithValue("@uid", obj_customerpaymode.uid);
+                               // customer_card.Parameters.AddWithValue("@cardnumber", sb.ToString());
+                                customer_card.Parameters.AddWithValue("@cardnumber", CardNoMasked);
+                                // customer_card.Parameters.AddWithValue("@cardname", obj_customerpaymode.cardname);
+                                customer_card.Parameters.AddWithValue("@cardname", obj_customerpaymode.cardname);
+                                customer_card.Parameters.AddWithValue("@expirydate", obj_customerpaymode.expirydate);
+                                customer_card.Parameters.AddWithValue("@bankname", obj_customerpaymode.bankname);
+                                customer_card.Parameters.AddWithValue("@ibannumber", obj_customerpaymode.ibannumber);
+                                customer_card.Parameters.AddWithValue("@status", "A");
+                                customer_card.Parameters.AddWithValue("@createdby", obj_customerpaymode.customerid);
+                                customer_card.Parameters.AddWithValue("@createddate", DateTime.Now);
+                                customer_card.Parameters.AddWithValue("@updatedby", 0);
+                                customer_card.Parameters.AddWithValue("@updateddate", DateTime.Now);
+                                customer_card.Parameters.AddWithValue("@carddefault", 0);
+                                var output = customer_card.ExecuteNonQuery();
+                                if (output > 0)
+                                {
+                                    return "Success";
+                                }
+                                else
+                                {
+                                    return "fail";
+                                }
                             }
                             else
                             {
-                                return "fail";
+                                return "Card no missing";
                             }
                         }
                         else
                         {
-                            return "Card no missing";
-                        }
+                            return "Card is inactive";
+                        }    
+                    
                     }
                     else
                     {
@@ -388,34 +427,51 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
 
                         }
 
-                        NpgsqlCommand customer_card = new NpgsqlCommand("insert into customerpaymodes (customerid,uid,cardnumber,cardname,expirydate,bankname,ibannumber,status,createdby,createddate,updatedby,updateddate,carddefault)  values(@customerid,@uid,@cardnumber,@cardname,@expirydate,@bankname," +
-                        "@ibannumber,@status,@createdby,@createddate,@updatedby,@updateddate,@carddefault)", connection);
-                        customer_card.Parameters.AddWithValue("@customerid", obj_customerpaymode.customerid);
-                        customer_card.Parameters.AddWithValue("@uid", obj_customerpaymode.uid);
-                        customer_card.Parameters.AddWithValue("@cardnumber", sb.ToString());
-                        // customer_card.Parameters.AddWithValue("@cardname", obj_customerpaymode.cardname);
-                        customer_card.Parameters.AddWithValue("@cardname", obj_customerpaymode.cardname);
-                        customer_card.Parameters.AddWithValue("@expirydate", obj_customerpaymode.expirydate);
-                        customer_card.Parameters.AddWithValue("@bankname", obj_customerpaymode.bankname);
-                        customer_card.Parameters.AddWithValue("@ibannumber", obj_customerpaymode.ibannumber);
-                        customer_card.Parameters.AddWithValue("@status", "A");
-                        customer_card.Parameters.AddWithValue("@createdby", obj_customerpaymode.customerid);
-                        customer_card.Parameters.AddWithValue("@createddate", DateTime.Now);
-                        customer_card.Parameters.AddWithValue("@updatedby", 0);
-                        customer_card.Parameters.AddWithValue("@updateddate", DateTime.Now);
-                        customer_card.Parameters.AddWithValue("@carddefault", 0);
-                        var output = customer_card.ExecuteNonQuery();
-                        if (output > 0)
+                       
+
+
+                            var m = new CSCreateInstrumentIdentifierCardRequestViewModel();
+                            m.CardNo = obj_customerpaymode.cardnumber;
+
+                            var obj = new CyberSourceHelperService().CreateInstrumentIdentifierCard(m);
+                            state = obj.State.ToString();
+                            CardNoMasked = obj.CardNoMasked.ToString();
+
+                        if (state == "ACTIVE")
                         {
-                            return "Success";
+
+                            NpgsqlCommand customer_card = new NpgsqlCommand("insert into customerpaymodes (customerid,uid,cardnumber,cardname,expirydate,bankname,ibannumber,status,createdby,createddate,updatedby,updateddate,carddefault)  values(@customerid,@uid,@cardnumber,@cardname,@expirydate,@bankname," +
+                            "@ibannumber,@status,@createdby,@createddate,@updatedby,@updateddate,@carddefault)", connection);
+                            customer_card.Parameters.AddWithValue("@customerid", obj_customerpaymode.customerid);
+                            customer_card.Parameters.AddWithValue("@uid", obj_customerpaymode.uid);
+                            //customer_card.Parameters.AddWithValue("@cardnumber", sb.ToString());
+                            customer_card.Parameters.AddWithValue("@cardnumber", CardNoMasked);
+                            // customer_card.Parameters.AddWithValue("@cardname", obj_customerpaymode.cardname);
+                            customer_card.Parameters.AddWithValue("@cardname", obj_customerpaymode.cardname);
+                            customer_card.Parameters.AddWithValue("@expirydate", obj_customerpaymode.expirydate);
+                            customer_card.Parameters.AddWithValue("@bankname", obj_customerpaymode.bankname);
+                            customer_card.Parameters.AddWithValue("@ibannumber", obj_customerpaymode.ibannumber);
+                            customer_card.Parameters.AddWithValue("@status", "A");
+                            customer_card.Parameters.AddWithValue("@createdby", obj_customerpaymode.customerid);
+                            customer_card.Parameters.AddWithValue("@createddate", DateTime.Now);
+                            customer_card.Parameters.AddWithValue("@updatedby", 0);
+                            customer_card.Parameters.AddWithValue("@updateddate", DateTime.Now);
+                            customer_card.Parameters.AddWithValue("@carddefault", 0);
+                            var output = customer_card.ExecuteNonQuery();
+                            if (output > 0)
+                            {
+                                return "Success";
+                            }
+                            else
+                            {
+                                return "fail";
+                            }
                         }
+
                         else
                         {
-                            return "fail";
+                            return "Card is inactive";
                         }
-
-
-
 
                         //if (result.ToString() != (obj_customerpaymode.cardnumber).ToString())
                         //{

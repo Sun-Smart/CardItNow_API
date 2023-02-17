@@ -15,6 +15,8 @@ namespace carditnow.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column(TypeName = "int")]
         public int? customertermid { get; set; }
+
+
         [Column(TypeName = "int")]
         public int? termid { get; set; }
         [NotMapped]

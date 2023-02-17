@@ -151,8 +151,13 @@ namespace carditnow.Services
         {
             //GetRandomNumber();
             bool OTPUpdated = false;
+            int custid = 0;
+            string custmid = string.Empty;
+            int geoid = 0;
+            string geoids = string.Empty;
             try
             {
+               
 
                 _logger.LogInfo("Getting into SendOTP(string email) api");
 
@@ -216,10 +221,32 @@ namespace carditnow.Services
                     SendEmail(email, subject, sb.ToString());
                     //Helper.SendEmail();
                     //return "Success";
+
+                    //shy
+
+                    using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                    {
+                        var parameters_customerid = new { @cid = cid, @uid = uid, @email = email };
+                        var SQL = "  select pk_encode(m.customerid) as pkcol,m.customerid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
+                        var result = connection.Query<dynamic>(SQL, parameters_customerid);
+                        var obj_cutomerid = result.FirstOrDefault();
+                        custid = obj_cutomerid.customerid;
+                        geoid = obj_cutomerid.geoid;
+                        custmid = custid.ToString();
+                        geoids = geoid.ToString();
+                        connection.Close();
+                    }
+
+                    //end
+
+
                     var result1 = new
                     {
                         status = "success",
-                        data = "",   /* Application-specific data would go here. */
+                        data = "",/* Application-specific data would go here. */
+                        OTP = TACNo.ToString(),//SHY
+                        customerid = custmid,//SHY
+                        geoid= geoids,
                         message = "succesfully save record" /* Or optional success message */
                     };
                     return JsonConvert.SerializeObject(result1);
@@ -229,7 +256,185 @@ namespace carditnow.Services
                     var result1 = new
                     {
                         status = "success",
-                        data = "",   /* Application-specific data would go here. */
+                        data = "",/* Application-specific data would go here. */
+                        OTP = TACNo.ToString(),
+                        customerid= custmid,
+                        geoid= geoids,
+                    message = "succesfully save record" /* Or optional success message */
+                    };
+                    return JsonConvert.SerializeObject(result1);
+
+
+                    //return "Failed";
+                }
+
+
+                #region
+                //using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                //{
+                //    var parameters_customeremail = new { @cid = cid, @uid = uid, @customeremail = email }; 
+                //    Helper.SendEmail("Login OTP", token, fromuser, touser, fromemailuser, toemailuser, strOTP.ToString(), _logger);
+
+                //    connection.Close();
+                //    connection.Dispose();
+                //    //return (result);
+                //    return "send";
+                //}
+                #endregion
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+                throw ex;
+            }
+            //return "success";
+        }
+
+
+
+
+        //new 16/2 shy
+        public string SendOTP1(string email,string geoid)
+        {
+            //GetRandomNumber();
+            bool OTPUpdated = false;
+            int custid = 0;
+            string custmid = string.Empty;
+            int geonumber = 0;
+            int geid = 0;
+            string geoids = string.Empty;
+            geid = Convert.ToInt32(geoid);
+            try
+            {
+
+
+                _logger.LogInfo("Getting into SendOTP(string email) api");
+
+                decimal TACNo = GetRandomNumber();
+
+                var customers = _context.customermasters.Where(x => x.email == email);
+                if (customers != null && customers.Any())
+                {
+                    var dbEntry = _context.customermasters.Find(customers.FirstOrDefault().customerid);
+
+                    if (dbEntry != null)
+                    {
+                        //dbEntry.otp = Convert.ToString(TACNo);
+                        //dbEntry.updateddate = DateTime.Now;
+                        //dbEntry.updatedby = 0;
+                        //dbEntry.mode = "R";
+                        //dbEntry.type = "c";
+                        //dbEntry.status = "N";
+                        //dbEntry.mobile = "000000";
+                        //OTPUpdated = _context.SaveChanges() > 0;
+                        return "Your account already register";
+                    }
+
+                }
+                else
+                {
+                    var cus_master = new customermaster();
+                    var cus_detail = new customerdetail();
+                    cus_master.email = email;
+                    cus_master.createdby = 0;
+                    cus_master.mode = "I";
+                    cus_master.uid = "P" + DateTime.Now.Second.ToString();
+                    cus_master.type = "I";
+                    cus_master.status = "N";
+                    cus_master.mobile = "000000";
+                    cus_master.createddate = DateTime.Now;
+                    cus_master.otp = TACNo.ToString();
+                    _context.customermasters.Add(cus_master);
+                    OTPUpdated = _context.SaveChanges() > 0;
+                    //cus_detail.geoid = geid;
+                    //_context_cd.customerdetails.Add(cus_detail);
+                    //_context_cd.SaveChanges();
+                    //return "Success";
+                }
+
+                if (OTPUpdated)
+                {
+                    string subject = "CarditNow Registration OTP ";
+                    StringBuilder sb = new StringBuilder();
+                    SmtpClient smtp = new SmtpClient();
+                    smtp.EnableSsl = true;
+                    smtp.UseDefaultCredentials = false;
+                    sb.Append("Dear Customer,");
+                    sb.Append("<br/>");
+                    sb.Append("<br/>");
+                    sb.Append("Your OTP to Continue the Registration: ");
+                    sb.Append("<b>");
+                    sb.Append(TACNo);
+                    sb.Append("</b>");
+                    sb.Append("<br/>");
+                    sb.Append("<br/>");
+                    sb.Append("Regards,");
+                    sb.Append("<br/>");
+                    sb.Append("SunSmart Global");
+                    SendEmail(email, subject, sb.ToString());
+                    //Helper.SendEmail();
+                    //return "Success";
+
+                    //shy
+
+                    using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                    {
+                        var parameters_customerid = new { @cid = cid, @uid = uid, @email = email };
+                        var SQL = "  select pk_encode(m.customerid) as pkcol,m.customerid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
+                        var result = connection.Query<dynamic>(SQL, parameters_customerid);
+                        var obj_cutomerid = result.FirstOrDefault();
+                        custid = obj_cutomerid.customerid;
+                        geonumber = obj_cutomerid.geoid;
+                        custmid = custid.ToString();
+                        geoids = geonumber.ToString();
+                        connection.Close();
+                    }
+                    var cus_detail = new customerdetail();
+                    cus_detail.geoid = geid;
+                    cus_detail.customerid = custid;
+                    _context_cd.customerdetails.Add(cus_detail);
+                    _context_cd.SaveChanges();
+
+
+                    using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                    {
+                        var parameters_customerid = new { @cid = cid, @uid = uid, @email = email };
+                        var SQL = "  select pk_encode(m.customerid) as pkcol,m.customerid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
+                        var result = connection.Query<dynamic>(SQL, parameters_customerid);
+                        var obj_cutomerid = result.FirstOrDefault();
+                        custid = obj_cutomerid.customerid;
+                        geonumber = obj_cutomerid.geoid;
+                        custmid = custid.ToString();
+                        geoids = geonumber.ToString();
+                        connection.Close();
+                    }
+
+
+
+                    //end
+
+
+                    var result1 = new
+                    {
+                        status = "success",
+                        data = "",/* Application-specific data would go here. */
+                        OTP = TACNo.ToString(),//SHY
+                        customerid = custmid,//SHY
+                        geoid = geoids,
+                        message = "succesfully save record" /* Or optional success message */
+                    };
+                    return JsonConvert.SerializeObject(result1);
+                }
+                else
+                {
+                    var result1 = new
+                    {
+                        status = "success",
+                        data = "",/* Application-specific data would go here. */
+                        OTP = TACNo.ToString(),
+                        customerid = custmid,
+                        geoid = geoids,
                         message = "succesfully save record" /* Or optional success message */
                     };
                     return JsonConvert.SerializeObject(result1);
@@ -260,6 +465,10 @@ namespace carditnow.Services
             }
             //return "success";
         }
+
+
+
+
 
         public string PasswordSet(string email, string password)
         {
@@ -499,9 +708,12 @@ namespace carditnow.Services
         {
             try
             {
+
                 _logger.LogInfo("Getting into UpdateProfileInformation api");
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
+
+                   
                     connection.Open();
                     var get_cuscode = @"select customerid from customermasters where email='" + model.email + "' ";
                     var result = connection.ExecuteScalar(get_cuscode, connection);
@@ -527,8 +739,10 @@ namespace carditnow.Services
                             update_cus.CommandType = CommandType.Text;
                             update_cus.Parameters.AddWithValue("@customerid", result);
                             update_cus.Parameters.AddWithValue("@address", model.address);
-                            update_cus.Parameters.AddWithValue("@geoid", 1);
-                            update_cus.Parameters.AddWithValue("@cityid", 2);
+                           // update_cus.Parameters.AddWithValue("@geoid", 1);
+                            update_cus.Parameters.AddWithValue("@geoid", model.geoid);//shy
+                            //update_cus.Parameters.AddWithValue("@cityid", 2);
+                            update_cus.Parameters.AddWithValue("@cityid", model.cityid);//shy
                             update_cus.Parameters.AddWithValue("@postalcode", model.postalcode);
                             update_cus.Parameters.AddWithValue("@idissudate", model.idissuedate);
                             update_cus.Parameters.AddWithValue("@idexpirydate", model.idexpirydate);
@@ -567,8 +781,10 @@ namespace carditnow.Services
                             NpgsqlCommand inst_cd = new NpgsqlCommand("insert into customerdetails (customerid,address,geoid,cityid,postalcode,idissuedate,idexpirydate) values(@customerid,@address,@geoid,@cityid,@postalcode,@idissudate,@idexpirydate)", connection);
                             inst_cd.Parameters.AddWithValue("@customerid", result);
                             inst_cd.Parameters.AddWithValue("@address", model.address);
-                            inst_cd.Parameters.AddWithValue("@geoid", 1);
-                            inst_cd.Parameters.AddWithValue("@cityid", 2);
+                            // update_cus.Parameters.AddWithValue("@geoid", 1);
+                            inst_cd.Parameters.AddWithValue("@geoid", model.geoid);//shy
+                            //update_cus.Parameters.AddWithValue("@cityid", 2);
+                            inst_cd.Parameters.AddWithValue("@cityid", model.cityid);//shy
                             inst_cd.Parameters.AddWithValue("@postalcode", model.postalcode);
                             inst_cd.Parameters.AddWithValue("@idissudate", model.idissuedate);
                             inst_cd.Parameters.AddWithValue("@idexpirydate", model.idexpirydate);
@@ -1049,6 +1265,57 @@ s.avatarname as defaultavatardesc from GetTable(NULL::public.customermasters,@ci
 
             return null;
         }
+
+
+        //shy
+
+        public IEnumerable<Object> GetListdocument_bygeoid(string geoid)
+        {
+            try
+            {
+                dynamic result = "";
+                _logger.LogInfo("Getting into  GetListdocument_bygeoid(string geoid) api");
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    if (geoid=="1")
+                    {
+                        var parameters_customerdetailid = new { @cid = cid, @uid = uid, @geoid = geoid };
+
+                        var SQL = "select pk_encode(masterdataid)as pkcol,masterdataid as key,masterdatadescription as value from masterdatas where masterdatatypeid=9";
+                         result = connection.Query<dynamic>(SQL, parameters_customerdetailid);
+                        connection.Close();
+                        connection.Dispose();
+                        //return (result);
+                    }
+                    if (geoid == "2")
+                    {
+                        var parameters_customerdetailid = new { @cid = cid, @uid = uid, @geoid = geoid };
+
+                        var SQL = "select pk_encode(masterdataid)as pkcol,masterdataid as key,masterdatadescription as value from masterdatas where masterdatatypeid=8";
+                         result = connection.Query<dynamic>(SQL, parameters_customerdetailid);
+                        connection.Close();
+                        connection.Dispose();
+                       // return (result);
+
+                    }
+                    return (result);
+
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetListdocument_bygeoid(string geoid) \r\n {ex}");
+                throw ex;
+            }
+        }
+
+        //end
+
+
+
     }
 }
 

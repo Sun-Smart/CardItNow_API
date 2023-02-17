@@ -25,7 +25,9 @@ using System.Collections;
 using System.Text;
 using LoggerService;
 using nTireBO.Services;
+using nTireBO.Models;
 using carditnow.Services;
+using Microsoft.SqlServer.Management.Smo;
 
 namespace carditnow.Services
 {
@@ -36,6 +38,7 @@ namespace carditnow.Services
         private ILoggerManager _logger;
         private IHttpContextAccessor httpContextAccessor;
         private readonly IcustomertermsacceptanceService _service;
+        private ItokenService _tokenservice;
         int cid = 0;
         int uid = 0;
         string uname = "";
@@ -44,11 +47,12 @@ namespace carditnow.Services
 
 
 
-        public customertermsacceptanceService(customertermsacceptanceContext context, IConfiguration configuration, ILoggerManager logger, IHttpContextAccessor objhttpContextAccessor)
+        public customertermsacceptanceService(customertermsacceptanceContext context, IConfiguration configuration, ILoggerManager logger, IHttpContextAccessor objhttpContextAccessor, ItokenService tokenservice)
         {
             Configuration = configuration;
             _context = context;
             _logger = logger;
+            _tokenservice = tokenservice;
             this.httpContextAccessor = objhttpContextAccessor;
             if (httpContextAccessor.HttpContext.User.Claims.Any())
             {
@@ -121,6 +125,7 @@ namespace carditnow.Services
         //gets the screen record
         public dynamic Get_customertermsacceptance(int id)
         {
+            var tokenString = "";
             _logger.LogInfo("Getting into Get_customertermsacceptance(int id) api");
             try
             {
@@ -137,7 +142,7 @@ namespace carditnow.Services
                     var parameters = new { @cid = cid, @uid = uid, @id = id, @wStatus = wStatus };
                     var SQL = @"select pk_encode(a.customertermid) as pkcol,a.customertermid as pk,a.*,
 u.email as customeriddesc,
-t.termdetails as termiddesc
+t.termdetails as termiddesc,a.customerid,u.email as email,u.password as password
  from GetTable(NULL::public.customertermsacceptances,@cid) a 
  left join customermasters u on a.customerid=u.customerid
  left join termsmasters t on a.termid=t.termid
@@ -149,10 +154,36 @@ t.termdetails as termiddesc
                     FormProperty formproperty = new FormProperty();
                     formproperty.edit = true;
 
+                    //shy
+                    int cus = obj_customertermsacceptance.customerid;
+                    string email = obj_customertermsacceptance.email;
+                    string pass = obj_customertermsacceptance.password;
+                    if (obj_customertermsacceptance.email.ToString() != null && obj_customertermsacceptance.email.ToString() != "" && obj_customertermsacceptance.password.ToString() != "" && obj_customertermsacceptance.password.ToString() != null)
+                    {
+                        LoginModel lo = new LoginModel();
+                        UserCredential u = new UserCredential();
 
-                    connection.Close();
+                        lo.email = obj_customertermsacceptance.email;
+                        lo.Password = obj_customertermsacceptance.password;
+                        lo.host = "";
+                        var user = _tokenservice.Authenticate(lo);
+                        if (user != null)
+                        {
+                            tokenString = _tokenservice.BuildToken(user);
+                        }
+
+                     
+
+                    }
+
+
+
+
+
+
+                        connection.Close();
                     connection.Dispose();
-                    return (new { customertermsacceptance = obj_customertermsacceptance, customertermsacceptance_menuactions, formproperty, visiblelist, hidelist });
+                    return (new { customertermsacceptance = obj_customertermsacceptance, token= tokenString,customertermsacceptance_menuactions, formproperty, visiblelist, hidelist });
                 }
             }
             catch (Exception ex)

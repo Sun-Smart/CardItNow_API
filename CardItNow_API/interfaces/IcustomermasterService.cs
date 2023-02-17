@@ -31,6 +31,10 @@ namespace carditnow.Services
         dynamic account_Suspend(suspendAccount model);
         dynamic account_Suspend_Reactive(suspendAccount model);
 
+        IEnumerable<Object> GetListdocument_bygeoid(string geoid);
+
+        string SendOTP1(string email,string geoid);
+
 
     }
 }

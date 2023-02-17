@@ -15,6 +15,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
+
 namespace nTireBO.Services
 {
     public class tokenService: ItokenService
@@ -22,6 +23,7 @@ namespace nTireBO.Services
 
         private ILoggerManager _logger;
         private IHttpContextAccessor httpContextAccessor;
+
 
         int cid = 0;
         int uid = 0;
@@ -85,8 +87,19 @@ namespace nTireBO.Services
                 new Claim ("layoutpage", user.layoutpage == null? "": user.layoutpage.ToString ()),
                 new Claim ("theme", user.theme == null? "": user.theme.ToString ()),
                 new Claim ("logindate", DateTime.Now.ToString ()),
-                new Claim ("status", user.status == null? "": user.status.ToString ())
-            };
+                new Claim ("status", user.status == null? "": user.status.ToString ()),
+                new Claim ("firstname", user.firstname == null? "": user.firstname.ToString ()),
+                new Claim ("lastname", user.lastname == null? "": user.lastname.ToString ()),
+                new Claim ("nickname", user.nickname == null? "": user.nickname.ToString ()),
+                new Claim ("geoid", user.geoid == null? "": user.geoid.ToString ()),
+                new Claim ("customertype", user.customertype == null? "": user.customertype.ToString ()),
+                new Claim ("profileimage", user.profileimage == null? "": user.profileimage.ToString ()),
+                new Claim ("mobile", user.mobile == null? "": user.mobile.ToString ())
+
+
+
+
+        };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("veryVerySecretKey")); //_config["Jwt:Key"]
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -160,12 +173,25 @@ namespace nTireBO.Services
                             u.language = "en";
                             u.email = objusermaster.email;
                             u.status = objusermaster.status;
-                            
+                            u.email = objusermaster.email;
+                            u.status = objusermaster.status;
+                            u.firstname = objusermaster.firstname;
+                            u.lastname = objusermaster.lastname;
+                            u.nickname = objusermaster.nickname;
+                            u.geoid = objusermaster.geoid;
+                            u.customertype = objusermaster.type;
+                            u.profileimage = objusermaster.customerphoto;
+                            u.mobile = objusermaster.mobile;
+
                         }
                         else
                         {
                             var parameters_customermaster = new { @cid = cid, @key = key, @password = login.Password, tenant = login.host };
-                            string SQL_customer = "select pk_encode(customerid) as pkcol,* from customermasters where email = @key  and password=@password";
+                            //string SQL_customer = "select pk_encode(customerid) as pkcol,* from customermasters where email = @key  and password=@password";
+
+                            string SQL_customer = "  select pk_encode(m.customerid) as pkcol,m.*,d.geoid from customermasters m left join customerdetails d on d.customerid = m.customerid where m.email = @key  and m.password = @password";
+
+
                             var result_customer = connection.Query<dynamic>(SQL_customer, parameters_customermaster);
                             if (result_customer.FirstOrDefault().customerid > 0)
                             {
@@ -182,6 +208,13 @@ namespace nTireBO.Services
                             u.language = "en";
                             u.email = objusermaster.email;
                             u.status = objusermaster.status;
+                            u.firstname = objusermaster.firstname;
+                            u.lastname = objusermaster.lastname;
+                            u.nickname = objusermaster.nickname;
+                            u.geoid = objusermaster.geoid;
+                            u.customertype = objusermaster.type;
+                            u.profileimage = objusermaster.customerphoto;
+                            u.mobile = objusermaster.mobile;
 
 
                             //c.customerid = objusermaster.customerid;

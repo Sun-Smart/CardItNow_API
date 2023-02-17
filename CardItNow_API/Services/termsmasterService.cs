@@ -196,7 +196,7 @@ namespace carditnow.Services
                 {
 
                     //var parameters = new { @cid=0,@uid=0};
-                    var SQL = @"select termid,termdetails,currentversion,status from termsmasters where status='A'";
+                    var SQL = @"select termid,termid as Versionid,termdetails,currentversion,status,* from termsmasters where status='A' and currentversion='true'";//shy
                     //var result = connection.Query<dynamic>(SQL, parameters);
                     var result1 = connection.Query(SQL);
                     connection.Close();

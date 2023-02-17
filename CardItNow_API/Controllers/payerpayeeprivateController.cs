@@ -38,7 +38,7 @@ namespace CardItNow.Controllers
 
 
         [HttpPost]
-        //[Route("SavePayerPayeePrivate")]
+        [Route("SavePayerPayeePrivate")]
         public dynamic Save_payerpayeeprivate(payerpayeeprivate model)
         {
             var result = _payerpayeeprivateService.Save_payerpayeprivate(model);

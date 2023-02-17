@@ -549,5 +549,60 @@ namespace carditnow.Controllers
             }
             return null;
         }
+
+
+        //shy 16.2.2023
+
+        [HttpPost]
+        [Route("GetDocumenttype")]
+        public dynamic GetDocumenttype(customermaster model)
+        {
+            // ProcessOCRResposeView response = new ProcessOCRResposeView();
+            string geoig = model.geoid;
+            try
+            {
+                var result = _customermasterService.GetListdocument_bygeoid(geoig);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:Save api {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+
+        }
+
+
+        //end
+
+        //shy new senotp POST
+
+        [HttpPost("SendOTP1")]
+        public async Task<ActionResult<IEnumerable<Object>>> SendOTP(customermaster model)
+        {
+            try
+            {
+                string email = model.email;
+                string geoid = model.geoid;
+
+
+                if (!string.IsNullOrEmpty(email))
+                {
+                    var result = _customermasterService.SendOTP1(email,geoid);
+                    return Ok(result);
+                }
+                else
+                {
+                    return Content("fail");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: Password Config(string email,string password)\r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Password Config " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+
+        }
+
     }
 }

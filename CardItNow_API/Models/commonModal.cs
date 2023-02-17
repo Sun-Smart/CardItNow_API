@@ -26,6 +26,9 @@
         public string socialid { get; set; }
         public string mediatype { get; set; }
        // public string avatarURL { get; set; }
+       public string mobile { get; set; }
+
+        public int geoid { get; set; }
     }
 
     public class verify_otp

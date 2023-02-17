@@ -34,8 +34,8 @@ namespace carditnow.Controllers
             _logger = logger;
             if (objhttpContextAccessor.HttpContext.User.Claims.Any())
             {
-                cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
-                uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
+               // cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
+               // uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
                 uname = "";
                 uidemail = "";
                 if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
@@ -161,24 +161,47 @@ namespace carditnow.Controllers
             }
         }
 
+        //// POST: api/customertermsacceptance
+        //[HttpPost]
+        //public async Task<ActionResult<customertermsacceptance>> Post_customertermsacceptance()
+        //{
+        //    string token = Request.Headers["Authorization"].ToString();
+        //    try
+        //    {
+        //        customertermsacceptanceView obj_customertermsacceptance = JsonConvert.DeserializeObject<customertermsacceptanceView>(Request.Form["formData"]);
+        //        var result = _customertermsacceptanceService.Save_customertermsacceptance(token, obj_customertermsacceptance.data);
+        //        HttpClient client = new HttpClient();
+        //        client.DefaultRequestHeaders.Add("Authorization", token);
+        //        if (Request.Form.Files != null)
+        //        {
+        //            foreach (var file in Request.Form.Files)
+        //            {
+        //                Helper.Upload(file);
+        //            }
+        //        }
+
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Controller:Save api {ex}");
+        //        return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+        //    }
+        //}
+
+
+
+
         // POST: api/customertermsacceptance
         [HttpPost]
-        public async Task<ActionResult<customertermsacceptance>> Post_customertermsacceptance()
+        public async Task<ActionResult<customertermsacceptance>> Post_customertermsacceptance(customertermsacceptance obj_customertermsacceptance)
         {
             string token = Request.Headers["Authorization"].ToString();
             try
             {
-                customertermsacceptanceView obj_customertermsacceptance = JsonConvert.DeserializeObject<customertermsacceptanceView>(Request.Form["formData"]);
-                var result = _customertermsacceptanceService.Save_customertermsacceptance(token, obj_customertermsacceptance.data);
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Authorization", token);
-                if (Request.Form.Files != null)
-                {
-                    foreach (var file in Request.Form.Files)
-                    {
-                        Helper.Upload(file);
-                    }
-                }
+                //customertermsacceptanceView obj_customertermsacceptance = JsonConvert.DeserializeObject<customertermsacceptanceView>(Request.Form["formData"]);
+                var result = _customertermsacceptanceService.Save_customertermsacceptance(token, obj_customertermsacceptance);
+
 
                 return Ok(result);
             }
@@ -188,6 +211,13 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
+
+
+
+
+
+
+
 
         [HttpGet]
         [Route("getList_termid")]

@@ -51,6 +51,14 @@ namespace carditnow.Models
         [NotMapped]
         [Column(TypeName = "string")]
         public string Type { get; set; }
+
+        //shy
+
+        //[NotMapped]
+        //[Column(TypeName = "string")]
+        //public string securitycode { get; set; }
+
+
     }
     public class customerpaymodeView
     {

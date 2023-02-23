@@ -25,6 +25,8 @@ namespace carditnow.Services
         dynamic Get_customermaster(string sid);
         dynamic Get_customermaster(int id);
         dynamic Save_customermaster(string token, customermaster obj_customermaster);
+
+
         dynamic Delete(int id);
         dynamic Customerauth(customerauth model);
 
@@ -34,6 +36,10 @@ namespace carditnow.Services
         IEnumerable<Object> GetListdocument_bygeoid(string geoid);
 
         string SendOTP1(string email,string geoid);
+
+        IEnumerable<Object> GetsecurityQuestions();
+
+        string ReSendOTP(string email);
 
 
     }

@@ -171,7 +171,7 @@ namespace carditnow.Controllers
 
         }
 
-        [HttpPost("TPIN Config")]
+        [HttpPost("TPINConfig")]
         public async Task<ActionResult<IEnumerable<Object>>> SetPinConfig(string email, string pin)
         {
             try
@@ -603,6 +603,64 @@ namespace carditnow.Controllers
             }
 
         }
+
+
+
+        //feb23
+        //shy new senotp POST
+
+        [HttpPost("ReSendOTP")]
+        public async Task<ActionResult<IEnumerable<Object>>> ReSendOTP(customermaster model)
+        {
+            try
+            {
+                string email = model.email;
+                string geoid = model.geoid;
+
+
+                if (!string.IsNullOrEmpty(email))
+                {
+                    var result = _customermasterService.ReSendOTP(email);
+                    return Ok(result);
+                }
+                else
+                {
+                    return Content("fail");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: Password Config(string email,string password)\r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Password Config " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+
+        }
+
+
+
+
+
+
+        //feb 20
+
+        [HttpGet]
+        [Route("GetsecurityQuestions")]
+        public async Task<ActionResult<IEnumerable<Object>>> GetsecurityQuestions()
+        {
+            try
+            {
+                var result = _customermasterService.GetsecurityQuestions();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: GetFullList() \r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "GetList " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+
+
 
     }
 }

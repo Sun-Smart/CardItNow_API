@@ -345,6 +345,7 @@ namespace carditnow.Services
                     cus_master.mobile = "000000";
                     cus_master.createddate = DateTime.Now;
                     cus_master.otp = TACNo.ToString();
+                    cus_master.customervisible = false;
                     _context.customermasters.Add(cus_master);
                     OTPUpdated = _context.SaveChanges() > 0;
                     //cus_detail.geoid = geid;
@@ -466,7 +467,154 @@ namespace carditnow.Services
             //return "success";
         }
 
+        public string ReSendOTP(string email)
+        {
+            //GetRandomNumber();
+            bool OTPUpdated = false;
+            int custid = 0;
+            string custmid = string.Empty;
+            int geoid = 0;
+            string geoids = string.Empty;
+            int querytype = 0;
+            try
+            {
 
+
+                _logger.LogInfo("Getting into SendOTP(string email) api");
+
+                decimal TACNo = GetRandomNumber();
+
+                var customers = _context.customermasters.Where(x => x.email == email);
+                if (customers != null && customers.Any())
+                {
+
+                    //customermaster cus_master = new customermaster();
+                    ////cus_master.email = email;
+                    ////cus_master.mode = "I";
+                    ////cus_master.uid = "P" + DateTime.Now.Second.ToString();
+                    ////cus_master.type = "I";
+                    ////cus_master.status = "N";
+                    ////cus_master.mobile = "000000";
+                    //cus_master.updateddate = DateTime.Now;
+                    //cus_master.otp = TACNo.ToString();
+                    ////_context.customermasters.Add(cus_master);
+
+                    //_context.Entry(cus_master).Property("email").IsModified = false;
+                    //_context.Entry(cus_master).Property("mode").IsModified = false;
+                    //_context.Entry(cus_master).Property("uid").IsModified = false;
+                    //_context.Entry(cus_master).Property("type").IsModified = false;
+                    //_context.Entry(cus_master).Property("status").IsModified = false;
+                    //_context.Entry(cus_master).Property("mobile").IsModified = false;
+                    //_context.Entry(cus_master).Property("otp").CurrentValue = TACNo.ToString();
+                    ////cus_master.otp = TACNo.ToString();
+                    //querytype = 2;
+                    //_context.SaveChanges();
+
+
+
+                    using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                    {
+                        NpgsqlCommand customer_card = new NpgsqlCommand("update customermasters set otp=@otp where email=@email", connection);
+                        connection.Open();
+                    customer_card.Parameters.AddWithValue("@otp", TACNo.ToString());
+                    customer_card.Parameters.AddWithValue("@email", email);
+                    var output = customer_card.ExecuteNonQuery();
+
+
+
+
+
+
+
+                    string subject = "CarditNow Registration OTP ";
+                    StringBuilder sb = new StringBuilder();
+                    SmtpClient smtp = new SmtpClient();
+                    smtp.EnableSsl = true;
+                    smtp.UseDefaultCredentials = false;
+                    sb.Append("Dear Customer,");
+                    sb.Append("<br/>");
+                    sb.Append("<br/>");
+                    sb.Append("Your OTP to Continue the Registration: ");
+                    sb.Append("<b>");
+                    sb.Append(TACNo);
+                    sb.Append("</b>");
+                    sb.Append("<br/>");
+                    sb.Append("<br/>");
+                    sb.Append("Regards,");
+                    sb.Append("<br/>");
+                    sb.Append("SunSmart Global");
+                    SendEmail(email, subject, sb.ToString());
+                    //Helper.SendEmail();
+                    //return "Success";
+
+                    //shy
+
+                    //using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                    //{
+                        var parameters_customerid = new { @cid = cid, @uid = uid, @email = email };
+                        var SQL = "  select pk_encode(m.customerid) as pkcol,m.customerid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
+                        var result = connection.Query<dynamic>(SQL, parameters_customerid);
+                        var obj_cutomerid = result.FirstOrDefault();
+                        custid = obj_cutomerid.customerid;
+                        geoid = obj_cutomerid.geoid;
+                        custmid = custid.ToString();
+                        geoids = geoid.ToString();
+                        connection.Close();
+                    }
+
+                    //end
+
+
+                    var result1 = new
+                    {
+                        status = "success",
+                        data = "",/* Application-specific data would go here. */
+                        OTP = TACNo.ToString(),//SHY
+                        customerid = custmid,//SHY
+                        geoid = geoids,
+                        message = "succesfully save record" /* Or optional success message */
+                    };
+                    return JsonConvert.SerializeObject(result1);
+                }
+                else
+                {
+                    var result1 = new
+                    {
+                        status = "success",
+                        data = "",/* Application-specific data would go here. */
+                        OTP = "",
+                        customerid = "",
+                        geoid = "",
+                        message = "Not a registred MailID" /* Or optional success message */
+                    };
+                    return JsonConvert.SerializeObject(result1);
+
+
+                    //return "Failed";
+                }
+
+
+                #region
+                //using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                //{
+                //    var parameters_customeremail = new { @cid = cid, @uid = uid, @customeremail = email }; 
+                //    Helper.SendEmail("Login OTP", token, fromuser, touser, fromemailuser, toemailuser, strOTP.ToString(), _logger);
+
+                //    connection.Close();
+                //    connection.Dispose();
+                //    //return (result);
+                //    return "send";
+                //}
+                #endregion
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+                throw ex;
+            }
+            //return "success";
+        }
 
 
 
@@ -1313,6 +1461,38 @@ s.avatarname as defaultavatardesc from GetTable(NULL::public.customermasters,@ci
         }
 
         //end
+
+
+
+        public IEnumerable<Object> GetsecurityQuestions()
+        {
+            try
+            {
+                _logger.LogInfo("Getting into  GetsecurityQuestions() api");
+
+                int id = 0;
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    string wStatus = "NormalStatus";
+                    string vmode = "mode";
+                    string vcustomermastertype = "customermastertype";
+                    var parameters = new { @cid = cid, @uid = uid, @id = id, @wStatus = wStatus, @vmode = vmode, @vcustomermastertype = vcustomermastertype };
+                    var SQL = @"select masterdataid as Questionid,masterdatadescription as Question from masterdatas where masterdatatypeid=1 and status='A'";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+
+
+                    connection.Close();
+                    connection.Dispose();
+                    return (result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
+                throw ex;
+            }
+        }
+
 
 
 

@@ -18,6 +18,14 @@ namespace carditnow.Services
 dynamic Get_customersecurityquestion(string sid);
          dynamic Get_customersecurityquestion(int id);
         dynamic Save_customersecurityquestion(string token,customersecurityquestion obj_customersecurityquestion);
+
+        dynamic Save_customersecuritymultiquestions(string token, dynamic data);
         dynamic Delete(int id);
+
+        IEnumerable<Object> GetsecurityQuestions();
+
+        dynamic Get_customersecurityquestiondetail(int customerid);
+
+        dynamic securityquestioncheck(string token, customersecurityquestion obj_customersecurityquestion);
     }  
     }  

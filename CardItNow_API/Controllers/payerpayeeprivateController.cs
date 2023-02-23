@@ -60,5 +60,28 @@ namespace CardItNow.Controllers
             var result = _payerpayeeprivateService.MaskedNumber(source);
             return result;
         }
+
+        //payee detail based on business registration number brn
+
+        [HttpPost]
+        [Route("MandatoryPayee")]
+        public dynamic MandatoryPayee(payerpayeeprivate model)
+        {
+            try
+            {
+                string brn = model.brn;
+                //var list_uid = getList_uid().Result.Result;
+                var result = _payerpayeeprivateService.MandatoryPayee(brn);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:GetDefaultData() {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "GetDefaultData() " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+
+
     }
 }

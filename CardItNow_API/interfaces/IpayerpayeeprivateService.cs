@@ -13,5 +13,7 @@ namespace CardItNow.interfaces
         //dynamic Save_payerpayeprivateDocument(payerpayeeprivate obj_payerpayeeprivate); 
         dynamic Get_rawresult();
         dynamic MaskedNumber(String source);
+
+        dynamic MandatoryPayee(string brn);
     }
 }

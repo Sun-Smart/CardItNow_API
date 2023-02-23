@@ -63,10 +63,10 @@ namespace CardItNow.Services
            // string cardNumber = "6071870000961364";// "411111111111111";
             Tmsv2customersEmbeddedDefaultPaymentInstrumentEmbeddedInstrumentIdentifierCard card = new Tmsv2customersEmbeddedDefaultPaymentInstrumentEmbeddedInstrumentIdentifierCard(
                 Number: model.CardNo
-                //ExpirationMonth:model.expierymonth,//shy feb20
-                //ExpirationYear:model.expieryyear,
-                //SecurityCode:model.securitycode
-                
+                //ExpirationMonth: model.expierymonth.ToString(),//shy feb20
+                //ExpirationYear: model.expieryyear.ToString(),
+                //SecurityCode: model.securitycode.ToString()
+
 
 
            );

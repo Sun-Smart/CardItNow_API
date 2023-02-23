@@ -358,10 +358,10 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
                         var m = new CSCreateInstrumentIdentifierCardRequestViewModel();
                         m.CardNo = obj_customerpaymode.cardnumber;
                         ////shy
-                        //string[] a = obj_customerpaymode.expirydate.ToString().Split('/');
-                        //m.expierymonth = a[0].ToString();
-                        //m.expieryyear = a[1].ToString();
-                        //m.securitycode = obj_customerpaymode.securitycode;
+                        string[] a = obj_customerpaymode.expirydate.ToString().Split('/');
+                        m.expierymonth = a[0].ToString();
+                        m.expieryyear = a[1].ToString();
+                        m.securitycode = obj_customerpaymode.securitycode;
 
                         var obj = new CyberSourceHelperService().CreateInstrumentIdentifierCard(m);
                         state = obj.State.ToString();
@@ -438,10 +438,10 @@ u.email as uiddesc from GetTable(NULL::public.customerpaymodes,@cid) a
                             var m = new CSCreateInstrumentIdentifierCardRequestViewModel();
                             m.CardNo = obj_customerpaymode.cardnumber;
                         //shy
-                        //string[] a = obj_customerpaymode.expirydate.ToString().Split('/');
-                        //m.expierymonth = a[0].ToString();
-                        //m.expieryyear = a[1].ToString();
-                        //m.securitycode = obj_customerpaymode.securitycode;
+                        string[] a = obj_customerpaymode.expirydate.ToString().Split('/');
+                        m.expierymonth = a[0].ToString();
+                        m.expieryyear = a[1].ToString();
+                        m.securitycode = obj_customerpaymode.securitycode;
 
                         var obj = new CyberSourceHelperService().CreateInstrumentIdentifierCard(m);
                             state = obj.State.ToString();

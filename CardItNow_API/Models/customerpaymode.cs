@@ -54,9 +54,9 @@ namespace carditnow.Models
 
         //shy
 
-        //[NotMapped]
-        //[Column(TypeName = "string")]
-        //public string securitycode { get; set; }
+        [NotMapped]
+        [Column(TypeName = "string")]
+        public string securitycode { get; set; }
 
 
     }

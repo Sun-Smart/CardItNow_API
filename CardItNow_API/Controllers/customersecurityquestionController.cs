@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace carditnow.Controllers
 {
-    [Authorize]
+   // [Authorize]
     [Route("carditnowapi/[controller]")]
     [ApiController]
     public class customersecurityquestionController : ControllerBase
@@ -26,21 +26,22 @@ namespace carditnow.Controllers
         private string uidemail = "";
         private readonly IcustomersecurityquestionService _customersecurityquestionService;
         private readonly IcustomermasterService _customermasterService;
-        private readonly ImasterdataService _masterdataService;
+       // private readonly ImasterdataService _masterdataService;
 
-        public customersecurityquestionController(IHttpContextAccessor objhttpContextAccessor, IcustomersecurityquestionService obj_customersecurityquestionService, IcustomermasterService obj_customermasterService, ImasterdataService obj_masterdataService, ILoggerManager logger)
+        public customersecurityquestionController(IHttpContextAccessor objhttpContextAccessor, IcustomersecurityquestionService obj_customersecurityquestionService, IcustomermasterService obj_customermasterService, ILoggerManager logger)
+        //, ImasterdataService obj_masterdataService
         {
             _customersecurityquestionService = obj_customersecurityquestionService;
             _logger = logger;
-            cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
-            uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
+          //  cid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
+           // uid = int.Parse(objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
             uname = "";
             uidemail = "";
-            if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
-            if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
+            //if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username") != null) uname = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "username").Value.ToString();
+            //if (objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid") != null) uidemail = objhttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "emailid").Value.ToString();
             _customersecurityquestionService = obj_customersecurityquestionService;
             _customermasterService = obj_customermasterService;
-            _masterdataService = obj_masterdataService;
+           // _masterdataService = obj_masterdataService;
         }
 
         // GET: api/customersecurityquestion
@@ -140,6 +141,13 @@ namespace carditnow.Controllers
             }
         }
 
+
+
+        
+
+
+
+
         [HttpGet]
         [Route("getdefaultdata")]
         public async Task<ActionResult<Object>> GetDefaultData()
@@ -147,7 +155,8 @@ namespace carditnow.Controllers
             try
             {
                 var list_customerid = getList_customerid().Result.Result;
-                var list_questionid = getList_questionid().Result.Result;
+                var list_questionid = "";
+              //  var list_questionid = getList_questionid().Result.Result;
                 var result = (new { list_customerid, list_questionid });
                 return Ok(result);
             }
@@ -160,23 +169,13 @@ namespace carditnow.Controllers
 
         // POST: api/customersecurityquestion
         [HttpPost]
-        public async Task<ActionResult<customersecurityquestion>> Post_customersecurityquestion()
+        public async Task<ActionResult<customersecurityquestion>> Post_customersecurityquestion(customersecurityquestion obj_customersecurityquestion)
         {
             string token = Request.Headers["Authorization"].ToString();
+             //   string token ="";
             try
             {
-                customersecurityquestionView obj_customersecurityquestion = JsonConvert.DeserializeObject<customersecurityquestionView>(Request.Form["formData"]);
-                var result = _customersecurityquestionService.Save_customersecurityquestion(token, obj_customersecurityquestion.data);
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Authorization", token);
-                if (Request.Form.Files != null)
-                {
-                    foreach (var file in Request.Form.Files)
-                    {
-                        Helper.Upload(file);
-                    }
-                }
-
+                var result = _customersecurityquestionService.Save_customersecurityquestion(token, obj_customersecurityquestion);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -185,6 +184,46 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
+
+        //multi security questions
+
+
+        [HttpPost]
+        [Route("insertcustomersecurityquestions")]
+        public async Task<ActionResult<customersecurityquestion>> Post_customersecurityquestions(dynamic data)
+        {
+            string token = Request.Headers["Authorization"].ToString();
+            try
+            {
+                var result = _customersecurityquestionService.Save_customersecuritymultiquestions(token, data);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:Save api {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+
+        [HttpPost]
+        [Route("securityquestioncheck")]
+        public async Task<ActionResult<customersecurityquestion>> Post_securityquestioncheck(customersecurityquestion obj_customersecurityquestion)
+        {
+            string token = Request.Headers["Authorization"].ToString();
+            //   string token ="";
+            try
+            {
+                var result = _customersecurityquestionService.securityquestioncheck(token, obj_customersecurityquestion);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:Save api {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
 
         [HttpGet]
         [Route("getList_customerid")]
@@ -203,22 +242,67 @@ namespace carditnow.Controllers
             }
         }
 
+
+
+
+        //feb 20
+
         [HttpGet]
-        [Route("getList_questionid")]
-        public async Task<ActionResult<dynamic>> getList_questionid()
+        [Route("GetsecurityQuestions")]
+        public async Task<ActionResult<IEnumerable<Object>>> GetsecurityQuestions()
         {
             try
             {
-                string strCondition = "";
-                var result = _masterdataService.GetList(strCondition);
+                var result = _customersecurityquestionService.GetsecurityQuestions();
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Controller: getList_questionid() {ex}");
-                return StatusCode(StatusCodes.Status417ExpectationFailed, ex.Message + "  " + ex.InnerException?.Message);
+                _logger.LogError($"Controller: GetFullList() \r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "GetList " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
+
+
+
+
+        //feb22
+        // GET: api/customersecurityquestion/customerquestiondetail/{customerid}
+        [HttpGet("customerquestiondetail/{customerid}")]
+        public async Task<ActionResult<customersecurityquestion>> Get_customersecurityquestiondetail(int customerid)
+        {
+            try
+            {
+                var result = _customersecurityquestionService.Get_customersecurityquestiondetail(customerid);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: Get_customersecurityquestion(int id)\r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Get_customersecurityquestion(int id) " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+
+
+
+
+        //[HttpGet]
+        //[Route("getList_questionid")]
+        //public async Task<ActionResult<dynamic>> getList_questionid()
+        //{
+        //    try
+        //    {
+        //        string strCondition = "";
+        //        var result = _masterdataService.GetList(strCondition);
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Controller: getList_questionid() {ex}");
+        //        return StatusCode(StatusCodes.Status417ExpectationFailed, ex.Message + "  " + ex.InnerException?.Message);
+        //    }
+        //}
 
         // DELETE: api/customersecurityquestion/5
         [HttpDelete]

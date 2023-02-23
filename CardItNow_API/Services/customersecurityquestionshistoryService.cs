@@ -218,10 +218,7 @@ int querytype=0;
                     throw new Exception(serr);
                 }
                     
-                    //connection.Open();
-                    //using var transaction = connection.BeginTransaction();
-                    //_context.Database.UseTransaction(transaction);
-                //customersecurityquestionshistory table
+                
                 if (obj_customersecurityquestionshistory.historyid == 0 || obj_customersecurityquestionshistory.historyid == null || obj_customersecurityquestionshistory.historyid<0)
 {
 if(obj_customersecurityquestionshistory.status=="" || obj_customersecurityquestionshistory.status==null)obj_customersecurityquestionshistory.status="A";

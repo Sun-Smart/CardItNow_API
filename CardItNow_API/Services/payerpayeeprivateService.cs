@@ -1,12 +1,15 @@
 ﻿using CardItNow.interfaces;
 using CardItNow.Models;
+using Dapper;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Npgsql;
 using Org.BouncyCastle.Asn1.Ocsp;
+using SunSmartnTireProducts.Helpers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -62,8 +65,8 @@ namespace CardItNow.Services
 
                         NpgsqlCommand upd_customermaster = new NpgsqlCommand("update customermasters set mode=@mode,type=@type,customervisible=@customervisible where customerid=@customerid", connection);
                         upd_customermaster.Parameters.AddWithValue("@customerid", obj_payerpayeeprivate.customerid);
-                        upd_customermaster.Parameters.AddWithValue("@mode", obj_payerpayeeprivate.customertype);
-                        upd_customermaster.Parameters.AddWithValue("@type", obj_payerpayeeprivate.type);
+                        upd_customermaster.Parameters.AddWithValue("@mode", obj_payerpayeeprivate.type);
+                        upd_customermaster.Parameters.AddWithValue("@type", obj_payerpayeeprivate.customertype);
                         upd_customermaster.Parameters.AddWithValue("@customervisible", obj_payerpayeeprivate.visibletoall);
                         int result_upd = upd_customermaster.ExecuteNonQuery();
 
@@ -228,5 +231,46 @@ namespace CardItNow.Services
         //    else { return "Customer id not avilable"; }
         //    return null;
         //}
+
+
+
+
+        public dynamic MandatoryPayee(string brn)
+        {
+            _logger.LogInfo("Getting into Get_customerpaymode(int id) api");
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    //all visible & hiding of fields are to be controlled with these variables.Must visible, Must hide fields are used 
+                    ArrayList visiblelist = new ArrayList();
+                    ArrayList hidelist = new ArrayList();
+
+
+                    string wStatus = "NormalStatus";
+
+                    var parameters = new { @cid = cid, @uid = uid, @brn = brn, @wStatus = wStatus };
+                    var SQL = @"select * from payerpayeeprivate where brn=@brn";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    var obj_MandatoryPayee = result.FirstOrDefault();
+                    var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customerpaymodes'";
+                    var customerpaymode_menuactions = connection.Query<dynamic>(SQLmenuactions, parameters);
+                    FormProperty formproperty = new FormProperty();
+                    formproperty.edit = true;
+
+
+                    connection.Close();
+                    connection.Dispose();
+                    return (new { MandatoryPayee = obj_MandatoryPayee, formproperty, visiblelist, hidelist });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: Get_customerpaymode(int id)\r\n {ex}");
+                throw ex;
+            }
+        }
+
     }
 }

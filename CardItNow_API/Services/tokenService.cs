@@ -178,10 +178,10 @@ namespace nTireBO.Services
                             u.firstname = objusermaster.firstname;
                             u.lastname = objusermaster.lastname;
                             u.nickname = objusermaster.nickname;
-                            u.geoid = objusermaster.geoid;
-                            u.customertype = objusermaster.type;
-                            u.profileimage = objusermaster.customerphoto;
-                            u.mobile = objusermaster.mobile;
+                            //u.geoid = objusermaster.basegoid;
+                            //u.customertype = objusermaster.type;
+                            //u.profileimage = objusermaster.customerphoto;
+                            //u.mobile = objusermaster.mobile;
 
                         }
                         else

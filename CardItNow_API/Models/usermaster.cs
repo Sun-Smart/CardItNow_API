@@ -43,6 +43,13 @@ namespace carditnow.Models
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
         public DateTime? updateddate{ get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<userrolemaster> userrolemasters { get; set; }
+        [NotMapped]
+        public string Deleted_userrolemaster_IDs { get; set; }
+
+
     }
     public class usermasterView
     {

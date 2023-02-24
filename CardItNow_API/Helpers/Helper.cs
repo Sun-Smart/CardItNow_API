@@ -188,7 +188,7 @@ namespace SunSmartnTireProducts.Helpers
             var response = (await client.PostAsync("http://localhost:7002/ntireboapi/boworkflow/addworkflow/" + cid + "/" + MenuName + "/" + PK, null));
 
         }
-        public async static Task<ActionResult<usermaster>> GetUser(string token, int user)
+        public async static Task<ActionResult<usermasterContext>> GetUser(string token, int user)
         {
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", token);
@@ -199,10 +199,10 @@ namespace SunSmartnTireProducts.Helpers
             //JsonConvert.DeserializeAnonymousType(jsonString.Result, objserialkey);
 
             // dynamic objtable = (JsonConvert.DeserializeObject<dynamic>(jsonString));     
-            List<usermaster> tbl = (List<usermaster>)JsonConvert.DeserializeObject(jsonString, typeof(List<usermaster>));
+            List<usermasterContext> tbl = (List<usermasterContext>)JsonConvert.DeserializeObject(jsonString, typeof(List<usermasterContext>));
             if (tbl.Count > 0)
             {
-                usermaster objuser = tbl[0];
+                usermasterContext objuser = tbl[0];
                 return objuser;
             }
             return null;
@@ -562,9 +562,23 @@ namespace SunSmartnTireProducts.Helpers
                 // return BadRequest();
             }
         }
-        public static int Count(string sql, dynamic paramaters)
+        //public static int Count(string sql, dynamic paramaters)
+        //{
+        //    return 0;
+        //}
+
+        public static long Count(string sql, object parameters)
         {
-            return 0;
+            NpgsqlConnection dbConn = new NpgsqlConnection(Connectionstring);
+            dynamic obj = null;
+            dbConn.Open();
+
+            var result = dbConn.Query<dynamic>(sql, parameters);
+            if (result.Count() > 0) obj = result.FirstOrDefault();
+            long count = 0;
+            if (obj != null) count = obj.count;
+            dbConn.Close();
+            return count;
         }
         public static int GetId(string key)
         {

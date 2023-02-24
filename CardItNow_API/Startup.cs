@@ -27,6 +27,7 @@ using nTireBO.Services;
 using nTireBO.Models;
 using CardItNow.interfaces;
 using CardItNow.Services;
+using SunSmartnTireProducts.Models;
 
 namespace CardItNow
 {
@@ -154,6 +155,8 @@ namespace CardItNow
             services.AddDbContext<transactiondetailContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
             services.AddDbContext<transactionitemdetailContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
             services.AddDbContext<transactionmasterContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
+            //services.AddDbContext<usermasterContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));//23feb
+
             services.AddDbContext<usermasterContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
             services.AddDbContext<userrolemasterContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
 

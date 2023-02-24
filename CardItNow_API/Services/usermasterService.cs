@@ -26,6 +26,9 @@ using System.Text;
 using LoggerService;
 using nTireBO.Services;
 using carditnow.Services;
+using Microsoft.SqlServer.Management.Sdk.Sfc;
+using Org.BouncyCastle.Crypto.Generators;
+//using Jose.native;
 
 namespace carditnow.Services
 {
@@ -33,6 +36,7 @@ namespace carditnow.Services
     {
         private readonly IConfiguration Configuration;
         private readonly usermasterContext _context;
+        private readonly IuserrolemasterService _userrolemasterService;
         private ILoggerManager _logger;
         private IHttpContextAccessor httpContextAccessor;
         private readonly IusermasterService _service;
@@ -138,7 +142,7 @@ namespace carditnow.Services
                     var SQL = @"select pk_encode(a.userid) as pkcol,a.userid as pk,a.*,
 r.roledescription as roleiddesc,
 g.geoname as basegeoiddesc
- from GetTable(NULL::public.usermasters,@cid) a 
+ from usermasters a 
  left join userrolemasters r on a.roleid=r.roleid
  left join geographymasters g on a.basegeoid=g.geoid
  where a.userid=@id";
@@ -229,12 +233,13 @@ g.geoname as basegeoiddesc from GetTable(NULL::public.usermasters,@cid) a
                 if (obj_usermaster.mobile != null)
                 {
                     var parametersmobile = new { @cid = cid, @uid = uid, @mobile = obj_usermaster.mobile, @userid = obj_usermaster.userid };
-                    if (Helper.Count("select count(*) from usermasters where  and mobile =  @mobile and (@userid == 0 ||  @userid == null ||  @userid < 0 || userid!=  @userid)", parametersmobile) > 0) serr += "mobile is unique\r\n";
+                    if (Helper.Count("select count(*) as count from usermasters where  mobile =  @mobile ", parametersmobile) > 0) serr += "mobile is unique\r\n";
                 }
+                //and (@userid == 0 ||  @userid == null ||  @userid < 0 || userid!=  @userid)
                 if (obj_usermaster.email != null)
                 {
                     var parametersemail = new { @cid = cid, @uid = uid, @email = obj_usermaster.email, @userid = obj_usermaster.userid };
-                    if (Helper.Count("select count(*) from usermasters where  and email =  @email and (@userid == 0 ||  @userid == null ||  @userid < 0 || userid!=  @userid)", parametersemail) > 0) serr += "email is unique\r\n";
+                    if (Helper.Count("select count(*) as count from usermasters where  email =  @email ", parametersemail) > 0) serr += "email is unique\r\n";
                 }
                 if (serr != "")
                 {
@@ -242,16 +247,22 @@ g.geoname as basegeoiddesc from GetTable(NULL::public.usermasters,@cid) a
                     throw new Exception(serr);
                 }
 
+                
                 //connection.Open();
                 //using var transaction = connection.BeginTransaction();
                 //_context.Database.UseTransaction(transaction);
                 //usermaster table
                 if (obj_usermaster.userid == 0 || obj_usermaster.userid == null || obj_usermaster.userid < 0)
                 {
+
+                    var datasss = Encoding.Unicode.GetBytes("123456");
+
                     if (obj_usermaster.status == "" || obj_usermaster.status == null) obj_usermaster.status = "A";
                     //obj_usermaster.companyid=cid;
                     obj_usermaster.createdby = uid;
+                   // obj_usermaster.emailpassword = crypt('1234', obj_usermaster.emailpassword);
                     obj_usermaster.createddate = DateTime.Now;
+                   
                     _context.usermasters.Add((dynamic)obj_usermaster);
                     querytype = 1;
                 }
@@ -268,6 +279,61 @@ g.geoname as basegeoiddesc from GetTable(NULL::public.usermasters,@cid) a
                 }
                 _logger.LogInfo("saving api usermasters ");
                 _context.SaveChanges();
+
+                //start
+
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    string wStatus = "NormalStatus";
+                    var parameters = new { @cid = cid, @uid = uid, @email = obj_usermaster.email, @wStatus = wStatus };
+                    var SQL = @"update usermasters set emailpassword=crypt('"+ obj_usermaster .emailpassword+ "',emailpassword) where email = @email ";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+
+
+                    connection.Close();
+                    connection.Dispose();
+                    return (result);
+                }
+
+
+                if (obj_usermaster.userrolemasters != null && obj_usermaster.userrolemasters.Count > 0)
+                {
+                    foreach (var obj in obj_usermaster.userrolemasters)
+                    {
+                        if (obj.roleid == null)
+                        {
+                            //obj.userid = result.usermaster.userid;
+                            _userrolemasterService.Save_userrolemaster(token, obj);
+                        }
+                    }
+                }
+                if (obj_usermaster.Deleted_userrolemaster_IDs != null && obj_usermaster.Deleted_userrolemaster_IDs != "")
+                {
+                    string[] ids = obj_usermaster.Deleted_userrolemaster_IDs.Split(',');
+                    foreach (var id in ids)
+                    {
+                        if (id != "")
+                        {
+                            _userrolemasterService.Delete(int.Parse(id));
+                        }
+                    }
+                }
+                //if (Request.Form.Files != null)
+                //{
+                //    foreach (var file in Request.Form.Files)
+                //    {
+                //        Helper.Upload(file);
+                //    }
+                //}
+
+
+
+
+                //end
+
+
+
+
 
 
                 //to generate serial key - select serialkey option for that column
@@ -326,6 +392,12 @@ g.geoname as basegeoiddesc from GetTable(NULL::public.usermasters,@cid) a
                 return false;
             }
         }
+
+
+        //
+
+       
+
     }
 }
 

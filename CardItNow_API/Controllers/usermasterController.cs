@@ -162,44 +162,16 @@ namespace carditnow.Controllers
 
         // POST: api/usermaster
         [HttpPost]
-        public async Task<ActionResult<usermaster>> Post_usermaster()
+        public async Task<ActionResult<usermaster>> Post_usermaster(usermaster obj_usermaster)
         {
             string token = Request.Headers["Authorization"].ToString();
             try
             {
-                usermasterView obj_usermaster = JsonConvert.DeserializeObject<usermasterView>(Request.Form["formData"]);
-                var result = _usermasterService.Save_usermaster(token, obj_usermaster.data);
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Authorization", token);
-                if (obj_usermaster.userrolemasters != null && obj_usermaster.userrolemasters.Count > 0)
-                {
-                    foreach (var obj in obj_usermaster.userrolemasters)
-                    {
-                        if (obj.roleid == null)
-                        {
-                            //obj.userid = result.usermaster.userid;
-                            _userrolemasterService.Save_userrolemaster(token, obj);
-                        }
-                    }
-                }
-                if (obj_usermaster.Deleted_userrolemaster_IDs != null && obj_usermaster.Deleted_userrolemaster_IDs != "")
-                {
-                    string[] ids = obj_usermaster.Deleted_userrolemaster_IDs.Split(',');
-                    foreach (var id in ids)
-                    {
-                        if (id != "")
-                        {
-                            _userrolemasterService.Delete(int.Parse(id));
-                        }
-                    }
-                }
-                if (Request.Form.Files != null)
-                {
-                    foreach (var file in Request.Form.Files)
-                    {
-                        Helper.Upload(file);
-                    }
-                }
+               // usermaster obj_usermaster = JsonConvert.DeserializeObject<usermaster>(Request.Form["data"]);
+                var result = _usermasterService.Save_usermaster(token, obj_usermaster);
+                //HttpClient client = new HttpClient();
+                //client.DefaultRequestHeaders.Add("Authorization", token);
+            
 
                 return Ok(result);
             }

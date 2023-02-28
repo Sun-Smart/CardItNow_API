@@ -114,5 +114,19 @@ namespace CardItNow.Controllers
             }
            
         }
+
+
+        //get privacy clause
+
+        [HttpGet]
+        [Route("GetPrivacyclause")]
+        public dynamic GetPrivacyclause()
+        {
+            var result = _commonService.GetPrivacyclause();
+            return result;
+        }
+
+
+
     }
 }

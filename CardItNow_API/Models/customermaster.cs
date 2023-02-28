@@ -89,12 +89,34 @@ namespace carditnow.Models
 
         [Column(TypeName = "bool")]
         public bool customervisible { get; set; }
+
+        public virtual ICollection<customerdetail> customerdetails { get; set; }
+        [NotMapped]
+        public string Deleted_customerdetail_IDs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<customertermsacceptance> customertermsacceptances { get; set; }
+        [NotMapped]
+        public string Deleted_customertermsacceptance_IDs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<customerpaymode> customerpaymodes { get; set; }
+        [NotMapped]
+        public string Deleted_customerpaymode_IDs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<customersecurityquestion> customersecurityquestions { get; set; }
+        [NotMapped]
+        public string Deleted_customersecurityquestion_IDs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<customersecurityquestionshistory> customersecurityquestionshistories { get; set; }
+        [NotMapped]
+        public string Deleted_customersecurityquestionshistory_IDs { get; set; }
+
+
     }
 
     public class processdocument
     {
         public string email { get; set; }
-        public int doucumenttype { get; set; }
+        public int documenttype { get; set; }
         public string document { get; set; }
         public string documentid { get; set; }
         public string selfie { get; set; }

@@ -292,16 +292,154 @@ namespace carditnow.Controllers
         }
 
         // POST: api/customermaster
+        //[HttpPost]
+        //public async Task<ActionResult<customermaster>> Post_customermaster()
+        //{
+        //    string token = Request.Headers["Authorization"].ToString();
+        //    try
+        //    {
+        //        customermasterView obj_customermaster = JsonConvert.DeserializeObject<customermasterView>(Request.Form["formData"]);
+        //        var result = _customermasterService.Save_customermaster(token, obj_customermaster.data);
+        //        HttpClient client = new HttpClient();
+        //        client.DefaultRequestHeaders.Add("Authorization", token);
+        //        if (obj_customermaster.customerdetails != null && obj_customermaster.customerdetails.Count > 0)
+        //        {
+        //            foreach (var obj in obj_customermaster.customerdetails)
+        //            {
+        //                if (obj.customerdetailid == null)
+        //                {
+        //                    obj.customerid = result.customermaster.customerid;
+        //                    _customerdetailService.Save_customerdetail(token, obj);
+        //                }
+        //            }
+        //        }
+        //        if (obj_customermaster.Deleted_customerdetail_IDs != null && obj_customermaster.Deleted_customerdetail_IDs != "")
+        //        {
+        //            string[] ids = obj_customermaster.Deleted_customerdetail_IDs.Split(',');
+        //            foreach (var id in ids)
+        //            {
+        //                if (id != "")
+        //                {
+        //                    _customerdetailService.Delete(int.Parse(id));
+        //                }
+        //            }
+        //        }
+        //        if (obj_customermaster.customertermsacceptances != null && obj_customermaster.customertermsacceptances.Count > 0)
+        //        {
+        //            foreach (var obj in obj_customermaster.customertermsacceptances)
+        //            {
+        //                if (obj.customertermid == null)
+        //                {
+        //                    obj.customerid = result.customermaster.customerid;
+        //                    _customertermsacceptanceService.Save_customertermsacceptance(token, obj);
+        //                }
+        //            }
+        //        }
+        //        if (obj_customermaster.Deleted_customertermsacceptance_IDs != null && obj_customermaster.Deleted_customertermsacceptance_IDs != "")
+        //        {
+        //            string[] ids = obj_customermaster.Deleted_customertermsacceptance_IDs.Split(',');
+        //            foreach (var id in ids)
+        //            {
+        //                if (id != "")
+        //                {
+        //                    _customertermsacceptanceService.Delete(int.Parse(id));
+        //                }
+        //            }
+        //        }
+        //        if (obj_customermaster.customerpaymodes != null && obj_customermaster.customerpaymodes.Count > 0)
+        //        {
+        //            foreach (var obj in obj_customermaster.customerpaymodes)
+        //            {
+        //                if (obj.payid == null)
+        //                {
+        //                    obj.customerid = result.customermaster.customerid;
+        //                    _customerpaymodeService.Save_customerpaymode(token, obj);
+        //                }
+        //            }
+        //        }
+        //        if (obj_customermaster.Deleted_customerpaymode_IDs != null && obj_customermaster.Deleted_customerpaymode_IDs != "")
+        //        {
+        //            string[] ids = obj_customermaster.Deleted_customerpaymode_IDs.Split(',');
+        //            foreach (var id in ids)
+        //            {
+        //                if (id != "")
+        //                {
+        //                    _customerpaymodeService.Delete(int.Parse(id));
+        //                }
+        //            }
+        //        }
+        //        if (obj_customermaster.customersecurityquestions != null && obj_customermaster.customersecurityquestions.Count > 0)
+        //        {
+        //            foreach (var obj in obj_customermaster.customersecurityquestions)
+        //            {
+        //                if (obj.securityquestionid == null)
+        //                {
+        //                    obj.customerid = result.customermaster.customerid;
+        //                    _customersecurityquestionService.Save_customersecurityquestion(token, obj);
+        //                }
+        //            }
+        //        }
+        //        if (obj_customermaster.Deleted_customersecurityquestion_IDs != null && obj_customermaster.Deleted_customersecurityquestion_IDs != "")
+        //        {
+        //            string[] ids = obj_customermaster.Deleted_customersecurityquestion_IDs.Split(',');
+        //            foreach (var id in ids)
+        //            {
+        //                if (id != "")
+        //                {
+        //                    _customersecurityquestionService.Delete(int.Parse(id));
+        //                }
+        //            }
+        //        }
+        //        if (obj_customermaster.customersecurityquestionshistories != null && obj_customermaster.customersecurityquestionshistories.Count > 0)
+        //        {
+        //            foreach (var obj in obj_customermaster.customersecurityquestionshistories)
+        //            {
+        //                if (obj.historyid == null)
+        //                {
+        //                    obj.customerid = result.customermaster.customerid;
+        //                    _customersecurityquestionshistoryService.Save_customersecurityquestionshistory(token, obj);
+        //                }
+        //            }
+        //        }
+        //        if (obj_customermaster.Deleted_customersecurityquestionshistory_IDs != null && obj_customermaster.Deleted_customersecurityquestionshistory_IDs != "")
+        //        {
+        //            string[] ids = obj_customermaster.Deleted_customersecurityquestionshistory_IDs.Split(',');
+        //            foreach (var id in ids)
+        //            {
+        //                if (id != "")
+        //                {
+        //                    _customersecurityquestionshistoryService.Delete(int.Parse(id));
+        //                }
+        //            }
+        //        }
+        //        if (Request.Form.Files != null)
+        //        {
+        //            foreach (var file in Request.Form.Files)
+        //            {
+        //                Helper.Upload(file);
+        //            }
+        //        }
+
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Controller:Save api {ex}");
+        //        return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+        //    }
+        //}
+
+//new
         [HttpPost]
-        public async Task<ActionResult<customermaster>> Post_customermaster()
+        public async Task<ActionResult<customermaster>> Post_customermaster(customermasterView obj_customermaster)
         {
             string token = Request.Headers["Authorization"].ToString();
             try
             {
-                customermasterView obj_customermaster = JsonConvert.DeserializeObject<customermasterView>(Request.Form["formData"]);
+               // customermasterView obj_customermaster = JsonConvert.DeserializeObject<customermasterView>(Request.Form["formData"]);
                 var result = _customermasterService.Save_customermaster(token, obj_customermaster.data);
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Authorization", token);
+                //HttpClient client = new HttpClient();
+                //client.DefaultRequestHeaders.Add("Authorization", token);
                 if (obj_customermaster.customerdetails != null && obj_customermaster.customerdetails.Count > 0)
                 {
                     foreach (var obj in obj_customermaster.customerdetails)
@@ -412,13 +550,13 @@ namespace carditnow.Controllers
                         }
                     }
                 }
-                if (Request.Form.Files != null)
-                {
-                    foreach (var file in Request.Form.Files)
-                    {
-                        Helper.Upload(file);
-                    }
-                }
+                //if (Request.Form.Files != null)
+                //{
+                //    foreach (var file in Request.Form.Files)
+                //    {
+                //        Helper.Upload(file);
+                //    }
+                //}
 
                 return Ok(result);
             }

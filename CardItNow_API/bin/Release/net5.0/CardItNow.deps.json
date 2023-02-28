@@ -49,6 +49,7 @@
           "Npgsql.EntityFrameworkCore.PostgreSQL": "5.0.7",
           "Swashbuckle.AspNetCore": "5.6.3",
           "System.IdentityModel.Tokens.Jwt": "6.25.1",
+          "Xamarin.Essentials": "1.7.5",
           "jose-jwt": "2.5.0",
           "ApiSdk": "1.0.0.0",
           "LoggerService": "1.0.0.0",
@@ -1804,6 +1805,20 @@
       "System.Windows.Extensions/5.0.0": {
         "dependencies": {
           "System.Drawing.Common": "5.0.0"
+        }
+      },
+      "Xamarin.Essentials/1.7.5": {
+        "dependencies": {
+          "System.Numerics.Vectors": "4.5.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Xamarin.Essentials.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Xamarin.Essentials.dll": {}
         }
       },
       "ApiSdk/1.0.0.0": {
@@ -4427,6 +4442,13 @@
       "sha512": "sha512-c1ho9WU9ZxMZawML+ssPKZfdnrg/OjR3pe0m9v8230z3acqphwvPJqzAkH54xRYm5ntZHGG1EPP3sux9H3qSPg==",
       "path": "system.windows.extensions/5.0.0",
       "hashPath": "system.windows.extensions.5.0.0.nupkg.sha512"
+    },
+    "Xamarin.Essentials/1.7.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+dDLUCXOehBxFOw5D5AXeFtcLQ0HBCMeVHSSbonVuZWJ2/8mb7+pGFQA8n053Lvpie7CAd8C+05chIKK6YCBiw==",
+      "path": "xamarin.essentials/1.7.5",
+      "hashPath": "xamarin.essentials.1.7.5.nupkg.sha512"
     },
     "ApiSdk/1.0.0.0": {
       "type": "reference",

@@ -220,6 +220,8 @@ namespace carditnow.Services
                     sb.Append("SunSmart Global");
                     SendEmail(email, subject, sb.ToString());
                     //Helper.SendEmail();
+
+                    
                     //return "Success";
 
                     //shy
@@ -305,6 +307,10 @@ namespace carditnow.Services
             int geid = 0;
             string geoids = string.Empty;
             geid = Convert.ToInt32(geoid);
+            int maxid = 0;
+            string newValueString = string.Empty;
+            string uidd = string.Empty;
+            string cusname = string.Empty;
             try
             {
 
@@ -334,12 +340,39 @@ namespace carditnow.Services
                 }
                 else
                 {
+
+                    using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                    {
+                        var parameters_customerid = new { @cid = cid, @uid = uid, @email = email };
+                        var SQL = "select max(customerid) as maxid from customermasters";
+                        var result = connection.Query<dynamic>(SQL, parameters_customerid);
+                        var obj_cutomerid = result.FirstOrDefault();
+                        maxid = obj_cutomerid.maxid;
+                        maxid = maxid + 1;
+                    }
+
+
+                    if (geid==1)
+                    {
+                         newValueString ="U"+ maxid.ToString().PadLeft(8, '0');
+                    }
+                    if (geid==2)
+                    {
+                         newValueString ="P"+ maxid.ToString().PadLeft(8, '0');
+                    }
+
+                    // convert back to string with leading zero's
+                    //string newValueString = maxid.ToString().PadLeft(8, '0');
+
+
+
                     var cus_master = new customermaster();
                     var cus_detail = new customerdetail();
                     cus_master.email = email;
                     cus_master.createdby = 0;
                     cus_master.mode = "I";
-                    cus_master.uid = "P" + DateTime.Now.Second.ToString();
+                    //cus_master.uid = "P" + DateTime.Now.Second.ToString();
+                    cus_master.uid = newValueString;
                     cus_master.type = "I";
                     cus_master.status = "N";
                     cus_master.mobile = "000000";
@@ -370,22 +403,25 @@ namespace carditnow.Services
                     sb.Append("</b>");
                     sb.Append("<br/>");
                     sb.Append("<br/>");
-                    sb.Append("Regards,");
+                    sb.Append("Cheers,");
                     sb.Append("<br/>");
-                    sb.Append("SunSmart Global");
-                    SendEmail(email, subject, sb.ToString());
+                    sb.Append("Carditnow");
+                    //SendEmail(email, subject, sb.ToString());
                     //Helper.SendEmail();
                     //return "Success";
+
+                    Helper.Email(sb.ToString(), email, cusname, subject);
 
                     //shy
 
                     using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                     {
                         var parameters_customerid = new { @cid = cid, @uid = uid, @email = email };
-                        var SQL = "  select pk_encode(m.customerid) as pkcol,m.customerid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
+                        var SQL = "  select pk_encode(m.customerid) as pkcol,m.customerid,m.uid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
                         var result = connection.Query<dynamic>(SQL, parameters_customerid);
                         var obj_cutomerid = result.FirstOrDefault();
                         custid = obj_cutomerid.customerid;
+                        uidd =obj_cutomerid.uid;
                         geonumber = obj_cutomerid.geoid;
                         custmid = custid.ToString();
                         geoids = geonumber.ToString();
@@ -394,6 +430,7 @@ namespace carditnow.Services
                     var cus_detail = new customerdetail();
                     cus_detail.geoid = geid;
                     cus_detail.customerid = custid;
+                    cus_detail.uid = uidd.ToString();
                     _context_cd.customerdetails.Add(cus_detail);
                     _context_cd.SaveChanges();
 
@@ -401,10 +438,11 @@ namespace carditnow.Services
                     using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                     {
                         var parameters_customerid = new { @cid = cid, @uid = uid, @email = email };
-                        var SQL = "  select pk_encode(m.customerid) as pkcol,m.customerid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
+                        var SQL = "  select pk_encode(m.customerid) as pkcol,m.customerid,m.uid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
                         var result = connection.Query<dynamic>(SQL, parameters_customerid);
                         var obj_cutomerid = result.FirstOrDefault();
                         custid = obj_cutomerid.customerid;
+                        uidd =obj_cutomerid.uid;
                         geonumber = obj_cutomerid.geoid;
                         custmid = custid.ToString();
                         geoids = geonumber.ToString();
@@ -766,10 +804,11 @@ namespace carditnow.Services
                             //var update_customerdocumnet = @"update customerdetails set identificationdocumenttype='"+ doucumenttype + "',idnumber='"+ documentid + "'where customerdetailid='" + result_customerdetails + "' ";
                             //var result_updatedocument = connection.Query(update_customerdocumnet);
 
-                            NpgsqlCommand inst_cd = new NpgsqlCommand("update customerdetails set identificationdocumenttype=@identificationdocumenttype,idnumber=@idnumber,updatedby=@updatedby,updateddate=@updateddate", connection);
+                            NpgsqlCommand inst_cd = new NpgsqlCommand("update customerdetails set identificationdocumenttype=@identificationdocumenttype,idnumber=@idnumber,updatedby=@updatedby,updateddate=@updateddate,livestockphoto=@document", connection);
                             inst_cd.Parameters.AddWithValue("@customerdetailid", result_customerdetails);
-                            inst_cd.Parameters.AddWithValue("@identificationdocumenttype", model.doucumenttype);
+                            inst_cd.Parameters.AddWithValue("@identificationdocumenttype", model.documenttype);
                             inst_cd.Parameters.AddWithValue("@idnumber", model.documentid);
+                            inst_cd.Parameters.AddWithValue("@document", model.document);
                             inst_cd.Parameters.AddWithValue("@updatedby", result_customerdetails);
                             inst_cd.Parameters.AddWithValue("@updateddate", DateTime.Now);
                             var output = inst_cd.ExecuteNonQuery();
@@ -804,7 +843,7 @@ namespace carditnow.Services
                             inst_cd.Parameters.AddWithValue("@customerid", result);
                             inst_cd.Parameters.AddWithValue("@type", 1);
                             inst_cd.Parameters.AddWithValue("@uid", 2);
-                            inst_cd.Parameters.AddWithValue("@identificationdocumenttype", model.doucumenttype);
+                            inst_cd.Parameters.AddWithValue("@identificationdocumenttype", model.documenttype);
                             inst_cd.Parameters.AddWithValue("@idnumber", model.documentid);
                             inst_cd.Parameters.AddWithValue("@createdby", result);
                             inst_cd.Parameters.AddWithValue("@createddate", DateTime.Now);
@@ -1137,20 +1176,22 @@ s.avatarname as defaultavatardesc from GetTable(NULL::public.customermasters,@ci
             {
                 string serr = "";
                 int querytype = 0;
-                if (obj_customermaster.uid != null)
-                {
-                    var parametersuid = new { @cid = cid, @uid = uid, @cuid = obj_customermaster.uid, @customerid = obj_customermaster.customerid };
-                    if (Helper.Count("select count(*) from customermasters where  and uid =  @cuid and (@customerid == 0 ||  @customerid == null ||  @customerid < 0 || customerid!=  @customerid)", parametersuid) > 0) serr += "uid is unique\r\n";
-                }
+                //if (obj_customermaster.uid != null)
+                //{
+                //    var parametersuid = new { @cid = cid, @uid = uid, @cuid = obj_customermaster.uid, @customerid = obj_customermaster.customerid };
+                //    if (Helper.Count("select count(*) from customermasters where   uid =  @cuid and (@customerid = 0 ||  @customerid = null ||  @customerid < 0 )", parametersuid) > 0) serr += "uid is unique\r\n";
+                //}
                 if (obj_customermaster.email != null)
                 {
                     var parametersemail = new { @cid = cid, @uid = uid, @email = obj_customermaster.email, @customerid = obj_customermaster.customerid };
-                    if (Helper.Count("select count(*) from customermasters where  and email =  @email and (@customerid == 0 ||  @customerid == null ||  @customerid < 0 || customerid!=  @customerid)", parametersemail) > 0) serr += "email is unique\r\n";
+                    if (Helper.Count("select count(*) from customermasters where   email =  @email ", parametersemail) > 0) serr += "email is unique\r\n";
+
+                    //and (@customerid = 0 ||  @customerid = null ||  @customerid < 0 )
                 }
                 if (obj_customermaster.mobile != null)
                 {
                     var parametersmobile = new { @cid = cid, @uid = uid, @mobile = obj_customermaster.mobile, @customerid = obj_customermaster.customerid };
-                    if (Helper.Count("select count(*) from customermasters where  and mobile =  @mobile and (@customerid == 0 ||  @customerid == null ||  @customerid < 0 || customerid!=  @customerid)", parametersmobile) > 0) serr += "mobile is unique\r\n";
+                    if (Helper.Count("select count(*) from customermasters where   mobile =  @mobile ", parametersmobile) > 0) serr += "mobile is unique\r\n";
                 }
                 if (serr != "")
                 {
@@ -1162,6 +1203,31 @@ s.avatarname as defaultavatardesc from GetTable(NULL::public.customermasters,@ci
                 //using var transaction = connection.BeginTransaction();
                 //_context.Database.UseTransaction(transaction);
                 //customermaster table
+
+
+                //using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                //{
+                //    var parameters_customerid = new { @cid = cid, @uid = uid, @email = email };
+                //    var SQL = "select max(customerid) as maxid from customermasters";
+                //    var result = connection.Query<dynamic>(SQL, parameters_customerid);
+                //    var obj_cutomerid = result.FirstOrDefault();
+                //    maxid = obj_cutomerid.maxid;
+                //    maxid = maxid + 1;
+                //}
+
+
+                //if (geid == 1)
+                //{
+                //    newValueString = "U" + maxid.ToString().PadLeft(8, '0');
+                //}
+                //if (geid == 2)
+                //{
+                //    newValueString = "P" + maxid.ToString().PadLeft(8, '0');
+                //}
+
+
+
+
                 if (obj_customermaster.customerid == 0 || obj_customermaster.customerid == null || obj_customermaster.customerid < 0)
                 {
                     if (obj_customermaster.status == "" || obj_customermaster.status == null) obj_customermaster.status = "A";
@@ -1184,6 +1250,9 @@ s.avatarname as defaultavatardesc from GetTable(NULL::public.customermasters,@ci
                 }
                 _logger.LogInfo("saving api customermasters ");
                 _context.SaveChanges();
+
+
+
 
 
                 //to generate serial key - select serialkey option for that column

@@ -190,12 +190,13 @@ namespace carditnow.Controllers
 
         [HttpPost]
         [Route("insertcustomersecurityquestions")]
-        public async Task<ActionResult<customersecurityquestion>> Post_customersecurityquestions(dynamic data)
+        public async Task<ActionResult<customersecurityquestion>> Post_customersecurityquestions(customersecurityquestionView obj_customersecurityquestion)
         {
             string token = Request.Headers["Authorization"].ToString();
             try
             {
-                var result = _customersecurityquestionService.Save_customersecuritymultiquestions(token, data);
+                //customersecurityquestionView obj_customersecurityquestion = JsonConvert.DeserializeObject<customersecurityquestionView>(Request.Form["formData"]);
+                var result = _customersecurityquestionService.Save_customersecuritymultiquestions(token, obj_customersecurityquestion.data);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -204,6 +205,29 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
+
+
+        //multiques 5 question same time
+
+        [HttpPost]
+        [Route("insertcustomerallsecurityquestions")]
+        public async Task<ActionResult<customersecurityquestion>> Post_customerallsecurityquestions(dynamic data)
+        {
+            string token = Request.Headers["Authorization"].ToString();
+            try
+            {
+                //customersecurityquestionView obj_customersecurityquestion = JsonConvert.DeserializeObject<customersecurityquestionView>(Request.Form["formData"]);
+                var result = _customersecurityquestionService.Save_customerallsecuritymultiquestions(data);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:Save api {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+
 
 
         [HttpPost]
@@ -224,6 +248,28 @@ namespace carditnow.Controllers
             }
         }
 
+
+
+        //check multiple security check questions(minimum 3 answer should be match)
+
+
+        [HttpPost]
+        [Route("securityquestionscheck")]
+        public async Task<ActionResult<customersecurityquestion>> Post_securityquestionscheck(dynamic data)
+        {
+            string token = Request.Headers["Authorization"].ToString();
+            //   string token ="";
+            try
+            {
+                var result = _customersecurityquestionService.securityquestionscheck(data);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:Save api {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
 
         [HttpGet]
         [Route("getList_customerid")]

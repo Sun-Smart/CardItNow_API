@@ -15,6 +15,8 @@ using System.Net;
 using System.Text;
 using carditnow.Models;
 using Dapper;
+using System.Collections;
+using SunSmartnTireProducts.Helpers;
 
 namespace CardItNow.Services
 {
@@ -360,6 +362,7 @@ namespace CardItNow.Services
         {
             try
             {
+                int custid = 0;
 
                 _logger.LogInfo("Getting into Forgot Passcode(string email) api");
 
@@ -393,12 +396,26 @@ namespace CardItNow.Services
                             sb.Append("<br/>");
                             sb.Append("SunSmart Global");
                             SendEmail(model.email, subject, sb.ToString());
+
+
+
+
+                            var parameters_customerid1 = new { @cid = cid, @uid = uid, @email = model.email };
+                            var SQL1 = "  select m.customerid,m.uid from customermasters m where m.email=@email ";
+                            var result_cus = connection.Query<dynamic>(SQL1, parameters_customerid1);
+                            var obj_cutomerid1 = result_cus.FirstOrDefault();
+                            custid = obj_cutomerid1.customerid;
+
+
+
+
                             //Helper.SendEmail();
                             //return "Success";
                             var result1 = new
                             {
                                 status = "success",
-                                data = "",   /* Application-specific data would go here. */
+                                data = "",
+                                customerid= custid,/* Application-specific data would go here. */
                                 message = "OTP has been send to register email id" /* Or optional success message */
                             };
                             return JsonConvert.SerializeObject(result1);
@@ -409,7 +426,8 @@ namespace CardItNow.Services
                         var result1 = new
                         {
                             status = "fail",
-                            data = "",   /* Application-specific data would go here. */
+                            data = "",
+                            customerid = "",/* Application-specific data would go here. */
                             message = "Forgot email ID not avilable in CarditNow App" /* Or optional success message */
                         };
                         return JsonConvert.SerializeObject(result1);
@@ -587,6 +605,54 @@ namespace CardItNow.Services
         {
             throw new NotImplementedException();
         }
+
+
+
+
+        //privacy clause
+
+
+        public dynamic GetPrivacyclause()
+        {
+            _logger.LogInfo("Getting into Get_customerpaymode(int id) api");
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    //all visible & hiding of fields are to be controlled with these variables.Must visible, Must hide fields are used 
+                    ArrayList visiblelist = new ArrayList();
+                    ArrayList hidelist = new ArrayList();
+
+
+                    string wStatus = "NormalStatus";
+
+                    var parameters = new { @cid = cid, @uid = uid,  @wStatus = wStatus };
+                    var SQL = @"select pk_encode(masterdataid) as pkcol,masterdataid,masterdatadescription as privacyclause from masterdatas where masterdatatypeid=10";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    var obj_privacypolicy = result.FirstOrDefault();
+                    //var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customerpaymodes'";
+                    //var customerpaymode_menuactions = connection.Query<dynamic>(SQLmenuactions, parameters);
+                    FormProperty formproperty = new FormProperty();
+                    formproperty.edit = true;
+
+
+                    connection.Close();
+                    connection.Dispose();
+                    return (new { Privacypolicy = obj_privacypolicy, formproperty, visiblelist, hidelist });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: Get_customerpaymode(int id)\r\n {ex}");
+                throw ex;
+            }
+        }
+
+
+
+
+
 
 
     }

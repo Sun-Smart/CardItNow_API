@@ -106,6 +106,10 @@
               "target": "Package",
               "version": "[6.25.1, )"
             },
+            "Xamarin.Essentials": {
+              "target": "Package",
+              "version": "[1.7.5, )"
+            },
             "jose-jwt": {
               "target": "Package",
               "version": "[2.5.0, )"

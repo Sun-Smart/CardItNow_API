@@ -15,5 +15,7 @@ namespace CardItNow.interfaces
         dynamic MaskedNumber(String source);
 
         dynamic MandatoryPayee(string brn);
+
+        dynamic GetallPayee(int customerid);
     }
 }

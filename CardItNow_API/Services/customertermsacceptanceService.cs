@@ -28,6 +28,9 @@ using nTireBO.Services;
 using nTireBO.Models;
 using carditnow.Services;
 using Microsoft.SqlServer.Management.Smo;
+using System.Net.Mail;
+using Xamarin.Essentials;
+using System.Net;
 
 namespace carditnow.Services
 {
@@ -257,6 +260,9 @@ t.termdetails as termiddesc from GetTable(NULL::public.customertermsacceptances,
             {
                 string serr = "";
                 int querytype = 0;
+                string email = string.Empty;
+                string cusname = string.Empty;
+                string fromname = "hi5@carditnow.com";
                 if (serr != "")
                 {
                     _logger.LogError($"Validation error-save: {serr}");
@@ -294,8 +300,41 @@ t.termdetails as termiddesc from GetTable(NULL::public.customertermsacceptances,
                 //to generate serial key - select serialkey option for that column
                 //the procedure to call after insert/update/delete - configure in systemtables 
 
-                Helper.AfterExecute(token, querytype, obj_customertermsacceptance, "customertermsacceptances", 0, obj_customertermsacceptance.customertermid, "", null, _logger);
+                //Helper.AfterExecute(token, querytype, obj_customertermsacceptance, "customertermsacceptances", 0, obj_customertermsacceptance.customertermid, "", null, _logger);
 
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    var parameters_customerid = new { @cid = cid, @uid = uid, @customerid = obj_customertermsacceptance.customerid };
+                    var SQL = "  select  email,concat(firstname,'',lastname) as cusname from customermasters where customerid=@customerid";
+                    var result = connection.Query<dynamic>(SQL, parameters_customerid);
+                    var obj_cutomerid = result.FirstOrDefault();
+                    email = obj_cutomerid.email;
+                    cusname = obj_cutomerid.cusname;
+                
+                    connection.Close(); 
+                }
+
+
+
+                string subject = "Welcome Greetings";
+                StringBuilder sb = new StringBuilder();
+                SmtpClient smtp = new SmtpClient();
+                smtp.EnableSsl = true;
+                smtp.UseDefaultCredentials = false;
+                sb.Append("Dear "+ cusname + ",");
+                sb.Append("<br/>");
+                sb.Append("<br/>");
+                sb.Append("Congratulations you have successfully onboard with CARDINOW ");
+                //sb.Append("<b>");
+                //sb.Append("");
+                //sb.Append("</b>");
+                sb.Append("<br/>");
+                sb.Append("<br/>");
+                sb.Append("Cheers,");
+                sb.Append("<br/>");
+                sb.Append("Carditnow");
+               // SendEmail(email, subject, sb.ToString());
+                Helper.Email(sb.ToString(), email, cusname, subject);
 
                 //After saving, send the whole record to the front end. What saved will be shown in the screen
                 var res = Get_customertermsacceptance((int)obj_customertermsacceptance.customertermid);
@@ -416,6 +455,45 @@ t.termdetails as termiddesc from GetTable(NULL::public.customertermsacceptances,
             }
             return null;
         }
+
+
+
+        public void SendEmail(string toemail, string subject, string htmlString)
+        {
+            //string _fromemail = @"support@myskillstree.com";
+            // string _password = @"SupMyST123";//
+
+            //  string _fromemail = @"support@sunsmartglobal.com";
+            //  string _password = @"ecqsufegzoucluji";
+
+            string _fromemail = @"pprakash@sunsmartglobal.com";
+            string _password = @"dtrhxbwaorkbtyia";
+
+            try
+            {
+                MailMessage message = new MailMessage();
+                SmtpClient smtp = new SmtpClient();
+                message.From = new MailAddress(_fromemail);
+                message.To.Add(new MailAddress(toemail));
+                message.Subject = subject;
+                message.IsBodyHtml = true; //to make message body as html  
+                message.Body = htmlString;
+                smtp.Port = 587;
+                smtp.Host = "smtp.gmail.com"; //for gmail host  
+                smtp.EnableSsl = true;
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = new NetworkCredential(_fromemail, _password);
+                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtp.Send(message);
+                smtp.Dispose();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  SendEmail \r\n {ex}");
+                throw ex;
+            }
+        }
+
     }
 }
 

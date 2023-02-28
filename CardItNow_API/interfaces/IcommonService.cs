@@ -21,5 +21,6 @@ namespace CardItNow.Services
         string ChangePass(changepasscode model);
         string otpvalidate(verify_otp model);
 
+        dynamic GetPrivacyclause();
     }
 }

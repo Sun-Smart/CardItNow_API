@@ -491,7 +491,9 @@ namespace SunSmartnTireProducts.Helpers
                // message.From.Add(new MailboxAddress("SunSmart", "support@sunsmartglobal.com"));
                 message.From.Add(new MailboxAddress("SunSmart", "pprakash@sunsmartglobal.com"));
 
-                message.Subject = "Notify from " + fromname;
+                //message.Subject = "Notify from " + fromname;
+
+                message.Subject =  fromname;
                 //We will say we are sending HTML. But there are options for plaintext etc. 
                 message.Body = new TextPart(TextFormat.Html)
                 {

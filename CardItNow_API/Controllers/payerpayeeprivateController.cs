@@ -82,6 +82,14 @@ namespace CardItNow.Controllers
         }
 
 
+        //payerpayeeprivate/GetpayeeList/{customerid}
+        [HttpGet]
+        [Route("GetpayeeList/{customerid}")]
+        public dynamic Get_payeeList(int customerid)
+        {
+            var result = _payerpayeeprivateService.GetallPayee(customerid);
+            return result;
+        }
 
     }
 }

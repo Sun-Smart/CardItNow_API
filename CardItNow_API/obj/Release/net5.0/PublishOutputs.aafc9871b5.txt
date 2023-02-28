@@ -92,6 +92,7 @@ E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\obj\Release\net5.0\Pu
 E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\obj\Release\net5.0\PubTmp\Out\System.Security.Cryptography.Pkcs.dll
 E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\obj\Release\net5.0\PubTmp\Out\System.Security.Cryptography.ProtectedData.dll
 E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\obj\Release\net5.0\PubTmp\Out\System.Text.Encoding.CodePages.dll
+E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\obj\Release\net5.0\PubTmp\Out\Xamarin.Essentials.dll
 E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\obj\Release\net5.0\PubTmp\Out\runtimes\unix\lib\netcoreapp3.1\Microsoft.Data.SqlClient.dll
 E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\obj\Release\net5.0\PubTmp\Out\runtimes\win\lib\netcoreapp3.1\Microsoft.Data.SqlClient.dll
 E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\obj\Release\net5.0\PubTmp\Out\runtimes\win-arm\native\Microsoft.Data.SqlClient.SNI.dll

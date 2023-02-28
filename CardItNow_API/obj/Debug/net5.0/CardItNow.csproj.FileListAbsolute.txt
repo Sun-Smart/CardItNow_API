@@ -413,3 +413,4 @@ E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\obj\Debug\net5.0\Card
 E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\obj\Debug\net5.0\ref\CardItNow.dll
 E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\obj\Debug\net5.0\CardItNow.pdb
 E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\obj\Debug\net5.0\CardItNow.genruntimeconfig.cache
+E:\Carditnow\CardItNow_API\CardItNow_API_new\CardItNow_API\bin\Debug\net5.0\Xamarin.Essentials.dll

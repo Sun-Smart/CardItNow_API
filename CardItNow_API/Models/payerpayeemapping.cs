@@ -43,6 +43,10 @@ namespace CardItNow.Models
         [Column(TypeName = "string")]
         public string uid { get; set; }
 
+
+        [Column(TypeName = "string")]
+        public string payeeuid { get; set; }
+
         [Column(TypeName = "int")]
         public int city { get; set; }
 

@@ -27,5 +27,9 @@ dynamic Get_customersecurityquestion(string sid);
         dynamic Get_customersecurityquestiondetail(int customerid);
 
         dynamic securityquestioncheck(string token, customersecurityquestion obj_customersecurityquestion);
+
+         dynamic Save_customerallsecuritymultiquestions(dynamic data);
+
+        dynamic securityquestionscheck(dynamic data);
     }  
     }  

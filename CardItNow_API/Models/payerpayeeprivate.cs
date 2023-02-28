@@ -74,7 +74,10 @@ namespace CardItNow.Models
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
         public DateTime? updateddate { get; set; }
-
+        [Column(TypeName = "string")]
+        public string accounttype { get; set; }
+        [Column(TypeName = "string")]
+        public string middlename { get; set; }
 
         [NotMapped]
         [Column(TypeName = "string")]

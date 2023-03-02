@@ -98,6 +98,9 @@ namespace nTireBO.Models
 
         [Column(TypeName = "string")]
         public string mobile { get; set; }
+
+        [Column(TypeName = "string")]
+        public string uid { get; set; }
     }
 
     public class LoginModel

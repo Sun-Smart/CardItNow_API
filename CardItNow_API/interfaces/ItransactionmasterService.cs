@@ -19,5 +19,18 @@ dynamic Get_transactionmaster(string sid);
          dynamic Get_transactionmaster(int id);
         dynamic Save_transactionmaster(string token,transactionmaster obj_transactionmaster);
         dynamic Delete(int id);
+
+        dynamic Get_purpose();
+
+        dynamic Get_payee();
+
+
+        dynamic transactiondocument(string token, transactionmaster obj_transactionmaster);
+
+        dynamic newjob();
+
+      Task<dynamic> jobdoc(jobdoc model);
+
+        dynamic billamountcalculation(string token, transactionmaster obj_transactionmaster);
     }  
     }  

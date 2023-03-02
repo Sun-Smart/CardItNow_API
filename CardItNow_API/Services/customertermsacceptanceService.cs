@@ -310,10 +310,17 @@ t.termdetails as termiddesc from GetTable(NULL::public.customertermsacceptances,
                     var obj_cutomerid = result.FirstOrDefault();
                     email = obj_cutomerid.email;
                     cusname = obj_cutomerid.cusname;
-                
-                    connection.Close(); 
-                }
 
+
+
+
+                    var parameters = new { @cid=cid, @customerid = obj_customertermsacceptance.customerid };
+                    string sql_update = "update customermasters set status='A' where customerid=@customerid ";
+                var result_update = connection.Query<string>(sql_update, parameters);
+               
+
+                    connection.Close();
+                }
 
 
                 string subject = "Welcome Greetings";

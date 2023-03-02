@@ -94,7 +94,8 @@ namespace nTireBO.Services
                 new Claim ("geoid", user.geoid == null? "": user.geoid.ToString ()),
                 new Claim ("customertype", user.customertype == null? "": user.customertype.ToString ()),
                 new Claim ("profileimage", user.profileimage == null? "": user.profileimage.ToString ()),
-                new Claim ("mobile", user.mobile == null? "": user.mobile.ToString ())
+                new Claim ("mobile", user.mobile == null? "": user.mobile.ToString ()),
+                new Claim ("uid", user.uid == null? "": user.uid.ToString ())
 
 
 
@@ -215,6 +216,7 @@ namespace nTireBO.Services
                             u.customertype = objusermaster.type;
                             u.profileimage = objusermaster.customerphoto;
                             u.mobile = objusermaster.mobile;
+                            u.uid = objusermaster.uid;
 
 
                             //c.customerid = objusermaster.customerid;

@@ -127,6 +127,15 @@ namespace CardItNow.Controllers
         }
 
 
+        [HttpPost]
+        [Route("duplicatetransactionvalidation")]
+        public dynamic duplicatetransactionvalidation(duplicatetransactionvalidation model)
+        {
+            var result = _commonService.duplicatetransactionvalidation(model);
+            return result;
+
+        }
+
 
     }
 }

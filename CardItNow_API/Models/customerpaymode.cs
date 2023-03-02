@@ -28,6 +28,9 @@ namespace carditnow.Models
         public string cardname { get; set; }
         [Column(TypeName = "DateTime")]
         public DateTime? expirydate { get; set; }
+
+        //[Column(TypeName = "string")]
+        //public string expirydate { get; set; }
         [Column(TypeName = "string")]
         public string bankname { get; set; }
         [Column(TypeName = "string")]

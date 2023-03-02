@@ -106,6 +106,10 @@
               "target": "Package",
               "version": "[6.25.1, )"
             },
+            "System.Net.Http": {
+              "target": "Package",
+              "version": "[4.3.4, )"
+            },
             "Xamarin.Essentials": {
               "target": "Package",
               "version": "[1.7.5, )"

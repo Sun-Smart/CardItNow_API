@@ -198,22 +198,49 @@ namespace CardItNow.Services
                 int custid = 0;
                 string custmid = string.Empty;
                 int geonumber = 0;
-                int geid = 0;
+                int geid =model.geoid;
                 string geoids = string.Empty;
-               // geid = Convert.ToInt32(geoid);
+                int maxid = 0;
+                string newValueString = string.Empty;
+                // geid = Convert.ToInt32(geoid);
 
                 _logger.LogInfo("Getting into Save social api Type Login");
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
                     connection.Open();
+
                     NpgsqlCommand CheckExists_social_media = new NpgsqlCommand("select count(email) from customermasters where email='" + model.email + "'", connection);
                     var exists_result = CheckExists_social_media.ExecuteScalar().ToString();
                     if (int.Parse(exists_result) == 0)
                     {
-                        NpgsqlCommand inst_social_media = new NpgsqlCommand("insert into customermasters(mode,uid,type,firstname,lastname,email,mobile,googleid,facebookid,status,createddate,createdby) values(@mode,@uid,@type,@firstname,@lastname,@email,@mobile,@googleid,@facebookid,@status,@createddate,@createdby)", connection);
-                        inst_social_media.Parameters.AddWithValue("@mode", "R");
-                        inst_social_media.Parameters.AddWithValue("@uid", "P" + DateTime.Now.Day);
-                        inst_social_media.Parameters.AddWithValue("@type", "C");
+                        //shy
+                        var parameters_customeridmax = new { @cid = cid, @uid = uid };
+                        var SQLmax = "select max(customerid) as maxid from customermasters";
+                        var resultmax = connection.Query<dynamic>(SQLmax, parameters_customeridmax);
+                        var obj_cutomeridmax = resultmax.FirstOrDefault();
+                        maxid = obj_cutomeridmax.maxid;
+                        maxid = maxid + 1;
+
+
+
+                        if (geid == 1)
+                        {
+                            newValueString = "U" + maxid.ToString().PadLeft(8, '0');
+                        }
+                        if (geid == 2)
+                        {
+                            newValueString = "P" + maxid.ToString().PadLeft(8, '0');
+                        }
+
+
+
+                        NpgsqlCommand inst_social_media = new NpgsqlCommand("insert into customermasters(mode,uid,type,firstname,lastname,email,mobile,googleid,facebookid,status,createddate,createdby,customervisible) values(@mode,@uid,@type,@firstname,@lastname,@email,@mobile,@googleid,@facebookid,@status,@createddate,@createdby,@customervisible)", connection);
+                       // inst_social_media.Parameters.AddWithValue("@mode", "R");
+                        inst_social_media.Parameters.AddWithValue("@mode", "I");
+                       // inst_social_media.Parameters.AddWithValue("@uid", "P" + DateTime.Now.Day);
+                        inst_social_media.Parameters.AddWithValue("@uid",newValueString);
+                        inst_social_media.Parameters.AddWithValue("@type", "I");
+                       // inst_social_media.Parameters.AddWithValue("@type", "C");
                         inst_social_media.Parameters.AddWithValue("@firstname", model.firstname);
                         inst_social_media.Parameters.AddWithValue("@lastname", model.lastname);
                         inst_social_media.Parameters.AddWithValue("@email", model.email);
@@ -235,9 +262,10 @@ namespace CardItNow.Services
                         {
                             inst_social_media.Parameters.AddWithValue("@facebookid", "0");
                         }
-                        inst_social_media.Parameters.AddWithValue("@status", "P");
+                        inst_social_media.Parameters.AddWithValue("@status", "N");
                         inst_social_media.Parameters.AddWithValue("@createddate", DateTime.Now);
                         inst_social_media.Parameters.AddWithValue("@createdby", 1);
+                        inst_social_media.Parameters.AddWithValue("@customervisible", false);
                         var result = inst_social_media.ExecuteNonQuery().ToString();
 
                        
@@ -650,6 +678,64 @@ namespace CardItNow.Services
         }
 
 
+
+
+        public string duplicatetransactionvalidation(duplicatetransactionvalidation model)
+        {
+            try
+            {
+               // var result1 = "";
+
+                _logger.LogInfo("Getting into Forgot Passcode(string email) api");
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+
+                    var parameters_customerid = new { @cid = cid, @uid = uid, @customerid = model.customerid, @municipality=model.municipality,@purpose=model.purpose,@startdate=model.startdate,@enddate=model.enddate,@billamount=model.billamount};
+                    //var SQL = "  select * from transactionmasters where uid=(select uid from customermasters where customerid=@customerid) and recipientuid = (select uid from customermasters where customerid = @municipality) and recipientid = @municipality and transactiontype = @purpose and pin = @pin and startdate = @startdate and expirydate = @enddate and contractamount = @billamount";
+                    //var result = connection.Query<dynamic>(SQL, parameters_customerid);
+
+
+
+                    NpgsqlCommand CheckExists_customer = new NpgsqlCommand(" select * from transactionmasters where uid=(select uid from customermasters where customerid='"+ model.customerid + "') and recipientuid = (select uid from customermasters where customerid = '"+ model.customerid + "') and recipientid = '"+model.municipality+"' and transactiontype = '"+model.purpose+"' and pin = '"+model.pin+"' and startdate = '"+model.startdate+"' and expirydate = '"+model.enddate+"' and contractamount = '"+model.billamount+"'", connection);
+                    NpgsqlDataAdapter get_customer = new NpgsqlDataAdapter(CheckExists_customer);
+                    DataTable dt = new DataTable();
+                    get_customer.Fill(dt);
+                    if (dt.Rows.Count==0)
+                    {
+                               
+                                    var result1 = new
+                                    {
+                                        status = "success",
+                                        data = "",   /* Application-specific data would go here. */
+                                        message = "Procedd for futher action" /* Or optional success message */
+                                    };
+                                    return JsonConvert.SerializeObject(result1);
+                              
+                            }
+                            else
+                            {
+                                var result1 = new
+                                {
+                                    status = "fail",
+                                    data = "",   /* Application-specific data would go here. */
+                                    message = "This invoice has been paid" /* Or optional success message */
+                                };
+                                return JsonConvert.SerializeObject(result1);
+                            }
+                      
+                                
+                            }
+                        }
+                   
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+                throw ex;
+            }
+            return null;
+        }
 
 
 

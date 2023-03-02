@@ -22,5 +22,7 @@ namespace CardItNow.Services
         string otpvalidate(verify_otp model);
 
         dynamic GetPrivacyclause();
+
+        string duplicatetransactionvalidation(duplicatetransactionvalidation model);
     }
 }

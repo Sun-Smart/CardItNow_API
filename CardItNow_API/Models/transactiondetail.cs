@@ -31,7 +31,7 @@ namespace carditnow.Models
         [Column(TypeName = "string")]
         public string recipientuiddesc { get; set; }
         [Column(TypeName = "int")]
-        public int recipientid { get; set; }
+        public int? recipientid { get; set; }
         [Column(TypeName = "int")]
         public int? payid { get; set; }
         [NotMapped]
@@ -79,6 +79,10 @@ namespace carditnow.Models
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
         public DateTime? updateddate{ get; set; }
+
+        //new
+        [Column(TypeName = "string")]
+        public string pin { get; set; }
     }
     public class transactiondetailView
     {

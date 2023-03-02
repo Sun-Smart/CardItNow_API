@@ -78,6 +78,39 @@ namespace carditnow.Models
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
         public DateTime? updateddate{ get; set; }
+        //new
+        [Column(TypeName = "string")]
+        public string pin { get; set; }
+
+        [NotMapped]
+        [Column(TypeName = "string")]
+        public string uploadDoc { get; set; }
+        //[NotMapped]
+        //[Column(TypeName = "string")]
+        //public string billamount { get; set; }
+
+        [NotMapped]
+        [Column(TypeName = "double")]
+        public double billamount { get; set; }
+
+        [NotMapped]
+        [Column(TypeName = "int")]
+        public int CC_carditnowfee { get; set; }
+
+
+        [NotMapped]
+        [Column(TypeName = "int")]
+        public int NB_carditnowfee { get; set; }
+
+        [NotMapped]
+        [Column(TypeName = "int")]
+
+        public int CC_totalamount { get; set; }
+
+
+        [NotMapped]
+        [Column(TypeName = "int")]
+        public int NB_totalamount { get; set; }
     }
     public class transactionmasterView
     {
@@ -87,6 +120,48 @@ public transactionmaster data{ get; set; }
         [NotMapped]
         public string Deleted_transactiondetail_IDs { get; set; }
 
+    }
+
+    public class jobdoc
+    {
+        public string jobid { get; set; }
+
+        public string uploadDoc { get; set; }
+    }
+
+    public class billamountclass
+    {
+
+        [NotMapped]
+        [Column(TypeName = "string")]
+        public string billamount { get; set; }
+
+        [NotMapped]
+        [Column(TypeName = "string")]
+        public string CC_carditnowfee { get; set; }
+
+        //[NotMapped]
+        //[Column(TypeName = "double")]
+        //public double CC_carditnowfee1 { get; set; }
+
+
+        [NotMapped]
+        [Column(TypeName = "string")]
+        public string NB_carditnowfee { get; set; }
+
+        [NotMapped]
+        [Column(TypeName = "string")]
+
+        public string CC_totalamount { get; set; }
+
+
+        [NotMapped]
+        [Column(TypeName = "string")]
+        public string NB_totalamount { get; set; }
+
+        public string paystatus { get; set; }
+
+        public string feereason { get; set; }
     }
 }
 

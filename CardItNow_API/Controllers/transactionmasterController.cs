@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using nTireBO.Services;
 using SunSmartnTireProducts.Helpers;
 using System;
@@ -168,44 +169,45 @@ namespace carditnow.Controllers
 
         // POST: api/transactionmaster
         [HttpPost]
-        public async Task<ActionResult<transactionmaster>> Post_transactionmaster()
+        [Route("Post_transactionmaster")]
+        public async Task<ActionResult<transactionmaster>> Post_transactionmaster(transactionmaster obj_transactionmaster)
         {
             string token = Request.Headers["Authorization"].ToString();
             try
             {
-                transactionmasterView obj_transactionmaster = JsonConvert.DeserializeObject<transactionmasterView>(Request.Form["formData"]);
-                var result = _transactionmasterService.Save_transactionmaster(token, obj_transactionmaster.data);
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Authorization", token);
-                if (obj_transactionmaster.transactiondetails != null && obj_transactionmaster.transactiondetails.Count > 0)
-                {
-                    foreach (var obj in obj_transactionmaster.transactiondetails)
-                    {
-                        if (obj.transactiondetailid == null)
-                        {
-                            obj.transactionid = result.transactionmaster.transactionid;
-                            _transactiondetailService.Save_transactiondetail(token, obj);
-                        }
-                    }
-                }
-                if (obj_transactionmaster.Deleted_transactiondetail_IDs != null && obj_transactionmaster.Deleted_transactiondetail_IDs != "")
-                {
-                    string[] ids = obj_transactionmaster.Deleted_transactiondetail_IDs.Split(',');
-                    foreach (var id in ids)
-                    {
-                        if (id != "")
-                        {
-                            _transactiondetailService.Delete(int.Parse(id));
-                        }
-                    }
-                }
-                if (Request.Form.Files != null)
-                {
-                    foreach (var file in Request.Form.Files)
-                    {
-                        Helper.Upload(file);
-                    }
-                }
+                //transactionmasterView obj_transactionmaster = JsonConvert.DeserializeObject<transactionmasterView>(Request.Form["formData"]);
+                var result = _transactionmasterService.Save_transactionmaster(token, obj_transactionmaster);
+                //HttpClient client = new HttpClient();
+                //client.DefaultRequestHeaders.Add("Authorization", token);
+                //if (obj_transactionmaster.transactiondetails != null && obj_transactionmaster.transactiondetails.Count > 0)
+                //{
+                //    foreach (var obj in obj_transactionmaster.transactiondetails)
+                //    {
+                //        if (obj.transactiondetailid == null)
+                //        {
+                //            obj.transactionid = result.transactionmaster.transactionid;
+                //            _transactiondetailService.Save_transactiondetail(token, obj);
+                //        }
+                //    }
+                //}
+                //if (obj_transactionmaster.Deleted_transactiondetail_IDs != null && obj_transactionmaster.Deleted_transactiondetail_IDs != "")
+                //{
+                //    string[] ids = obj_transactionmaster.Deleted_transactiondetail_IDs.Split(',');
+                //    foreach (var id in ids)
+                //    {
+                //        if (id != "")
+                //        {
+                //            _transactiondetailService.Delete(int.Parse(id));
+                //        }
+                //    }
+                //}
+                //if (Request.Form.Files != null)
+                //{
+                //    foreach (var file in Request.Form.Files)
+                //    {
+                //        Helper.Upload(file);
+                //    }
+                //}
 
                 return Ok(result);
             }
@@ -315,5 +317,100 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "Delete " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
+
+
+
+        [HttpGet("Getpurpose")]
+        public async Task<ActionResult<transactionmaster>> Get_purpose()
+        {
+            try
+            {
+                var result = _transactionmasterService.Get_purpose();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: Get_transactionmaster(int id)\r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Get_transactionmaster(int id) " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+        [HttpGet("Getpayee")]
+        public async Task<ActionResult<transactionmaster>> Get_payee()
+        {
+            try
+            {
+                var result = _transactionmasterService.Get_payee();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: Get_transactionmaster(int id)\r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Get_transactionmaster(int id) " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+
+
+
+        [HttpPost]
+        [Route("Post_transactiondocument")]
+        public async Task<ActionResult<transactionmaster>> Post_transactiondocument(transactionmaster obj_transactionmaster)
+        {
+            string token = Request.Headers["Authorization"].ToString();
+            try
+            {
+                var res1 = _transactionmasterService.newjob();
+                jobdoc obj_jobdoc = new jobdoc();
+                obj_jobdoc.jobid = res1;
+                obj_jobdoc.uploadDoc = obj_transactionmaster.uploadDoc;
+
+
+                var res2= await _transactionmasterService.jobdoc(obj_jobdoc);
+                //JObject j1 = JsonConvert.SerializeObject(res2);
+                //var result = "";
+                //transactionmasterView obj_transactionmaster = JsonConvert.DeserializeObject<transactionmasterView>(Request.Form["formData"]);
+                //var result = _transactionmasterService.transactiondocument(token, obj_transactionmaster);
+               
+                return Ok(res2);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:Save api {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+
+
+
+
+        [HttpPost]
+        [Route("Post_billamountcalculation")]
+        public async Task<ActionResult<transactionmaster>> Post_billamountcalculation(transactionmaster obj_transactionmaster)
+        {
+            string token = Request.Headers["Authorization"].ToString();
+            try
+            {
+               
+
+
+                var result = _transactionmasterService.billamountcalculation(token,obj_transactionmaster);
+                
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:Save api {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+
+
+
+
+
     }
 }

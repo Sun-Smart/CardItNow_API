@@ -406,7 +406,7 @@ namespace carditnow.Services
                     sb.Append("Cheers,");
                     sb.Append("<br/>");
                     sb.Append("Carditnow");
-                    //SendEmail(email, subject, sb.ToString());
+                   // SendEmail(email, subject, sb.ToString());
                     //Helper.SendEmail();
                     //return "Success";
 

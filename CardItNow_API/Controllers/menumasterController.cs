@@ -189,12 +189,12 @@ namespace carditnow.Controllers
 
         // POST: api/menumaster
         [HttpPost]
-        public async Task<ActionResult<menumaster>> Post_menumaster()
+        public async Task<ActionResult<menumaster>> Post_menumaster(menumasterView obj_menumaster)
         {
             string token = Request.Headers["Authorization"].ToString();
             try
             {
-                menumasterView obj_menumaster = JsonConvert.DeserializeObject<menumasterView>(Request.Form["formData"]);
+                //menumasterView obj_menumaster = JsonConvert.DeserializeObject<menumasterView>(Request.Form["formData"]);
                 var result = _menumasterService.Save_menumaster(token, obj_menumaster.data);
                 HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.Add("Authorization", token);

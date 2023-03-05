@@ -136,6 +136,46 @@ namespace CardItNow.Controllers
 
         }
 
+        //dashboard
 
+        [HttpPost]
+        [Route("dashboard_recenttransaction")]
+        public dynamic dashboard_recenttransaction(dashboard model)
+        {
+            var result = _commonService.get_recenttransaction(model);
+            return result;
+
+        }
+
+
+        [HttpPost]
+        [Route("dashboard_allrecenttransaction")]
+        public dynamic dashboard_allrecenttransaction(dashboard model)
+        {
+            var result = _commonService.get_allrecenttransaction(model);
+            return result;
+
+        }
+
+
+        [HttpPost]
+        [Route("dashboard_moneyspenddetails")]
+        public dynamic dashboard_moneyspenddetails(dashboard model)
+        {
+            var result = _commonService.get_moneyspenddetails(model);
+            return result;
+
+        }
+
+
+
+        [HttpPost]
+        [Route("dashboard_transactionoverview")]
+        public dynamic dashboard_transactionoverview(dashboard model)
+        {
+            var result = _commonService.get_transactionoverview(model);
+            return result;
+
+        }
     }
 }

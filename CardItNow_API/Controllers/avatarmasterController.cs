@@ -186,22 +186,22 @@ namespace carditnow.Controllers
         // POST: api/avatarmaster
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<avatarmaster>> Post_avatarmaster()
+        public async Task<ActionResult<avatarmaster>> Post_avatarmaster(avatarmasterView obj_avatarmaster)
         {
             string token = Request.Headers["Authorization"].ToString();
             try
             {
-                avatarmasterView obj_avatarmaster = JsonConvert.DeserializeObject<avatarmasterView>(Request.Form["formData"]);
+                //avatarmasterView obj_avatarmaster = JsonConvert.DeserializeObject<avatarmasterView>(Request.Form["formData"]);
                 var result = _avatarmasterService.Save_avatarmaster(token, obj_avatarmaster.data);
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Authorization", token);
-                if (Request.Form.Files != null)
-                {
-                    foreach (var file in Request.Form.Files)
-                    {
-                        Helper.Upload(file);
-                    }
-                }
+                //HttpClient client = new HttpClient();
+                //client.DefaultRequestHeaders.Add("Authorization", token);
+                //if (Request.Form.Files != null)
+                //{
+                //    foreach (var file in Request.Form.Files)
+                //    {
+                //        Helper.Upload(file);
+                //    }
+                //}
 
                 return Ok(result);
             }

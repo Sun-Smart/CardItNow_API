@@ -32,5 +32,7 @@ dynamic Get_transactionmaster(string sid);
       Task<dynamic> jobdoc(jobdoc model);
 
         dynamic billamountcalculation(string token, transactionmaster obj_transactionmaster);
+
+        dynamic Save_transactionmaster1(string token, transactionmaster obj_transactionmaster);
     }  
     }  

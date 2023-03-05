@@ -24,5 +24,12 @@ namespace CardItNow.Services
         dynamic GetPrivacyclause();
 
         string duplicatetransactionvalidation(duplicatetransactionvalidation model);
+
+        dynamic get_recenttransaction(dashboard model);
+
+        dynamic get_allrecenttransaction(dashboard model);
+
+        dynamic get_moneyspenddetails(dashboard model);
+        dynamic get_transactionoverview(dashboard model);
     }
 }

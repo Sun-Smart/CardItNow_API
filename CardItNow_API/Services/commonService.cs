@@ -738,8 +738,108 @@ namespace CardItNow.Services
         }
 
 
+        public dynamic get_recenttransaction(dashboard model)
+        {
+            _logger.LogInfo("Getting into Get_purpose() api");
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    var parameters = new { @cid = cid, @uid = uid,@customerid=model.customerid };
+                    string SQL = " select m.*,d.transactiondate,concat(c.firstname,'',c.lastname) as customername, m.recipientname as paidto,case when m.transactiontype = 'P' then 'Property Tax' when m.transactiontype = 'I' then 'Invoice' when m.transactiontype = 'R' then 'Rent' end as purpose,d.transactionconfirmnumber as TXNID from transactionmasters m left join transactiondetails d on m.transactionid = d.transactionid left join customermasters c on c.uid = d.uid and c.uid = m.uid  and c.customerid = m.recipientid where m.uid = (select uid from customermasters where customerid = @customerid) order by m.transactionid desc limit 4";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    connection.Close();
+                    connection.Dispose();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service : Get_purpose(): {ex}");
+                throw ex;
+            }
+            return null;
+        }
+
+        public dynamic get_allrecenttransaction(dashboard model)
+        {
+            _logger.LogInfo("Getting into Get_purpose() api");
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    var parameters = new { @cid = cid, @uid = uid, @customerid = model.customerid };
+                    string SQL = " select m.*,d.transactiondate,concat(c.firstname,'',c.lastname) as customername, m.recipientname as paidto,case when m.transactiontype = 'P' then 'Property Tax' when m.transactiontype = 'I' then 'Invoice' when m.transactiontype = 'R' then 'Rent' end as purpose,d.transactionconfirmnumber as TXNID from transactionmasters m left join transactiondetails d on m.transactionid = d.transactionid left join customermasters c on c.uid = d.uid and c.uid = m.uid  and c.customerid = m.recipientid where m.uid = (select uid from customermasters where customerid = @customerid) order by m.transactionid desc ";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    connection.Close();
+                    connection.Dispose();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service : Get_purpose(): {ex}");
+                throw ex;
+            }
+            return null;
+        }
+
+        public dynamic get_moneyspenddetails(dashboard model)
+        {
+            _logger.LogInfo("Getting into Get_purpose() api");
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    var parameters = new { @cid = cid, @uid = uid, @customerid = model.customerid };
+                    //string SQL = "select sum(m.payamount) as moneycount,extract(month from d.transactiondate) as month,to_char(d.transactiondate, 'month') as monthname from transactionmasters m left join transactiondetails d on m.transactionid = d.transactionid where m.uid = (select uid from customermasters where customerid = @customerid) and d.transactiondate > CURRENT_DATE - INTERVAL '6 months' group by d.transactiondate";
 
 
+                    string SQL = "select  (select sum(m.payamount) as moneycount from transactionmasters m  where m.uid = (select uid from customermasters where customerid = @customerid)) as moneyd,extract(month from d.transactiondate) as month,trim(to_char(d.transactiondate, 'month')) as monthname from transactionmasters m left join transactiondetails d on m.transactionid = d.transactionid where m.uid = (select uid from customermasters where customerid = @customerid) and d.transactiondate > CURRENT_DATE - INTERVAL '6 months' group by d.transactiondate ";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    connection.Close();
+                    connection.Dispose();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service : Get_purpose(): {ex}");
+                throw ex;
+            }
+            return null;
+        }
+
+
+        public dynamic get_transactionoverview(dashboard model)
+        {
+            _logger.LogInfo("Getting into Get_purpose() api");
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    var parameters = new { @cid = cid, @uid = uid, @customerid = model.customerid };
+                  
+
+
+                    string SQL = "select m.payamount as totalamount,m.contractamount as billamount,m.carditconvfee as ConvenienceFee,d.transactionconfirmnumber as transactionid,case when m.transactiontype = 'P' then 'Property Tax' when m.transactiontype = 'I' then 'Invoice' when m.transactiontype = 'R' then 'Rent' end as purpose,concat('Trnx ID',':', d.transactionconfirmnumber) as mailsubject,'pingme@carditnow.com' as toemail,m.* from transactionmasters m left join transactiondetails d on m.transactionid = d.transactionid where m.uid = (select uid from customermasters where customerid = @customerid)";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    connection.Close();
+                    connection.Dispose();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service : Get_purpose(): {ex}");
+                throw ex;
+            }
+            return null;
+        }
 
     }
 }

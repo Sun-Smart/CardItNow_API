@@ -276,12 +276,16 @@ namespace carditnow.Services
                 if (obj_avatarmaster.avatarname != null)
                 {
                     var parametersavatarname = new { @cid = cid, @uid = uid, @avatarname = obj_avatarmaster.avatarname, @avatarid = obj_avatarmaster.avatarid };
-                    if (Helper.Count("select count(*) from avatarmasters where  and avatarname =  @avatarname and (@avatarid == 0 ||  @avatarid == null ||  @avatarid < 0 || avatarid!=  @avatarid)", parametersavatarname) > 0) serr += "avatarname is unique\r\n";
+                    if (Helper.Count("select count(*) from avatarmasters where  avatarname =  @avatarname ", parametersavatarname) > 0) serr += "avatarname is unique\r\n";
+
+                    //and (@avatarid == 0 ||  @avatarid == null ||  @avatarid < 0 || avatarid!=  @avatarid)
                 }
                 if (obj_avatarmaster.avatarurl != null)
                 {
                     var parametersavatarurl = new { @cid = cid, @uid = uid, @avatarurl = obj_avatarmaster.avatarurl, @avatarid = obj_avatarmaster.avatarid };
-                    if (Helper.Count("select count(*) from avatarmasters where  and avatarurl =  @avatarurl and (@avatarid == 0 ||  @avatarid == null ||  @avatarid < 0 || avatarid!=  @avatarid)", parametersavatarurl) > 0) serr += "avatarurl is unique\r\n";
+                    if (Helper.Count("select count(*) from avatarmasters where   avatarurl =  @avatarurl ", parametersavatarurl) > 0) serr += "avatarurl is unique\r\n";
+
+                    //and (@avatarid == 0 ||  @avatarid == null ||  @avatarid < 0 || avatarid!=  @avatarid)
                 }
                 if (serr != "")
                 {
@@ -387,7 +391,55 @@ namespace carditnow.Services
 
         public dynamic Get_avatarmaster(int id)
         {
-            throw new NotImplementedException();
+
+            //shy start
+
+            _logger.LogInfo("Getting into Get_customermaster(int id) api");
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    //all visible & hiding of fields are to be controlled with these variables.Must visible, Must hide fields are used 
+                    ArrayList visiblelist = new ArrayList();
+                    ArrayList hidelist = new ArrayList();
+                    string wStatus = "NormalStatus";
+                    string vmode = "mode";
+                    string vcustomermastertype = "customermastertype";
+                    var parameters = new { @cid = cid, @uid = uid, @id = id, @wStatus = wStatus, @vmode = vmode, @vcustomermastertype = vcustomermastertype };
+                    var SQL = @"select * from avatarmasters where avatarid=@id";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    var obj_customermaster = result.FirstOrDefault();
+                    var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'avatarmasters'";
+                    var customermaster_menuactions = connection.Query<dynamic>(SQLmenuactions, parameters);
+                    FormProperty formproperty = new FormProperty();
+                    formproperty.edit = true;
+
+
+                    connection.Close();
+                    connection.Dispose();
+                    return (new { customermaster = obj_customermaster, customermaster_menuactions, formproperty, visiblelist, hidelist });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: Get_customermaster(int id)\r\n {ex}");
+                throw ex;
+            }
+
+
+
+
+            //end
+
+
+
+
+
+
+
+
+            // throw new NotImplementedException();  ramesh
         }
         [AllowAnonymous]
         public async Task<string> UploadSelfi(avatarUploadRequestViewModel objfile)

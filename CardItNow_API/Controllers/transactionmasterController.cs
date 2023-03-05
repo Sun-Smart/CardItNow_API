@@ -218,6 +218,33 @@ namespace carditnow.Controllers
             }
         }
 
+
+
+
+
+
+        // POST: api/transactionmaster
+        [HttpPost]
+        [Route("Post_transactionmaster1")]
+        public async Task<ActionResult<transactionmaster>> Post_transactionmaster1(transactionmaster obj_transactionmaster)
+        {
+            string token = Request.Headers["Authorization"].ToString();
+            try
+            {
+                
+                var result = _transactionmasterService.Save_transactionmaster1(token, obj_transactionmaster);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:Save api {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+
+        
+
         [HttpGet]
         [Route("getList_uid")]
         public async Task<ActionResult<dynamic>> getList_uid()

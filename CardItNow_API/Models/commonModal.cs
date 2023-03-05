@@ -95,4 +95,10 @@ namespace CardItNow.Models
         [Column(TypeName = "DateTime")]
         public DateTime enddate { get; set; }
     }
+
+
+    public class dashboard
+    {
+        public int customerid { get; set; }
+    }
 }

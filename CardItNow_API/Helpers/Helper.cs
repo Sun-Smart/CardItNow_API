@@ -489,7 +489,7 @@ namespace SunSmartnTireProducts.Helpers
                                 emailClient.Authenticate("srimathi@sunsmartglobal.com", "sender@123$");
                                 */
                // message.From.Add(new MailboxAddress("SunSmart", "support@sunsmartglobal.com"));
-                message.From.Add(new MailboxAddress("SunSmart", "pprakash@sunsmartglobal.com"));
+                message.From.Add(new MailboxAddress("SunSmart", "support@sunsmartglobal.com"));
 
                 //message.Subject = "Notify from " + fromname;
 
@@ -509,8 +509,8 @@ namespace SunSmartnTireProducts.Helpers
                     //Remove any OAuth functionality as we won't be using it. 
                     emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
 
-                   // emailClient.Authenticate("support@sunsmartglobal.com", "ecqsufegzoucluji");
-                    emailClient.Authenticate("pprakash@sunsmartglobal.com", "dtrhxbwaorkbtyia");
+                   emailClient.Authenticate("support@sunsmartglobal.com", "ogiytmqpuypkfugt");
+                  //  emailClient.Authenticate("pprakash@sunsmartglobal.com", "dtrhxbwaorkbtyia");
 
                     emailClient.Send(message);
 

@@ -252,7 +252,8 @@ var parametersdocumentnumber =new {@cid=cid,@uid=uid, @documentnumber = obj_tran
                 //transactionmaster table
                 if (obj_transactionmaster.transactionid == 0 || obj_transactionmaster.transactionid == null || obj_transactionmaster.transactionid<0)
 {
-//if(obj_transactionmaster.status=="" || obj_transactionmaster.status==null)obj_transactionmaster.status="A";
+//if(obj_transactionmaster.status=="" || obj_transactionmaster.status==null)
+obj_transactionmaster.status="I";
 //obj_transactionmaster.companyid=cid;
 obj_transactionmaster.createdby=uid;
 obj_transactionmaster.createddate=DateTime.Now;
@@ -289,6 +290,7 @@ querytype=2;
                 cus_trans.recipientuid = obj_transactionmaster.recipientuid;
                 cus_trans.payid = obj_transactionmaster.payid;
                 cus_trans.transactiondate = DateTime.Now;
+                cus_trans.status = "I";
                 cus_trans.transactionamount = obj_transactionmaster.payamount;
                 _td_context.Add(cus_trans);
                 _td_context.SaveChanges();
@@ -311,8 +313,103 @@ return (res);
             }
         }
 
+
+        //saving new method
+
+        public dynamic Save_transactionmaster1(string token, transactionmaster obj_transactionmaster)
+        {
+            int transactionid = 0;
+            _logger.LogInfo("Saving: Save_transactionmaster(string token,transactionmaster obj_transactionmaster) ");
+            try
+            {
+                var res = "";
+                string serr = "";
+                int querytype = 0;
+                if (obj_transactionmaster.documentnumber != null)
+                {
+                    var parametersdocumentnumber = new { @cid = cid, @uid = uid, @documentnumber = obj_transactionmaster.documentnumber, @transactionid = obj_transactionmaster.transactionid };
+                    if (Helper.Count("select count(*) from transactionmasters where   documentnumber =  @documentnumber ", parametersdocumentnumber) > 0) serr += "documentnumber is unique\r\n";
+                }
+
+                //and (@transactionid == 0 ||  @transactionid == null ||  @transactionid < 0 || transactionid!=  @transactionid
+                if (serr != "")
+                {
+                    //_logger.LogError($"Validation error-save: {serr}");
+                    //throw new Exception(serr);
+
+                    res = serr;
+                }
+
+                else
+                {
+
+
+                    if (obj_transactionmaster.transactionid == 0 || obj_transactionmaster.transactionid == null || obj_transactionmaster.transactionid < 0)
+                    {
+                        //if(obj_transactionmaster.status=="" || obj_transactionmaster.status==null)
+                        obj_transactionmaster.status = "I";
+                        //obj_transactionmaster.companyid=cid;
+                        obj_transactionmaster.createdby = uid;
+                        obj_transactionmaster.createddate = DateTime.Now;
+                        _context.transactionmasters.Add((dynamic)obj_transactionmaster);
+                        querytype = 1;
+                    }
+                    else
+                    {
+                        //obj_transactionmaster.companyid=cid;
+                        obj_transactionmaster.updatedby = uid;
+                        obj_transactionmaster.updateddate = DateTime.Now;
+                        _context.Entry(obj_transactionmaster).State = EntityState.Modified;
+                        //when IsModified = false, it will not update these fields.so old values will be retained
+                        _context.Entry(obj_transactionmaster).Property("createdby").IsModified = false;
+                        _context.Entry(obj_transactionmaster).Property("createddate").IsModified = false;
+                        querytype = 2;
+                    }
+                    _logger.LogInfo("saving api transactionmasters ");
+                    _context.SaveChanges();
+
+                    using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                    {
+                        var parameters_customerid = new { @cid = cid, @uid = uid };
+                        var SQL = "select max(transactionid) as transactionid from transactionmasters";
+                        var result = connection.Query<dynamic>(SQL, parameters_customerid);
+                        var obj_cutomerid = result.FirstOrDefault();
+                        transactionid = obj_cutomerid.transactionid;
+                    }
+
+                    var cus_trans = new transactiondetail();
+                    cus_trans.transactionid = Convert.ToInt32(transactionid);
+                    cus_trans.uid = obj_transactionmaster.uid;
+                    cus_trans.recipientid = obj_transactionmaster.recipientid;
+                    cus_trans.recipientuid = obj_transactionmaster.recipientuid;
+                    cus_trans.payid = obj_transactionmaster.payid;
+                    cus_trans.transactiondate = DateTime.Now;
+                    cus_trans.status = "I";
+                    cus_trans.transactionamount = obj_transactionmaster.payamount;
+                    _td_context.Add(cus_trans);
+                    _td_context.SaveChanges();
+
+
+                    //_context.customermasters.Add(cus_master);
+
+                    Helper.AfterExecute(token, querytype, obj_transactionmaster, "transactionmasters", 0, obj_transactionmaster.transactionid, "", null, _logger);
+
+
+                    //After saving, send the whole record to the front end. What saved will be shown in the screen
+                    res = Get_transactionmaster((int)obj_transactionmaster.transactionid);
+                }
+                return (res);
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Service: Save_transactionmaster(string token,transactionmaster obj_transactionmaster) \r\n{ex}");
+                throw ex;
+            }
+        }
+
         // DELETE: transactionmaster/5
-//delete process
+        //delete process
         public  dynamic Delete(int id)
         {
         try{

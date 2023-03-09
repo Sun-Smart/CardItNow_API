@@ -84,6 +84,8 @@ namespace CardItNow.Services
                 Tmsv2customersEmbeddedDefaultPaymentInstrumentEmbeddedInstrumentIdentifier result = apiInstance.PostInstrumentIdentifier(requestObj, profileid);
                 response.State = result.State;
                 response.CardNoMasked = result.Card.Number;
+                string id = result.Id;
+                response.id = result.Id;
                 return response;
             }
             catch (Exception e)

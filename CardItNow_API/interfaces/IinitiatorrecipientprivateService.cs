@@ -18,6 +18,8 @@ namespace carditnow.Services
 dynamic Get_initiatorrecipientprivate(string sid);
          dynamic Get_initiatorrecipientprivate(int id);
         dynamic Save_initiatorrecipientprivate(string token,initiatorrecipientprivate obj_initiatorrecipientprivate);
+
+        dynamic Save_initiatorrecipientprivate1(string token, initiatorrecipientprivate obj_initiatorrecipientprivate);
         dynamic Delete(int id);
     }  
     }  

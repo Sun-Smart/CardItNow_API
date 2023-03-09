@@ -1,4 +1,6 @@
-﻿namespace CardItNow.ViewModel
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace CardItNow.ViewModel
 {
     public class CSCreateInstrumentIdentifierCardRequestViewModel
     {
@@ -15,6 +17,8 @@
     {
         public string State { get; set; }
         public string CardNoMasked { get; set; }
+        [NotMapped]
+        public string id { get; set; }
 
     }
 }

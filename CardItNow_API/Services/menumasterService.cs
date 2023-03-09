@@ -122,7 +122,7 @@ int id = Helper.GetId(sid);
                     var usermasterresult = connection.Query<dynamic>(SQLusermaster, parametersusermaster).FirstOrDefault();
                     if (true || usermasterresult.userroleid == 6)
                     {
-                        string SQLresult = @"select distinct * from menumasters order by menuname";
+                        string SQLresult = @"select distinct * from menumasters where  status='A' order by menuname ";
                         var result = connection.Query<dynamic>(SQLresult, parametersusermaster).ToList();
                         connection.Close();
                         connection.Dispose();

@@ -202,6 +202,7 @@ namespace CardItNow.Services
                 string geoids = string.Empty;
                 int maxid = 0;
                 string newValueString = string.Empty;
+                string cusname = string.Empty;
                 // geid = Convert.ToInt32(geoid);
 
                 _logger.LogInfo("Getting into Save social api Type Login");
@@ -270,13 +271,14 @@ namespace CardItNow.Services
 
                        
                             var parameters_customerid = new { @cid = cid, @uid = uid, @email = model.email };
-                            var SQL1 = "  select pk_encode(m.customerid) as pkcol,m.customerid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
+                            var SQL1 = "  select pk_encode(m.customerid) as pkcol,m.customerid,m.customerid,concat(m.firstname,'',m.lastname) as cusname,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
                             var result2 = connection.Query<dynamic>(SQL1, parameters_customerid);
                             var obj_cutomerid = result2.FirstOrDefault();
                             custid = obj_cutomerid.customerid;
                             geonumber = obj_cutomerid.geoid;
                             custmid = custid.ToString();
                             geoids = geonumber.ToString();
+                        cusname = obj_cutomerid.cusname;
 
 
                         var cus_detail = new customerdetail();
@@ -287,17 +289,52 @@ namespace CardItNow.Services
 
 
                         var parameters_customerid2 = new { @cid = cid, @uid = uid, @email = model.email };
-                        var SQL2 = "  select pk_encode(m.customerid) as pkcol,m.customerid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
+                        var SQL2 = "  select pk_encode(m.customerid) as pkcol,m.customerid,concat(m.firstname,'',m.lastname) as cusname,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
                         var result3 = connection.Query<dynamic>(SQL2, parameters_customerid);
                         var obj_cutomerid2 = result3.FirstOrDefault();
                         custid = obj_cutomerid2.customerid;
                         geonumber = obj_cutomerid2.geoid;
                         custmid = custid.ToString();
                         geoids = geonumber.ToString();
-
+                        cusname = obj_cutomerid.cusname;
 
                         if (int.Parse(result) > 0)
                         {
+
+                            string subject = "Welcome Greetings";
+                            StringBuilder sb = new StringBuilder();
+                            SmtpClient smtp = new SmtpClient();
+                            smtp.EnableSsl = true;
+                            smtp.UseDefaultCredentials = false;
+                            sb.Append("Dear " + cusname + ",");
+                            sb.Append("<br/>");
+                            sb.Append("<br/>");
+                            sb.Append("Congratulations you have successfully onboard with CARDINOW ");
+                            //sb.Append("<b>");
+                            //sb.Append("");
+                            //sb.Append("</b>");
+                            sb.Append("<br/>");
+                            sb.Append("<br/>");
+                            sb.Append("Cheers,");
+                            sb.Append("<br/>");
+                            sb.Append("Carditnow");
+                            // SendEmail(email, subject, sb.ToString());
+                            Helper.Email(sb.ToString(), model.email, cusname, subject);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                             var result1 = new
                             {
                                 status = "success",
@@ -840,6 +877,84 @@ namespace CardItNow.Services
             }
             return null;
         }
+
+        //get LGU customers
+
+        public dynamic GetLGUcustomers()
+        {
+            _logger.LogInfo("Getting into Get_customerpaymode(int id) api");
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    //all visible & hiding of fields are to be controlled with these variables.Must visible, Must hide fields are used 
+                    ArrayList visiblelist = new ArrayList();
+                    ArrayList hidelist = new ArrayList();
+
+
+                    string wStatus = "NormalStatus";
+
+                    var parameters = new { @cid = cid, @uid = uid, @wStatus = wStatus };
+                    var SQL = @"select * from customermasters where mode='I' or mode='B' and status='A' ";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    var obj_privacypolicy = result.FirstOrDefault();
+                    //var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customerpaymodes'";
+                    //var customerpaymode_menuactions = connection.Query<dynamic>(SQLmenuactions, parameters);
+                    FormProperty formproperty = new FormProperty();
+                    formproperty.edit = true;
+
+
+                    connection.Close();
+                    connection.Dispose();
+                    return (new { Privacypolicy = obj_privacypolicy, formproperty, visiblelist, hidelist });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: Get_customerpaymode(int id)\r\n {ex}");
+                throw ex;
+            }
+        }
+
+
+        public dynamic GetHomerentcustomers()
+        {
+            _logger.LogInfo("Getting into Get_customerpaymode(int id) api");
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    //all visible & hiding of fields are to be controlled with these variables.Must visible, Must hide fields are used 
+                    ArrayList visiblelist = new ArrayList();
+                    ArrayList hidelist = new ArrayList();
+
+
+                    string wStatus = "NormalStatus";
+
+                    var parameters = new { @cid = cid, @uid = uid, @wStatus = wStatus };
+                    var SQL = @"select * from customermasters where mode='P' or mode='M' or mode='IL' and status='A'";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    var obj_privacypolicy = result.FirstOrDefault();
+                    //var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customerpaymodes'";
+                    //var customerpaymode_menuactions = connection.Query<dynamic>(SQLmenuactions, parameters);
+                    FormProperty formproperty = new FormProperty();
+                    formproperty.edit = true;
+
+
+                    connection.Close();
+                    connection.Dispose();
+                    return (new { Privacypolicy = obj_privacypolicy, formproperty, visiblelist, hidelist });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: Get_customerpaymode(int id)\r\n {ex}");
+                throw ex;
+            }
+        }
+
 
     }
 }

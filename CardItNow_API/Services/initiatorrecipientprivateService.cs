@@ -26,6 +26,9 @@ using System.Text;
 using LoggerService;
 using nTireBO.Services;
 using carditnow.Services;
+using MailKit.Net.Smtp;
+using System.Net.Mail;
+using System.Net;
 
 namespace carditnow.Services
 {
@@ -33,6 +36,8 @@ namespace carditnow.Services
     {
         private readonly IConfiguration Configuration;
         private readonly initiatorrecipientprivateContext _context;
+        private readonly customermasterContext _cus_context;
+        private readonly customerdetailContext _cd_context;
         private ILoggerManager _logger;
         private IHttpContextAccessor httpContextAccessor;
         private readonly IinitiatorrecipientprivateService _service;
@@ -44,11 +49,13 @@ string uidemail="";
 
 
 
-        public initiatorrecipientprivateService(initiatorrecipientprivateContext context,IConfiguration configuration, ILoggerManager logger,  IHttpContextAccessor objhttpContextAccessor )
+        public initiatorrecipientprivateService(initiatorrecipientprivateContext context, customermasterContext cus_context, customerdetailContext cd_context, IConfiguration configuration, ILoggerManager logger,  IHttpContextAccessor objhttpContextAccessor )
         {
 Configuration = configuration;
             _context = context;
             _logger = logger;
+            _cus_context = cus_context;
+            _cd_context = cd_context;
             this.httpContextAccessor = objhttpContextAccessor;
         cid=int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "companyid").Value.ToString());
         uid=int.Parse(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid").Value.ToString());
@@ -266,6 +273,7 @@ Helper.AfterExecute(token,querytype,obj_initiatorrecipientprivate,"initiatorreci
 //After saving, send the whole record to the front end. What saved will be shown in the screen
 var res= Get_initiatorrecipientprivate( (int)obj_initiatorrecipientprivate.privateid);
 return (res);
+                
             }
             catch (Exception ex)
             {
@@ -275,8 +283,371 @@ return (res);
             }
         }
 
+
+
+
+        public dynamic Save_initiatorrecipientprivate1(string token, initiatorrecipientprivate obj_initiatorrecipientprivate)
+        {
+            if (obj_initiatorrecipientprivate.customerid != null)
+            {
+                int maxid = 0;
+                string newValueString = string.Empty;
+                //string geoids = obj_initiatorrecipientprivate.geoid;
+                int? geid = 0;
+                geid = obj_initiatorrecipientprivate.geoid;
+                bool OTPUpdated = false;
+                int custid = 0;
+                //int uidd = 0;
+                string uidd = string.Empty;
+                string cusemail = string.Empty;
+                string cusname = string.Empty;
+                _logger.LogInfo("Getting into Get_avatarmasters() api");
+                try
+                {
+                    using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                    {
+
+                        connection.Open();
+                        //if ((obj_initiatorrecipientprivate.customerid != null) &&
+                        //    (!string.IsNullOrEmpty(obj_initiatorrecipientprivate.Type)))
+                        //{
+
+
+                        var customers = _cus_context.customermasters.Where(x => x.email == obj_initiatorrecipientprivate.email);
+                        if (customers != null && customers.Any())
+                        {
+                            var dbEntry = _cus_context.customermasters.Find(customers.FirstOrDefault().customerid);
+
+                            if (dbEntry != null)
+                            {
+
+                                var parameters_customerid1 = new { @cid = cid, @uid = uid, @email = obj_initiatorrecipientprivate.email };
+                                var SQL1 = "  select pk_encode(m.customerid) as pkcol,m.customerid,m.uid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
+                                var result1 = connection.Query<dynamic>(SQL1, parameters_customerid1);
+                                var obj_cutomerid1 = result1.FirstOrDefault();
+                                custid = obj_cutomerid1.customerid;
+                                uidd = obj_cutomerid1.uid;
+
+                                NpgsqlCommand upd_customermaster = new NpgsqlCommand("update customermasters set mode=@mode,type=@type,customervisible=@customervisible where customerid=@customerid", connection);
+                                upd_customermaster.Parameters.AddWithValue("@customerid", obj_initiatorrecipientprivate.customerid);
+                                upd_customermaster.Parameters.AddWithValue("@mode", obj_initiatorrecipientprivate.type);
+                                upd_customermaster.Parameters.AddWithValue("@type", obj_initiatorrecipientprivate.type);
+                                upd_customermaster.Parameters.AddWithValue("@customervisible", obj_initiatorrecipientprivate.visibletoall);
+                                int result_upd = upd_customermaster.ExecuteNonQuery();
+
+
+
+
+                                NpgsqlCommand check_payer1 = new NpgsqlCommand("select count(*)  from initiatorrecipientmappings where customerid = '" + obj_initiatorrecipientprivate.customerid + "' and uid = '" + obj_initiatorrecipientprivate.uid + "' and recipientuid = '" + uidd + "'", connection);
+                                var output_result1 = check_payer1.ExecuteScalar().ToString();
+                                if ((int.Parse(output_result1) == 0) || (output_result1 == null))
+                                {
+
+
+
+
+
+                                    NpgsqlCommand check_payer = new NpgsqlCommand("select count(*)  from initiatorrecipientprivates where customerid = '" + obj_initiatorrecipientprivate.customerid + "' and bankname = '" + obj_initiatorrecipientprivate.bankname + "' and bankaccountnumber = '" + obj_initiatorrecipientprivate.bankaccountnumber + "'", connection);
+                                    var output_result = check_payer.ExecuteScalar().ToString();
+
+
+                                    if ((int.Parse(output_result) == 0) || (output_result == null))
+                                    {
+
+                                        var parameters_cus = new { @cid = cid, @uid = uid, @customerid = obj_initiatorrecipientprivate.customerid };
+                                        var SQL_cus = "  select  email,concat(firstname,'',lastname) as cusname from customermasters where customerid=@customerid";
+                                        var resultcus = connection.Query<dynamic>(SQL_cus, parameters_cus);
+                                        var obj_cus = resultcus.FirstOrDefault();
+                                        cusemail = obj_cus.email;
+                                        cusname = obj_cus.cusname;
+
+
+
+
+
+
+
+
+                                        NpgsqlCommand inst_payerpayeeprivate = new NpgsqlCommand("INSERT INTO public.initiatorrecipientprivates(privateid, customerid, uid, type, firstname, lastname, email, mobile, geoid, cityid, pincode, bankaccountnumber, bankname, iban, accountname, status, createdby, createddate)VALUES(@customerid,@uid,@type,@firstname,@lastname,@email,@mobile,@geocode,@city,@pincode,@bankaccountnumber,@bankname,@iban,@accountname,@status,@createdby,@createddate)", connection);
+                                        // inst_payerpayeeprivate.Parameters.AddWithValue("@customerid", obj_initiatorrecipientprivate.customerid);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@customerid", custid);
+                                        //inst_payerpayeeprivate.Parameters.AddWithValue("@uid", obj_initiatorrecipientprivate.uid);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@uid", uidd);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@type", obj_initiatorrecipientprivate.type);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@firstname", obj_initiatorrecipientprivate.firstname);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@lastname", obj_initiatorrecipientprivate.lastname);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@email", obj_initiatorrecipientprivate.email);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@mobile", obj_initiatorrecipientprivate.mobile);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@geocode", obj_initiatorrecipientprivate.geoid);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@city", obj_initiatorrecipientprivate.cityid);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@pincode", obj_initiatorrecipientprivate.pincode);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@bankaccountnumber", obj_initiatorrecipientprivate.bankaccountnumber);
+                                        // inst_payerpayeeprivate.Parameters.AddWithValue("@brn", obj_initiatorrecipientprivate.b);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@bankname", obj_initiatorrecipientprivate.bankname);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@iban", obj_initiatorrecipientprivate.iban);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@accountname", obj_initiatorrecipientprivate.accountname);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@status", 'A');
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@createdby", obj_initiatorrecipientprivate.customerid);
+                                        inst_payerpayeeprivate.Parameters.AddWithValue("@createddate", DateTime.Now);
+                                        // inst_payerpayeeprivate.Parameters.AddWithValue("@middlename", obj_initiatorrecipientprivate.middlename);
+                                        // inst_payerpayeeprivate.Parameters.AddWithValue("@accounttype", obj_initiatorrecipientprivate.accounttype);
+                                        //  inst_payerpayeeprivate.Parameters.AddWithValue("@documenttype", obj_initiatorrecipientprivate.documnettype);
+                                        //inst_payerpayeeprivate.Parameters.AddWithValue("@document",obj_initiatorrecipientprivate.documentvalue);
+                                        int resultpayerpayeeprivate = inst_payerpayeeprivate.ExecuteNonQuery();
+
+
+                                        //NpgsqlCommand inst_payerpayeemapping = new NpgsqlCommand("insert into initiatorrecipientmappings(customerid, uid, recipientuid, status) values(@customerid, @uid, @recipientuid, @status)", connection);
+                                        //inst_payerpayeemapping.Parameters.AddWithValue("@customerid", obj_initiatorrecipientprivate.customerid);
+                                        //inst_payerpayeemapping.Parameters.AddWithValue("@uid", obj_initiatorrecipientprivate.uid);
+                                        //inst_payerpayeemapping.Parameters.AddWithValue("@recipientuid", uidd);
+                                        //inst_payerpayeemapping.Parameters.AddWithValue("@status", 'A');
+                                        //inst_payerpayeemapping.Parameters.AddWithValue("@createdby", obj_initiatorrecipientprivate.customerid);
+                                        //inst_payerpayeemapping.Parameters.AddWithValue("@createddate", DateTime.Now);
+                                        ////  inst_payerpayeeprivate.Parameters.AddWithValue("@documenttype", obj_initiatorrecipientprivate.documnettype);
+                                        ////inst_payerpayeeprivate.Parameters.AddWithValue("@document",obj_initiatorrecipientprivate.documentvalue);
+                                        //int resultpayerpayeemapping = inst_payerpayeemapping.ExecuteNonQuery();
+
+
+
+
+
+
+                                    }
+                                    else
+                                    {
+
+                                        //NpgsqlCommand inst_payerpayeemapping = new NpgsqlCommand("insert into initiatorrecipientmappings(customerid, uid, recipientuid, status) values(@customerid, @uid, @recipientuid, @status)", connection);
+                                        //inst_payerpayeemapping.Parameters.AddWithValue("@customerid", obj_initiatorrecipientprivate.customerid);
+                                        //inst_payerpayeemapping.Parameters.AddWithValue("@uid", obj_initiatorrecipientprivate.uid);
+                                        //inst_payerpayeemapping.Parameters.AddWithValue("@recipientuid", uidd);
+                                        //inst_payerpayeemapping.Parameters.AddWithValue("@status", 'A');
+                                        //inst_payerpayeemapping.Parameters.AddWithValue("@createdby", obj_initiatorrecipientprivate.customerid);
+                                        //inst_payerpayeemapping.Parameters.AddWithValue("@createddate", DateTime.Now);
+                                        ////  inst_payerpayeeprivate.Parameters.AddWithValue("@documenttype", obj_initiatorrecipientprivate.documnettype);
+                                        ////inst_payerpayeeprivate.Parameters.AddWithValue("@document",obj_initiatorrecipientprivate.documentvalue);
+                                        //int resultpayerpayeemapping = inst_payerpayeemapping.ExecuteNonQuery();
+
+
+                                        return "Success";
+                                    }
+
+                                }
+
+                            }
+                            else
+                            {
+                                return "The Given Payee already availbale in your My payee list ";
+                            }
+
+
+
+
+
+                        }
+                        else
+                        {
+
+                            var parameters_customerid = new { @cid = cid, @uid = uid };
+                            var SQL = "select max(customerid) as maxid from customermasters";
+                            var result = connection.Query<dynamic>(SQL, parameters_customerid);
+                            var obj_cutomerid = result.FirstOrDefault();
+                            maxid = obj_cutomerid.maxid;
+                            maxid = maxid + 1;
+
+
+
+                            if (geid == 1)
+                            {
+                                newValueString = "U" + maxid.ToString().PadLeft(8, '0');
+                            }
+                            if (geid == 2)
+                            {
+                                newValueString = "P" + maxid.ToString().PadLeft(8, '0');
+                            }
+
+                            // convert back to string with leading zero's
+                            //string newValueString = maxid.ToString().PadLeft(8, '0');
+
+
+
+                            var cus_master = new customermaster();
+                            var cus_detail = new customerdetail();
+                            cus_master.email = obj_initiatorrecipientprivate.email;
+                            cus_master.createdby = 0;
+                            cus_master.mode = obj_initiatorrecipientprivate.type;
+                            //cus_master.uid = "P" + DateTime.Now.Second.ToString();
+                            cus_master.uid = newValueString;
+                            cus_master.type = obj_initiatorrecipientprivate.type;
+                            cus_master.status = "N";
+                            cus_master.mobile = obj_initiatorrecipientprivate.mobile;
+                            cus_master.createddate = DateTime.Now;
+                            cus_master.customervisible = obj_initiatorrecipientprivate.visibletoall;
+                            // cus_master.otp = TACNo.ToString();
+                            cus_master.customervisible = false;
+                            _cus_context.customermasters.Add(cus_master);
+                            _cus_context.SaveChanges();
+
+
+
+                            var parameters_customerid1 = new { @cid = cid, @uid = uid, @email = obj_initiatorrecipientprivate.email };
+                            var SQL1 = "  select pk_encode(m.customerid) as pkcol,m.customerid,m.uid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
+                            var result1 = connection.Query<dynamic>(SQL1, parameters_customerid1);
+                            var obj_cutomerid1 = result1.FirstOrDefault();
+                            custid = obj_cutomerid1.customerid;
+                            uidd = obj_cutomerid1.uid;
+
+
+
+                            //var cus_detail = new customerdetail();
+                            cus_detail.geoid = geid;
+                            cus_detail.customerid = custid;
+                            cus_detail.uid = uidd.ToString();
+                            _cd_context.customerdetails.Add(cus_detail);
+                            _cd_context.SaveChanges();
+
+
+
+
+                            NpgsqlCommand check_payer1 = new NpgsqlCommand("select count(*)  from initiatorrecipientmappings where customerid = '" + custid + "' and uid = '" + obj_initiatorrecipientprivate.uid + "' and recipientuid = '" + uidd + "'", connection);
+                            var output_result1 = check_payer1.ExecuteScalar().ToString();
+                            if ((int.Parse(output_result1) == 0) || (output_result1 == null))
+                            {
+
+
+
+
+
+                                NpgsqlCommand check_payer = new NpgsqlCommand("select count(*)  from initiatorrecipientprivates where customerid = '" + obj_initiatorrecipientprivate.customerid + "' and bankname = '" + obj_initiatorrecipientprivate.bankname + "' and bankaccountnumber = '" + obj_initiatorrecipientprivate.bankaccountnumber + "'", connection);
+                                var output_result = check_payer.ExecuteScalar().ToString();
+
+
+                                if ((int.Parse(output_result) == 0) || (output_result == null))
+                                {
+
+                                    var parameters_cus = new { @cid = cid, @uid = uid, @customerid = custid };
+                                    var SQL_cus = "  select  email,concat(firstname,'',lastname) as cusname,email from customermasters where customerid=@customerid";
+                                    var resultcus = connection.Query<dynamic>(SQL_cus, parameters_cus);
+                                    var obj_cus = resultcus.FirstOrDefault();
+                                    cusemail = obj_cus.email;
+                                    cusname = obj_cus.cusname;
+
+
+
+
+
+
+
+
+
+                                    NpgsqlCommand inst_payerpayeeprivate = new NpgsqlCommand("INSERT INTO public.initiatorrecipientprivates(customerid, uid, type, firstname, lastname, email, mobile, geoid, cityid, pincode, bankaccountnumber, bankname, iban, accountname, status, createdby, createddate)VALUES(@customerid,@uid,@type,@firstname,@lastname,@email,@mobile,@geocode,@city,@pincode,@bankaccountnumber,@bankname,@iban,@accountname,@status,@createdby,@createddate)", connection);
+                                    // inst_payerpayeeprivate.Parameters.AddWithValue("@customerid", obj_initiatorrecipientprivate.customerid);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@customerid", custid);
+                                    //inst_payerpayeeprivate.Parameters.AddWithValue("@uid", obj_initiatorrecipientprivate.uid);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@uid", uidd);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@type", obj_initiatorrecipientprivate.type);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@firstname", obj_initiatorrecipientprivate.firstname);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@lastname", obj_initiatorrecipientprivate.lastname);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@email", obj_initiatorrecipientprivate.email);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@mobile", obj_initiatorrecipientprivate.mobile);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@geocode", obj_initiatorrecipientprivate.geoid);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@city", obj_initiatorrecipientprivate.cityid);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@pincode", obj_initiatorrecipientprivate.pincode);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@bankaccountnumber", obj_initiatorrecipientprivate.bankaccountnumber);
+                                    // inst_payerpayeeprivate.Parameters.AddWithValue("@brn", obj_initiatorrecipientprivate.b);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@bankname", obj_initiatorrecipientprivate.bankname);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@iban", obj_initiatorrecipientprivate.iban);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@accountname", obj_initiatorrecipientprivate.accountname);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@status", 'A');
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@createdby", custid);
+                                    inst_payerpayeeprivate.Parameters.AddWithValue("@createddate", DateTime.Now);
+                                    // inst_payerpayeeprivate.Parameters.AddWithValue("@middlename", obj_initiatorrecipientprivate.middlename);
+                                    // inst_payerpayeeprivate.Parameters.AddWithValue("@accounttype", obj_initiatorrecipientprivate.accounttype);
+                                    //  inst_payerpayeeprivate.Parameters.AddWithValue("@documenttype", obj_initiatorrecipientprivate.documnettype);
+                                    //inst_payerpayeeprivate.Parameters.AddWithValue("@document",obj_initiatorrecipientprivate.documentvalue);
+                                    int resultpayerpayeeprivate = inst_payerpayeeprivate.ExecuteNonQuery();
+
+
+                                    //NpgsqlCommand inst_payerpayeemapping = new NpgsqlCommand("insert into initiatorrecipientmappings(customerid, uid, recipientuid, status) values(@customerid, @uid, @recipientuid, @status)", connection);
+                                    //inst_payerpayeemapping.Parameters.AddWithValue("@customerid", custid);
+                                    //inst_payerpayeemapping.Parameters.AddWithValue("@uid", obj_initiatorrecipientprivate.uid);
+                                    //inst_payerpayeemapping.Parameters.AddWithValue("@recipientuid", uidd);
+                                    //inst_payerpayeemapping.Parameters.AddWithValue("@status", 'A');
+                                    //inst_payerpayeemapping.Parameters.AddWithValue("@createdby", custid);
+                                    //inst_payerpayeemapping.Parameters.AddWithValue("@createddate", DateTime.Now);
+                                    ////  inst_payerpayeeprivate.Parameters.AddWithValue("@documenttype", obj_initiatorrecipientprivate.documnettype);
+                                    ////inst_payerpayeeprivate.Parameters.AddWithValue("@document",obj_initiatorrecipientprivate.documentvalue);
+                                    //int resultpayerpayeemapping = inst_payerpayeemapping.ExecuteNonQuery();
+
+
+
+
+
+
+
+
+                                    string subject = cusname+" " +"Registration Confirmation Requested";
+                                    StringBuilder sb = new StringBuilder();
+                                    System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient();
+                                    smtp.EnableSsl = true;
+                                    smtp.UseDefaultCredentials = false;
+                                    sb.Append("Hiya" + cusname + ",");
+                                    sb.Append("<br/>");
+                                    sb.Append("<br/>");
+                                    sb.Append("Congratulations we have registered you succesfully on CarditNow.Click here to verify your email and set passcode.");
+                                    //sb.Append("<b>");
+                                    //sb.Append("");
+                                    //sb.Append("</b>");
+                                    sb.Append("<br/>");
+                                    sb.Append("<br/>");
+                                    sb.Append("Cheers,");
+                                    sb.Append("<br/>");
+                                    sb.Append("Carditnow");
+                                    // SendEmail(email, subject, sb.ToString());
+                                    Helper.Email(sb.ToString(), obj_initiatorrecipientprivate.email, cusname, subject);
+
+
+                                    return "Success";
+                                }
+
+
+                            }
+                           
+                        }
+
+
+
+
+
+
+
+
+
+
+
+                        connection.Close();
+
+
+                        }
+            
+                    return "Success";
+                
+
+
+
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Service : Save_payerpayeePrivate(): {ex}");
+
+                }
+            }
+            else { return "Customer id not avilable"; }
+            return null;
+        }
+
         // DELETE: initiatorrecipientprivate/5
-//delete process
+        //delete process
         public  dynamic Delete(int id)
         {
         try{

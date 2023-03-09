@@ -68,6 +68,11 @@ namespace carditnow.Models
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
         public DateTime? updateddate{ get; set; }
+
+
+        [NotMapped]
+        [Column(TypeName = "boolean")]
+        public Boolean visibletoall { get; set; }
     }
     public class initiatorrecipientprivateView
     {

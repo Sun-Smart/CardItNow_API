@@ -177,5 +177,23 @@ namespace CardItNow.Controllers
             return result;
 
         }
+
+        [HttpGet]
+        [Route("GetLGUcustomers")]
+        public dynamic GetLGUcustomers()
+        {
+            var result = _commonService.GetLGUcustomers();
+            return result;
+        }
+
+
+        [HttpGet]
+        [Route("GetHomerentcustomers")]
+        public dynamic GetHomerentcustomers()
+        {
+            var result = _commonService.GetHomerentcustomers();
+            return result;
+        }
+
     }
 }

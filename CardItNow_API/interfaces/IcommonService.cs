@@ -31,5 +31,8 @@ namespace CardItNow.Services
 
         dynamic get_moneyspenddetails(dashboard model);
         dynamic get_transactionoverview(dashboard model);
+
+        dynamic GetLGUcustomers();
+        dynamic GetHomerentcustomers();
     }
 }

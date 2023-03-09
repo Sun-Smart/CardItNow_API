@@ -167,22 +167,23 @@ namespace carditnow.Controllers
 
         // POST: api/initiatorrecipientprivate
         [HttpPost]
-        public async Task<ActionResult<initiatorrecipientprivate>> Post_initiatorrecipientprivate()
+        [Route("saveinitiatorrecipientprivate")]
+        public async Task<ActionResult<initiatorrecipientprivate>> Post_initiatorrecipientprivate(initiatorrecipientprivateView obj_initiatorrecipientprivate)
         {
             string token = Request.Headers["Authorization"].ToString();
             try
             {
-                initiatorrecipientprivateView obj_initiatorrecipientprivate = JsonConvert.DeserializeObject<initiatorrecipientprivateView>(Request.Form["formData"]);
+                //initiatorrecipientprivateView obj_initiatorrecipientprivate = JsonConvert.DeserializeObject<initiatorrecipientprivateView>(Request.Form["formData"]);
                 var result = _initiatorrecipientprivateService.Save_initiatorrecipientprivate(token, obj_initiatorrecipientprivate.data);
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Authorization", token);
-                if (Request.Form.Files != null)
-                {
-                    foreach (var file in Request.Form.Files)
-                    {
-                        Helper.Upload(file);
-                    }
-                }
+                //HttpClient client = new HttpClient();
+                //client.DefaultRequestHeaders.Add("Authorization", token);
+                //if (Request.Form.Files != null)
+                //{
+                //    foreach (var file in Request.Form.Files)
+                //    {
+                //        Helper.Upload(file);
+                //    }
+                //}
 
                 return Ok(result);
             }
@@ -192,6 +193,39 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
+
+
+
+        [HttpPost]
+        [Route("insertinitiatorrecipientprivate")]
+        public async Task<ActionResult<initiatorrecipientprivate>> Post_initiatorrecipientprivate1(initiatorrecipientprivateView obj_initiatorrecipientprivate)
+        {
+            string token = Request.Headers["Authorization"].ToString();
+            try
+            {
+                //initiatorrecipientprivateView obj_initiatorrecipientprivate = JsonConvert.DeserializeObject<initiatorrecipientprivateView>(Request.Form["formData"]);
+                var result = _initiatorrecipientprivateService.Save_initiatorrecipientprivate1(token, obj_initiatorrecipientprivate.data);
+                //HttpClient client = new HttpClient();
+                //client.DefaultRequestHeaders.Add("Authorization", token);
+                //if (Request.Form.Files != null)
+                //{
+                //    foreach (var file in Request.Form.Files)
+                //    {
+                //        Helper.Upload(file);
+                //    }
+                //}
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller:Save api {ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "Save " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+
+
 
         [HttpGet]
         [Route("getList_customerid")]
@@ -233,7 +267,9 @@ namespace carditnow.Controllers
         {
             try
             {
-                var result = _boconfigvalueService.GetList("customermastertype");
+                //var result = _boconfigvalueService.GetList("customermastertype");
+
+                var result = _boconfigvalueService.GetList("rentpartnertype");
                 return Ok(result);
             }
             catch (Exception ex)

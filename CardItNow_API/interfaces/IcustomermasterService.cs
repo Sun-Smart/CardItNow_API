@@ -41,6 +41,8 @@ namespace carditnow.Services
 
         string ReSendOTP(string email);
 
+        IEnumerable<Object> Getproviencedetail(int geoid);
+
 
     }
 }

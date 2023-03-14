@@ -262,12 +262,14 @@ int querytype=0;
 if( obj_menumaster.menuname!=null )
 {
 var parametersmenuname =new {@cid=cid,@uid=uid, @menuname = obj_menumaster.menuname,@menuid=obj_menumaster.menuid };
-                    if(Helper.Count("select count(*) from menumasters where  and menuname =  @menuname and (@menuid == 0 ||  @menuid == null ||  @menuid < 0 || menuid!=  @menuid)",parametersmenuname)> 0) serr +="menuname is unique\r\n";
-}
-if( obj_menumaster.menulocation!=null )
+                    if(Helper.Count("select count(*) from menumasters where   menuname =  @menuname",parametersmenuname)> 0) serr +="menuname is unique\r\n";
+
+                    // and (@menuid == 0 ||  @menuid == null ||  @menuid < 0 || menuid!=  @menuid)
+                }
+                if ( obj_menumaster.menulocation!=null )
 {
 var parametersmenulocation =new {@cid=cid,@uid=uid, @menulocation = obj_menumaster.menulocation,@menuid=obj_menumaster.menuid };
-                    if(Helper.Count("select count(*) from menumasters where  and menulocation =  @menulocation and (@menuid == 0 ||  @menuid == null ||  @menuid < 0 || menuid!=  @menuid)",parametersmenulocation)> 0) serr +="menulocation is unique\r\n";
+                    if(Helper.Count("select count(*) from menumasters where   menulocation =  @menulocation ",parametersmenulocation)> 0) serr +="menulocation is unique\r\n";
 }
                 if(serr!="")
                 {

@@ -32,6 +32,10 @@ namespace carditnow.Models
         public int? updatedby { get; set; }
         [Column(TypeName = "DateTime")]
         public DateTime? updateddate{ get; set; }
+
+        [Column(TypeName = "int")]
+        public int? provienceid { get; set; }
+
     }
     public class citymasterView
     {

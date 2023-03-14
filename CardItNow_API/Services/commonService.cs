@@ -137,22 +137,30 @@ namespace CardItNow.Services
                 using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
                 {
                     connection.Open();
-                    NpgsqlCommand inst_cd = new NpgsqlCommand("select  masterdatadescription from masterdatatypes inner join masterdatas on datatypeid = masterdatatypeid  where masterdatatypename = 'Purpose Of Payment' order by masterdatadescription", connection);
-                    NpgsqlDataAdapter sda = new NpgsqlDataAdapter(inst_cd);
-                    DataTable dt = new DataTable();
-                    sda.Fill(dt);
-                    if (dt.Rows.Count > 0)
-                    {
-                        foreach (DataRow dr in dt.Rows)
-                        {
-                            sList.Add(new purposeList
-                            {
-                                purpose = dr["masterdatadescription"].ToString()
-                            });
-                        }
-                    }
+
+                    var parameters = new { @cid = cid, @uid = uid };
+                        string inst_cd = @"select  masterdataid as value,masterdatadescription as description from masterdatatypes inner join masterdatas on datatypeid = masterdatatypeid where masterdatatypename = 'Purpose Of Payment' and masterdatatypeid = 7 order by masterdatadescription";
+                    var result = connection.Query<dynamic>(inst_cd, parameters);
                     connection.Close();
                     connection.Dispose();
+                    return new { payment_puposelist = result };
+                    //ramesh
+                    //NpgsqlDataAdapter sda = new NpgsqlDataAdapter(inst_cd);
+                    //DataTable dt = new DataTable();
+                    //sda.Fill(dt);
+                    //if (dt.Rows.Count > 0)
+                    //{
+                    //    foreach (DataRow dr in dt.Rows)
+                    //    {
+                    //        sList.Add(new purposeList
+                    //        {
+                    //            purpose = dr["masterdatadescription"].ToString()
+                    //        });
+                    //    }
+                    //}
+                    //connection.Close();
+                    //connection.Dispose();
+                    //end
                 }
                 return sList;
             }
@@ -162,6 +170,39 @@ namespace CardItNow.Services
             }
             return sList;
         }
+
+
+
+
+        public dynamic GetPurposeList_hr()
+        {
+            var sList = new List<purposeList>();
+            try
+            {
+                _logger.LogInfo("Getting into Get Document Type api");
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+                    var parameters = new { @cid = cid, @uid = uid };
+
+
+                    string inst_cd = @"select  masterdataid as value,masterdatadescription as description from masterdatatypes inner join masterdatas on datatypeid = masterdatatypeid where masterdatatypename = 'Rent Types' and masterdatatypeid = 12 order by masterdatadescription";
+                    var result = connection.Query<dynamic>(inst_cd, parameters);
+                    connection.Close();
+                    connection.Dispose();
+                    return new { houserent_puposelist = result };
+                }
+               
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+            }
+            return sList;
+        }
+
+
+
 
         public dynamic Sociallogin(sociallogin model)
         {
@@ -428,6 +469,7 @@ namespace CardItNow.Services
             try
             {
                 int custid = 0;
+                string cusname = string.Empty;
 
                 _logger.LogInfo("Getting into Forgot Passcode(string email) api");
 
@@ -441,6 +483,18 @@ namespace CardItNow.Services
                     {
                         NpgsqlCommand update_otp = new NpgsqlCommand("update customermasters set otp='" + TACNo + "'where email='" + model.email + "'", connection);
                         var update_result = update_otp.ExecuteNonQuery().ToString();
+
+
+                        var parameters_customerid = new { @cid = cid, @uid = uid,@email = model.email };
+                        var SQL = "select email,concat(firstname,'',lastname) as cusname from customermasters where email=@email";
+                        var result = connection.Query<dynamic>(SQL, parameters_customerid);
+                        var obj_cutomerid = result.FirstOrDefault();
+                       // email = obj_cutomerid.email;
+                        cusname = obj_cutomerid.cusname;
+
+
+
+
                         if (int.Parse(update_result) > 0)
                         {
                             string subject = "CarditNow Forgot passcode OTP ";
@@ -460,9 +514,9 @@ namespace CardItNow.Services
                             sb.Append("Regards,");
                             sb.Append("<br/>");
                             sb.Append("SunSmart Global");
-                            SendEmail(model.email, subject, sb.ToString());
+                            //SendEmail(model.email, subject, sb.ToString());
 
-
+                            Helper.Email(sb.ToString(), model.email, cusname, subject);
 
 
                             var parameters_customerid1 = new { @cid = cid, @uid = uid, @email = model.email };
@@ -716,7 +770,7 @@ namespace CardItNow.Services
 
 
 
-
+        //LGU duplication validation
         public string duplicatetransactionvalidation(duplicatetransactionvalidation model)
         {
             try
@@ -745,7 +799,7 @@ namespace CardItNow.Services
                                     {
                                         status = "success",
                                         data = "",   /* Application-specific data would go here. */
-                                        message = "Procedd for futher action" /* Or optional success message */
+                                        message = "Proceed for futher action" /* Or optional success message */
                                     };
                                     return JsonConvert.SerializeObject(result1);
                               
@@ -765,6 +819,95 @@ namespace CardItNow.Services
                             }
                         }
                    
+
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetUserEmail_validat(string email) \r\n {ex}");
+                throw ex;
+            }
+            return null;
+        }
+
+
+        //Home rent duplication
+
+        public string duplicatetransactionvalidation_hr(duplicatetransactionvalidation model)
+        {
+            try
+            {
+                // var result1 = "";
+
+                _logger.LogInfo("Getting into Forgot Passcode(string email) api");
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    connection.Open();
+
+                    if (model.purpose == "Maintenance" || model.purpose == "Renovation")
+                    {
+
+                        NpgsqlCommand CheckExists_customer = new NpgsqlCommand(" select * from transactionmasters where uid=(select uid from customermasters where customerid='" + model.customerid + "') and recipientuid = '" + model.recipientuid + "' and recipientid = '" + model.recipientid + "' and transactiontype = '" + model.purpose + "' and pin = '" + model.pin + "' and startdate = '" + model.startdate + "' and expirydate = '" + model.enddate + "' and contractamount = '" + model.billamount + "'", connection);
+                        NpgsqlDataAdapter get_customer = new NpgsqlDataAdapter(CheckExists_customer);
+                        DataTable dt = new DataTable();
+                        get_customer.Fill(dt);
+                        if (dt.Rows.Count == 0)
+                        {
+
+                            var result1 = new
+                            {
+                                status = "success",
+                                data = "",   /* Application-specific data would go here. */
+                                message = "Proceed for futher action" /* Or optional success message */
+                            };
+                            return JsonConvert.SerializeObject(result1);
+
+                        }
+                        else
+                        {
+                            var result1 = new
+                            {
+                                status = "fail",
+                                data = "",   /* Application-specific data would go here. */
+                                message = "This invoice has been paid" /* Or optional success message */
+                            };
+                            return JsonConvert.SerializeObject(result1);
+                        }
+                    }
+                    else
+                    {
+
+
+
+                        NpgsqlCommand CheckExists_customer = new NpgsqlCommand(" select * from transactionmasters where uid=(select uid from customermasters where customerid='" + model.customerid + "') and recipientuid = '" + model.recipientuid + "' and recipientid = '" + model.recipientid + "' and transactiontype = '" + model.purpose + "'  and startdate = '" + model.startdate + "' and expirydate = '" + model.enddate + "' and contractamount = '" + model.billamount + "'", connection);
+                        NpgsqlDataAdapter get_customer = new NpgsqlDataAdapter(CheckExists_customer);
+                        DataTable dt = new DataTable();
+                        get_customer.Fill(dt);
+                        if (dt.Rows.Count == 0)
+                        {
+
+                            var result1 = new
+                            {
+                                status = "success",
+                                data = "",   /* Application-specific data would go here. */
+                                message = "Proceed for futher action" /* Or optional success message */
+                            };
+                            return JsonConvert.SerializeObject(result1);
+
+                        }
+                        else
+                        {
+                            var result1 = new
+                            {
+                                status = "fail",
+                                data = "",   /* Application-specific data would go here. */
+                                message = "This invoice has been paid" /* Or optional success message */
+                            };
+                            return JsonConvert.SerializeObject(result1);
+                        }
+                    }
+
+                }
+            }
+
 
             catch (Exception ex)
             {
@@ -896,7 +1039,7 @@ namespace CardItNow.Services
                     string wStatus = "NormalStatus";
 
                     var parameters = new { @cid = cid, @uid = uid, @wStatus = wStatus };
-                    var SQL = @"select * from customermasters where mode='I' or mode='B' and status='A' ";
+                    var SQL = @"select * from customermasters where mode='LG' and type='B' and status='A' ";
                     var result = connection.Query<dynamic>(SQL, parameters);
                     var obj_privacypolicy = result.FirstOrDefault();
                     //var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customerpaymodes'";
@@ -907,7 +1050,7 @@ namespace CardItNow.Services
 
                     connection.Close();
                     connection.Dispose();
-                    return (new { Privacypolicy = obj_privacypolicy, formproperty, visiblelist, hidelist });
+                    return (new { LGUcustomers = result, formproperty, visiblelist, hidelist });
                 }
             }
             catch (Exception ex)
@@ -934,7 +1077,7 @@ namespace CardItNow.Services
                     string wStatus = "NormalStatus";
 
                     var parameters = new { @cid = cid, @uid = uid, @wStatus = wStatus };
-                    var SQL = @"select * from customermasters where mode='P' or mode='M' or mode='IL' and status='A'";
+                    var SQL = @"select * from customermasters where mode='PP' or mode='M' or mode='IL' and type='B' and status='A'";
                     var result = connection.Query<dynamic>(SQL, parameters);
                     var obj_privacypolicy = result.FirstOrDefault();
                     //var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customerpaymodes'";
@@ -945,7 +1088,7 @@ namespace CardItNow.Services
 
                     connection.Close();
                     connection.Dispose();
-                    return (new { Privacypolicy = obj_privacypolicy, formproperty, visiblelist, hidelist });
+                    return (new { Homerentcustomers = result, formproperty, visiblelist, hidelist });
                 }
             }
             catch (Exception ex)

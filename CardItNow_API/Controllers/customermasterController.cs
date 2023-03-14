@@ -33,8 +33,10 @@ namespace carditnow.Controllers
         private readonly IcustomerpaymodeService _customerpaymodeService;
         private readonly IcustomersecurityquestionService _customersecurityquestionService;
         private readonly IcustomersecurityquestionshistoryService _customersecurityquestionshistoryService;
+        private readonly IgeographymasterService _geographymasterService;
+        private readonly IcitymasterService _citymasterService;
 
-        public customermasterController(IHttpContextAccessor objhttpContextAccessor, IcustomermasterService obj_customermasterService, IboconfigvalueService obj_boconfigvalueService, IavatarmasterService obj_avatarmasterService, IcustomerdetailService obj_customerdetailService, IcustomertermsacceptanceService obj_customertermsacceptanceService, IcustomerpaymodeService obj_customerpaymodeService, IcustomersecurityquestionService obj_customersecurityquestionService, IcustomersecurityquestionshistoryService obj_customersecurityquestionshistoryService, ILoggerManager logger) : base(logger)
+        public customermasterController(IHttpContextAccessor objhttpContextAccessor, IcustomermasterService obj_customermasterService, IboconfigvalueService obj_boconfigvalueService, IavatarmasterService obj_avatarmasterService, IcustomerdetailService obj_customerdetailService, IcustomertermsacceptanceService obj_customertermsacceptanceService, IcustomerpaymodeService obj_customerpaymodeService, IcustomersecurityquestionService obj_customersecurityquestionService, IcustomersecurityquestionshistoryService obj_customersecurityquestionshistoryService, IgeographymasterService obj_geographymasterService, IcitymasterService obj_citymasterService, ILoggerManager logger) : base(logger)
         {
             _customermasterService = obj_customermasterService;
             _logger = logger;
@@ -54,6 +56,8 @@ namespace carditnow.Controllers
                 _customerpaymodeService = obj_customerpaymodeService;
                 _customersecurityquestionService = obj_customersecurityquestionService;
                 _customersecurityquestionshistoryService = obj_customersecurityquestionshistoryService;
+                _geographymasterService = obj_geographymasterService;
+                _citymasterService = obj_citymasterService;
             }
         }
 
@@ -796,6 +800,65 @@ namespace carditnow.Controllers
                 return StatusCode(StatusCodes.Status417ExpectationFailed, "GetList " + ex.Message + "  " + ex.InnerException?.Message);
             }
         }
+
+
+        //get geodetails
+        [HttpGet]
+        [Route("Getgeodetails")]
+        public async Task<ActionResult<IEnumerable<Object>>> Getgeodetails()
+        {
+            try
+            {
+                var result = _geographymasterService.Get_geographymasters();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: GetFullList() \r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "GetList " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+
+        //get provience based on geoid
+        [HttpGet]
+        [Route("Getproviencedeatail/{geoid}")]
+        public async Task<ActionResult<IEnumerable<Object>>> Getproviencedeatail(int geoid)
+        {
+            try
+            {
+                var result = _customermasterService.Getproviencedetail(geoid);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: GetFullList() \r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "GetList " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
+
+
+
+
+        //get city based on geoid and provience
+
+        [HttpGet]
+        [Route("Getcitydetail/{geoid}/{provienceid}")]
+        public async Task<ActionResult<IEnumerable<Object>>> Getcitydetail(int geoid,int provienceid)
+        {
+            try
+            {
+                var result = _citymasterService.GetListBy_geoid2(geoid, provienceid);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Controller: GetListBy_geoid(int geoid)\r\n{ex}");
+                return StatusCode(StatusCodes.Status417ExpectationFailed, "GetListBy_geoid " + ex.Message + "  " + ex.InnerException?.Message);
+            }
+        }
+
 
 
 

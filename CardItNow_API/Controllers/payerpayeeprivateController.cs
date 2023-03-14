@@ -91,5 +91,29 @@ namespace CardItNow.Controllers
             return result;
         }
 
+
+
+        //Get_payeetranscdetail/GetpayeeList/{customerid}
+        [HttpGet]
+        [Route("Get_payeetranscdetail/{customerid}")]
+        public dynamic Get_payeetranscdetail(int customerid)
+        {
+            var result = _payerpayeeprivateService.GetallPayeetranscdetail(customerid);
+            return result;
+        }
+
+
+
+
+        //payerpayeeprivate/Get_payeebankdetail/{payeeid}
+        [HttpGet]
+        [Route("Get_payeebankdetail/{payeeid}")]
+        public dynamic Get_payeebankdetail(int payeeid)
+        {
+            var result = _payerpayeeprivateService.GetallPayeebankdetail(payeeid);
+            return result;
+        }
+
+
     }
 }

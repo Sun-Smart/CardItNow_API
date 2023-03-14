@@ -128,6 +128,37 @@ namespace carditnow.Services
                 throw ex;
             }
         }
+
+
+
+
+        public IEnumerable<Object> GetListBy_geoid2(int geoid,int provienceid)
+        {
+            try
+            {
+                _logger.LogInfo("Getting into  GetListBy_geoid(int geoid) api");
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    var parameters_geoid = new { @cid = cid, @uid = uid, @geoid = geoid,@provienceid =provienceid};
+                    var SQL = "select pk_encode(cityid) as pkcol,cityid as value,cityname as label,* from GetTable(NULL::public.citymasters,@cid) where geoid = @geoid and provienceid=@provienceid";
+                    var result = connection.Query<dynamic>(SQL, parameters_geoid);
+
+                    connection.Close();
+                    connection.Dispose();
+                    return (result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service:  GetListBy_geoid(int geoid) \r\n {ex}");
+                throw ex;
+            }
+        }
+
+
+
+
+
         //used in getting the record. parameter is encrypted id  
         public dynamic Get_citymaster(string sid)
         {

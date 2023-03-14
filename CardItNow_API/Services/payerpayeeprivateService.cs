@@ -891,6 +891,49 @@ namespace CardItNow.Services
         }
 
 
+
+
+
+
+        public dynamic MaskedNumber1(string source)
+        {
+            StringBuilder sb = new StringBuilder(source);
+
+            const int skipLeft = 0;
+            const int skipRight = 4;
+
+            int left = -1;
+
+            for (int i = 0, c = 0; i < sb.Length; ++i)
+            {
+                if (Char.IsDigit(sb[i]))
+                {
+                    c += 1;
+
+                    if (c > skipLeft)
+                    {
+                        left = i;
+
+                        break;
+                    }
+                }
+            }
+
+            for (int i = sb.Length - 1, c = 0; i >= left; --i)
+                if (Char.IsDigit(sb[i]))
+                {
+                    c += 1;
+
+                    if (c > skipRight)
+                        sb[i] = 'X';
+                }
+
+            return sb.ToString();
+        }
+
+
+
+
         //public dynamic Save_payerpayeprivateDocument(payerpayeeprivate obj_payerpayeeprivate)
         //{
         //    if (obj_payerpayeeprivate.customerid != null)
@@ -1000,7 +1043,7 @@ namespace CardItNow.Services
                     string wStatus = "NormalStatus";
 
                     var parameters = new { @cid = cid, @uid = uid, @customerid = customerid, @wStatus = wStatus };
-                    var SQL = @"select m.* from payerpayeemapping p left join customermasters m on p.customerid=m.customerid and p.payeeuid=m.customerid where p.customerid=@customerid";
+                    var SQL = @" select distinct(m.customerid),m.* from payerpayeemapping p left join customermasters m on 1=1 and m.uid in (select payeeuid from payerpayeemapping where customerid=@customerid)";
                     var result = connection.Query<dynamic>(SQL, parameters);
                     var obj_MandatoryPayee = result.FirstOrDefault();
                     var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customerpaymodes'";
@@ -1011,7 +1054,7 @@ namespace CardItNow.Services
 
                     connection.Close();
                     connection.Dispose();
-                    return (new { MandatoryPayee = obj_MandatoryPayee, formproperty, visiblelist, hidelist });
+                    return (new { AllPayee = result, formproperty, visiblelist, hidelist });
                 }
             }
             catch (Exception ex)
@@ -1020,6 +1063,121 @@ namespace CardItNow.Services
                 throw ex;
             }
         }
+
+
+
+
+
+        public dynamic GetallPayeetranscdetail(int customerid)
+        {
+            _logger.LogInfo("Getting into Get_customerpaymode(int id) api");
+            try
+            {
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    //all visible & hiding of fields are to be controlled with these variables.Must visible, Must hide fields are used 
+                    ArrayList visiblelist = new ArrayList();
+                    ArrayList hidelist = new ArrayList();
+
+
+                    string wStatus = "NormalStatus";
+
+                    var parameters = new { @cid = cid, @uid = uid, @customerid = customerid, @wStatus = wStatus };
+                    var SQL = @" select pk_encode(m.verification_id) as pkcol,m.verification_id,m.documenttype,m.purpose,m.amount,
+case when m.status='P' then 'Pending' 
+when m.status='A' then 'Approved' 
+when m.status='R' then 'Rejected' end as statusdesc,
+m.uploadfilename,m.uploadpath,
+concat(c.firstname,'',c.lastname) as customername,concat(cu.firstname,'',cu.lastname) as payeename,m.*,
+case when m.status='P' then '' 
+when m.status='A' then
+   case when t.status='I' then 'Payment pending' 
+   when t.status='A' then 'Payment Done'
+   end
+when m.status='R' then 'Rejected' end as paymentsataus
+from customer_document_verification m
+left join customermasters c on c.customerid=m.customer_id 
+left join customermasters cu on cu.customerid=m.payeeid 
+left join transactionmasters t on t.recipientid = m.payeeid and t.documentnumber = m.documentnumber where m.customer_id=@customerid)";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    var obj_MandatoryPayee = result.FirstOrDefault();
+                    var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customerpaymodes'";
+                    var customerpaymode_menuactions = connection.Query<dynamic>(SQLmenuactions, parameters);
+                    FormProperty formproperty = new FormProperty();
+                    formproperty.edit = true;
+
+
+                    connection.Close();
+                    connection.Dispose();
+                    return (new { AllPayee = result, formproperty, visiblelist, hidelist });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: Get_customerpaymode(int id)\r\n {ex}");
+                throw ex;
+            }
+        }
+
+
+
+
+
+
+
+        public dynamic GetallPayeebankdetail(int payeeid)
+        {
+            _logger.LogInfo("Getting into Get_customerpaymode(int id) api");
+            try
+            {
+                string bankaccountnumber = string.Empty;
+                string mask_bankaccno = string.Empty;
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+
+                    //all visible & hiding of fields are to be controlled with these variables.Must visible, Must hide fields are used 
+                    ArrayList visiblelist = new ArrayList();
+                    ArrayList hidelist = new ArrayList();
+
+
+                    //get bankaccountnumber
+
+                    var parameters_cus = new { @cid = cid, @uid = uid, @customerid = payeeid};
+                    var SQL_cus = " select bankaccountnumber from payerpayeeprivate where customerid=@customerid";
+                    var resultcus = connection.Query<dynamic>(SQL_cus, parameters_cus);
+                    var obj_cus = resultcus.FirstOrDefault();
+                    bankaccountnumber = obj_cus.bankaccountnumber;
+                    // cusname = obj_cus.cusname;
+
+                    mask_bankaccno = MaskedNumber1(bankaccountnumber);
+
+
+
+                    string wStatus = "NormalStatus";
+
+                    var parameters = new { @cid = cid, @uid = uid, @customerid = payeeid, @wStatus = wStatus };
+                    var SQL = @" select concat(firstname,'',lastname) as payeename,bankname from payerpayeeprivate where customerid=@customerid";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+                    var obj_MandatoryPayee = result.FirstOrDefault();
+                    var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customerpaymodes'";
+                    var customerpaymode_menuactions = connection.Query<dynamic>(SQLmenuactions, parameters);
+                    FormProperty formproperty = new FormProperty();
+                    formproperty.edit = true;
+
+
+                    connection.Close();
+                    connection.Dispose();
+                    return (new { Payeedetail = result,maskedbankaccountnumber= mask_bankaccno, formproperty, visiblelist, hidelist });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: Get_customerpaymode(int id)\r\n {ex}");
+                throw ex;
+            }
+        }
+
 
     }
 }

@@ -14,8 +14,14 @@ namespace CardItNow.interfaces
         dynamic Get_rawresult();
         dynamic MaskedNumber(String source);
 
+        dynamic MaskedNumber1(String source);
+
         dynamic MandatoryPayee(string brn);
 
         dynamic GetallPayee(int customerid);
+
+        dynamic GetallPayeetranscdetail(int customerid);
+
+        dynamic GetallPayeebankdetail(int payeeid);
     }
 }

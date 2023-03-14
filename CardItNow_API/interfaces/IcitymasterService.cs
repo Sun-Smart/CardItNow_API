@@ -16,6 +16,8 @@ namespace carditnow.Services
         IEnumerable<Object> GetList(string key);
         IEnumerable<Object> GetListBy_cityid(int cityid);
         IEnumerable<Object> GetListBy_geoid(int geoid);
+
+        IEnumerable<Object> GetListBy_geoid2(int geoid, int provienceid);
         dynamic Get_citymaster(string sid);
         dynamic Get_citymaster(int id);
         dynamic Save_citymaster(string token, citymaster obj_citymaster);

@@ -46,6 +46,7 @@ using System.Security.Cryptography;
 using carditnow.Models;
 using carditnow.Services;
 using SunSmartnTireProducts.Models;
+using MailKit.Security;
 
 namespace SunSmartnTireProducts.Helpers
 {
@@ -489,7 +490,7 @@ namespace SunSmartnTireProducts.Helpers
                                 emailClient.Authenticate("srimathi@sunsmartglobal.com", "sender@123$");
                                 */
                // message.From.Add(new MailboxAddress("SunSmart", "support@sunsmartglobal.com"));
-                message.From.Add(new MailboxAddress("SunSmart", "support@sunsmartglobal.com"));
+                message.From.Add(new MailboxAddress("CarditNow", "hi5@carditnow.com"));
 
                 //message.Subject = "Notify from " + fromname;
 
@@ -503,19 +504,25 @@ namespace SunSmartnTireProducts.Helpers
                 //Be careful that the SmtpClient class is the one from Mailkit not the framework!
                 using (var emailClient = new SmtpClient())
                 {
-                    //The last parameter here is to use SSL (Which you should!)
-                    emailClient.Connect("smtp.gmail.com", 587, false);
+                    //The last parameter here is to use SSL (Which you should
+                    //   //sunsmart
+                    // emailClient.Connect("smtp.gmail.com", 587, false);
+
+
+                    emailClient.Connect("smtpout.secureserver.net", 80, false);
 
                     //Remove any OAuth functionality as we won't be using it. 
                     emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
 
-                   emailClient.Authenticate("support@sunsmartglobal.com", "ogiytmqpuypkfugt");
-                  //  emailClient.Authenticate("pprakash@sunsmartglobal.com", "dtrhxbwaorkbtyia");
+                  emailClient.Authenticate("hi5@carditnow.com", "Carditnow23@");
+
+                    //sunsmart
+                    //emailClient.Authenticate("support@sunsmartglobal.com", "ogiytmqpuypkfugt");
 
                     emailClient.Send(message);
 
                     emailClient.Disconnect(true);
-                }
+               }
 
                 return true;
             }

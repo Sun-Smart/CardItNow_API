@@ -14,6 +14,8 @@ namespace CardItNow.Services
         dynamic Getdocumenttype();
         dynamic GetBankList(); 
         dynamic GetPurposeList();
+
+        dynamic GetPurposeList_hr();
         dynamic Sociallogin(sociallogin model);
         dynamic SaveSocial(Savesocial model);
         string forgotpass(Savesocial model);
@@ -24,6 +26,8 @@ namespace CardItNow.Services
         dynamic GetPrivacyclause();
 
         string duplicatetransactionvalidation(duplicatetransactionvalidation model);
+
+        string duplicatetransactionvalidation_hr(duplicatetransactionvalidation model);
 
         dynamic get_recenttransaction(dashboard model);
 

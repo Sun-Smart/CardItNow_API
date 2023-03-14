@@ -102,7 +102,7 @@ namespace CardItNow
             services.AddScoped<IusermasterService, usermasterService>();
             services.AddScoped<IuserrolemasterService, userrolemasterService>();
             services.AddScoped<ItokenService, tokenService>();
-
+            services.AddScoped<IcustomerdocumentverificationService, customerdocumentverificationService>();
             services.AddScoped<IboreportService, boreportService>();
             services.AddDbContext<boreportContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
 
@@ -159,6 +159,7 @@ namespace CardItNow
 
             services.AddDbContext<usermasterContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
             services.AddDbContext<userrolemasterContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
+            services.AddDbContext<customerdocumentverificationContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DevConnection")));
 
             services.AddMvc().AddNewtonsoftJson();
             services.AddControllers();

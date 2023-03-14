@@ -514,6 +514,7 @@ namespace carditnow.Services
             int geoid = 0;
             string geoids = string.Empty;
             int querytype = 0;
+            string cusname = string.Empty;
             try
             {
 
@@ -581,14 +582,16 @@ namespace carditnow.Services
                     sb.Append("Regards,");
                     sb.Append("<br/>");
                     sb.Append("SunSmart Global");
-                    SendEmail(email, subject, sb.ToString());
-                    //Helper.SendEmail();
-                    //return "Success";
+                    //SendEmail(email, subject, sb.ToString());
+                        //Helper.SendEmail();
+                        //return "Success";
 
-                    //shy
 
-                    //using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
-                    //{
+                        Helper.Email(sb.ToString(), email, cusname, subject);
+                        //shy
+
+                        //using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                        //{
                         var parameters_customerid = new { @cid = cid, @uid = uid, @email = email };
                         var SQL = "  select pk_encode(m.customerid) as pkcol,m.customerid,case when d.geoid is null then 0 else d.geoid end as geoid from customermasters m  left join customerdetails d on d.customerid = m.customerid where m.email = @email";
                         var result = connection.Query<dynamic>(SQL, parameters_customerid);
@@ -1079,15 +1082,34 @@ namespace carditnow.Services
                     string vmode = "mode";
                     string vcustomermastertype = "customermastertype";
                     var parameters = new { @cid = cid, @uid = uid, @id = id, @wStatus = wStatus, @vmode = vmode, @vcustomermastertype = vcustomermastertype };
+                    //var SQL = @"select pk_encode(a.customerid) as pkcol,a.customerid as pk,a.*,
+                    //          d.configtext as modedesc,
+                    //          t.configtext as typedesc,
+                    //          s.avatarname as defaultavatardesc
+                    //         from GetTable(NULL::public.customermasters,@cid) a 
+                    //         left join boconfigvalues d on a.mode=d.configkey and @vmode=d.param
+                    //         left join boconfigvalues t on a.type=t.configkey and                       @vcustomermastertype=t.param
+                    //         left join avatarmasters s on a.defaultavatar=s.avatarid
+                    //         where a.customerid=@id";
+
+
                     var SQL = @"select pk_encode(a.customerid) as pkcol,a.customerid as pk,a.*,
                               d.configtext as modedesc,
                               t.configtext as typedesc,
-                              s.avatarname as defaultavatardesc
+                              s.avatarname as defaultavatardesc,
+							  de.address,g.geoname as country,
+							  c.cityname as city
                              from GetTable(NULL::public.customermasters,@cid) a 
+							 left join customerdetails de on a.customerid=de.customerid
                              left join boconfigvalues d on a.mode=d.configkey and @vmode=d.param
-                             left join boconfigvalues t on a.type=t.configkey and                       @vcustomermastertype=t.param
+                             left join boconfigvalues t on a.type=t.configkey and
+							 @vcustomermastertype=t.param
+							 left join geographymasters g on g.geoid=de.geoid
+							 left join citymasters c on c.cityid=de.cityid and c.geoid=g.geoid
                              left join avatarmasters s on a.defaultavatar=s.avatarid
                              where a.customerid=@id";
+
+
                     var result = connection.Query<dynamic>(SQL, parameters);
                     var obj_customermaster = result.FirstOrDefault();
                     var SQLmenuactions = @"select actionid as name,'html' as type,'<i style=""width: 10px""  class=""' || actionicon || '""></i>' as title, a.* from bomenumasters m, bomenuactions a where m.menuid = a.menuid and m.actionkey = 'customermasters'";
@@ -1563,6 +1585,39 @@ s.avatarname as defaultavatardesc from GetTable(NULL::public.customermasters,@ci
         }
 
 
+
+
+
+
+
+        public IEnumerable<Object> Getproviencedetail(int geoid)
+        {
+            try
+            {
+                _logger.LogInfo("Getting into  Getproviencedetail(int geoid) api");
+
+                int id = 0;
+                using (var connection = new NpgsqlConnection(Configuration.GetConnectionString("DevConnection")))
+                {
+                    string wStatus = "NormalStatus";
+                    string vmode = "mode";
+                    string vcustomermastertype = "customermastertype";
+                    var parameters = new { @cid = cid, @uid = uid,@geoid=geoid };
+                    var SQL = @"select pk_encode(a.provienceid) as pkcol,provienceid as value,name as label from GetTable(NULL::public.proviencemaster,@cid) a  WHERE a.geoid=@geoid and a.status='A'";
+                    var result = connection.Query<dynamic>(SQL, parameters);
+
+
+                    connection.Close();
+                    connection.Dispose();
+                    return (result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Service: GetList(string key) api \r\n {ex}");
+                throw ex;
+            }
+        }
 
 
     }

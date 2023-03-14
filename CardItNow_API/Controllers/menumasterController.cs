@@ -220,13 +220,13 @@ namespace carditnow.Controllers
                         }
                     }
                 }
-                if (Request.Form.Files != null)
-                {
-                    foreach (var file in Request.Form.Files)
-                    {
-                        Helper.Upload(file);
-                    }
-                }
+                //if (Request.Form.Files != null)
+                //{
+                //    foreach (var file in Request.Form.Files)
+                //    {
+                //        Helper.Upload(file);
+                //    }
+                //}
 
                 return Ok(result);
             }

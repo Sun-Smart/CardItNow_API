@@ -63,6 +63,7 @@ namespace CardItNow.Models
         [Column(TypeName = "string")]
         //purpose i.e transaction type
 
+        public int purposeid { get; set; }
         public string purpose { get; set; }
         //payee i.e muncipality
         public string recipientuid { get; set; }
@@ -94,6 +95,15 @@ namespace CardItNow.Models
 
         [Column(TypeName = "DateTime")]
         public DateTime enddate { get; set; }
+
+
+        [Column(TypeName = "string")]
+        //login customer
+        public string invoiceno { get; set; }
+
+        [Column(TypeName = "DateTime")]
+        public DateTime invoicedate { get; set; }
+
     }
 
 
